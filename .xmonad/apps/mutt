@@ -1,0 +1,1 @@
+exec sakura -e "bash -i -c mutt $@"

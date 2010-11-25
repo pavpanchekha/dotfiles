@@ -1,0 +1,19 @@
+#!/bin/bash
+
+STACKFILE="$HOME/usr/lib/stack"
+
+if [ "x$1" = "xpop" ]; then
+    head --lines=-1 "$STACKFILE" > /tmp/stack-workaround
+    mv /tmp/stack-workaround "$STACKFILE"
+elif [ "x$1" = "x-h" ]; then
+    echo "Record current activity on a stack"
+    echo
+    echo "USAGE: stack <task>   Push <task> onto stack and print it"
+    echo "     | stack pop      Pop top from stack and print new top"
+    echo "     | stack          Print top element of stack"
+    exit 0
+elif [ $# -ne 0 ]; then
+    echo $@ >> "$STACKFILE"
+fi
+
+tail --lines=1 "$STACKFILE"

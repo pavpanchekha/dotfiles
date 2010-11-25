@@ -1,0 +1,66 @@
+set from = "pavpanchekha@gmail.com"
+set realname = "Pavel Panchekha"
+set signature = "~/.signature"
+
+set use_from = yes
+set envelope_from ="yes"
+
+set sendmail="/usr/bin/msmtp"
+set spoolfile=/var/spool/mail/pavpanchekha
+
+set sort = 'threads'
+set sort_aux = 'last-date-received'
+
+set folder = "~/mail"
+set record="+sent"
+set postponed="+postponed"
+set mbox_type = Maildir
+set move = no
+
+ignore *
+unignore From: Subject: To: Date:
+
+set editor="vim"
+set edit_headers=no
+
+set alias_file = ~/mail/aliases
+source ~/mail/aliases
+set sort_alias=alias
+
+set markers
+set smart_wrap
+set pager_context=5
+set status_on_top
+push <show-version>
+
+mailboxes ! +inbox +reuse.mit +amun +lisp-hug
+bind index,pager \CP sidebar-prev
+bind index,pager \CN sidebar-next
+bind index,pager \CO sidebar-open
+
+set followup_to=yes
+set honor_followup_to=yes
+
+# Google contacts
+set query_command="goobook query '%s'"
+bind editor <Tab> complete-query
+
+#---- Mutt Colors for default Background -------
+color   hdrdefault   blue              default
+color   quoted       blue              default
+color   signature    blue              default
+color   attachment   red               default
+color   message      brightred         default
+color   error        brightred         default
+color   indicator    default             red
+color   status       brightgreen       blue
+color   tree         white             default
+color   normal       white             default
+color   markers      red               default
+color   search       white             default
+color   tilde        brightmagenta     default
+color   index        blue              default ~F
+color   index        red               default "~N|~O"
+
+macro index <f5> "<save-message>=school<enter>"
+macro index <f6> "<save-message>=2010<enter>"

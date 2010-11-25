@@ -1,0 +1,87 @@
+#!/bin/bash
+
+function wait-job {
+    NAME=$1
+    
+    breakflag=0
+    while [[ "$breakflag" == "0" ]]; do
+	STATUS=`ssh g3 "cd /tmp/$NAME; cat ~status"`
+	if [[ "$STATUS" == "done" ]]; then
+	    echo -e "\nRemote job $NAME finished" >&2
+	    breakflag=1
+	fi
+	sleep 3
+    done
+}
+
+if [[ "$1" == "out" ]]; then
+    if [[ $# -ge 2 ]]; then
+	NAME=$2
+    else
+	NAME=remote-job
+    fi
+    
+    scp g3:/tmp/$NAME/~out /tmp/~out > /dev/null || (echo "No such job" && exit 1)
+    cat /tmp/~out
+    rm /tmp/~out
+elif [[ "$1" == "err" ]]; then
+    if [[ $# -ge 2 ]]; then
+	NAME=$2
+    else
+	NAME=remote-job
+    fi
+    
+    scp g3:/tmp/$NAME/~err /tmp/~err > /dev/null || (echo "No such job" && exit 1)
+    cat /tmp/~err
+    rm /tmp/~err
+elif [[ "$1" == "del" ]]; then
+    if [[ $# -ge 2 ]]; then
+	NAME=$2
+    else
+	NAME=remote-job
+    fi
+    
+    ssh g3 "rm -r /tmp/$NAME" || (echo "No such job" && exit 1)
+elif [[ "$1" == "status" ]]; then
+    PING=`ping -A -c 5 -q g3.localhost | grep received | cut -f6 -d " "`
+    if [[ "$PING" == "0%" ]]; then
+        false
+    elif [[ "$PING" == "100%" ]]; then
+	echo "OFFLINE: No ping response"
+	exit
+    else
+	echo "WARNING: Ping response rate $PING"
+    fi
+
+    ssh g3 w
+elif [[ "$1" == "run" ]]; then
+    shift
+    if [[ "$1" == "-n" ]]; then
+	NAME=$2
+	shift; shift
+    else
+	NAME=remote-job
+    fi
+
+    DIR=$1
+    if [[ $# -ge 2 ]]; then
+	shift
+	CMD=$@
+    else
+	CMD=make
+    fi
+
+    scp -r $DIR g3:/tmp/$NAME
+    ssh g3 "cd /tmp/$NAME; echo -e \"#!/bin/bash\\n$CMD\\necho done > ~status\\n~/bin/alarm done\" > ~cmd; chmod +x ~cmd; touch ~status; nohup ./~cmd > ~out 2> ~err < /dev/null &"
+    wait-job $NAME &disown
+elif [[ "$1" == "alarm" ]]; then
+    ssh g3 "bin/alarm alarm"
+else
+    echo "Run a command on the G3 PowerMac"
+    echo
+    echo "USAGE: g3 run [-n <name>] <dir> [<cmd>]           Copy <dir> to the G3 and run <cmd> (default: make)"
+    echo "     | g3 out [<name>]             Get output of job <name> (default: remote-job)"
+    echo "     | g3 err [<name>]             Get error stream of job <name> (default: remote-job)"
+    echo "     | g3 del [<name>]             Remove all files related to job <name> (default: remote-job)"
+    echo "     | g3 status                Ping the G3"
+fi

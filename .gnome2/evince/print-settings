@@ -1,0 +1,36 @@
+
+[Print Settings]
+printer=PDF
+
+
+
+
+
+print-at=now
+resolution-x=300
+resolution-y=300
+cups-Resolution=300dpi
+cups-job-priority=50
+resolution=300
+cups-job-sheets=none,none
+cover-before=none
+cover-after=none
+cups-number-up=1
+print-at-time=
+
+
+
+
+
+
+
+[Page Setup]
+PPDName=Letter
+DisplayName=US Letter
+Width=215.89999389648438
+Height=279.39999389648438
+MarginTop=6.3499999999999996
+MarginBottom=14.224
+MarginLeft=6.3499999999999996
+MarginRight=6.3499999999999996
+Orientation=portrait

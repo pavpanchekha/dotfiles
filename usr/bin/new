@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if [[ "$#" -lt 1 || "$1" == "-h" ]]; then
+    echo "Create new files from a template"
+    echo
+    echo "USAGE: new <type> [<args> ...]"
+    exit
+fi
+
+type=$1
+shift
+~/usr/lib/new/$type "$@"

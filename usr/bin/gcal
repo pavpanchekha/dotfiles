@@ -1,0 +1,63 @@
+#!/usr/bin/env python
+
+import sys
+import getpass
+import keyring
+
+if len(sys.argv) > 1 and sys.argv[1] == "-h":
+    print "Retrieve Google Calendar appointments for today"
+    print
+    print "USAGE: gcal        Retrieve appointments, using `gcalcli`"
+    print "     | gcal --nc   Retrieve appointments, using `gcalcli`, with colorless output"
+    print "     | gcal -g     Retrieve appointments, using `google calendar`"
+    sys.exit()
+
+USERNAME = "pavpanchekha"
+PASSWORD = keyring.get_password("Google Calendar", USERNAME)
+if not PASSWORD:
+    PASSWORD = getpass.getpass("Google Calendar Password: ")
+    keyring.set_password("Google Calendar", USERNAME, PASSWORD)
+
+if "-g" in sys.argv:
+    import subprocess
+    
+    p = subprocess.Popen("google calendar today --cal .\* | egrep -v '\[.*\]' | egrep '^$' -v", shell=True, stdout=subprocess.PIPE)
+    p.wait()
+    stdout, _ = p.communicate("")
+    s = stdout.split("\n")
+    
+    events = []
+    for l in s:
+        try:
+            title, time = tuple(l.split(","))
+        except ValueError:
+            continue
+        
+        t_from = time.split()[2]
+        if t_from[0] == "0": t_from = t_from[1:]
+        events.append(t_from.rjust(5) + " " * 5 + title)
+
+    print "\n".join(sorted(events))
+else:
+    if "--nc" in sys.argv:
+        colored = False
+    else:
+        colored = True
+
+    import subprocess
+    p = subprocess.Popen(["gcalcli", "--user", USERNAME, "--pw", PASSWORD, "--details", "agenda", "12am", "11:59pm"], stdout=subprocess.PIPE)
+    p.wait()
+    stdout, _ = p.communicate("")
+    s = stdout.strip().split("\n")
+    s[0:2] = ["    " + ("  " if colored else "") + s[0] + s[1]]
+    for l in s:
+        if "Length" in l or "Location" in  l or "Content" in l:
+            print l[20:]
+        elif "Reminder" in l:
+            continue
+        elif l not in ("", "\x1b[0m]"):
+            if colored:
+                print "\x1b[0m\x1b[0;33m" + l[35:] + "\x1b[0m\x1b[0m"
+            else:
+                print l[34:]
+

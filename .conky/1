@@ -1,0 +1,60 @@
+own_window yes
+own_window_transparent yes
+own_window_type override
+
+double_buffer yes
+
+update_interval 3.0
+minimum_size 370
+maximum_width 370
+uppercase no
+use_xft yes
+xftfont Mensch:size=12
+
+mpd_host localhost
+mpd_port 6600
+
+no_buffers yes
+text_buffer_size 10000
+alignment tl
+
+gap_x 20
+gap_y 30
+
+TEXT
+${color orange}CPU ${hr 2}$color
+${freq}MHz ${alignr} ${loadavg}
+$cpubar
+${cpugraph 000000 ffffff}
+NAME               CPU     MEM
+${top name 1} ${top cpu 1} ${top mem 1}
+${top name 2} ${top cpu 2} ${top mem 2}
+${top name 3} ${top cpu 3} ${top mem 3}
+${top name 4} ${top cpu 4} ${top mem 4}
+
+${color orange}MEMORY ${hr 2}$color
+RAM:  $memperc% ${membar 6}$color
+Swap:  $swapperc% ${swapbar 6}$color
+
+${color orange}DISK ${hr 2}$color
+/     ${fs_free_perc /}% ${fs_bar 6 /}$color
+/home ${fs_free_perc /home}% ${fs_bar 6 /home}$color
+
+${color orange}NETWORK (${addr eth0}) ${hr 2}$color
+eth0: ${downspeed eth0} ${alignc} DOWN ${alignr} ${upspeed eth0} UP
+
+${if_mpd_playing}${color orange}MUSIC [${mpd_status}] ${hr 2}$color
+${mpd_smart}
+${mpd_bar}
+${mpd_elapsed}/${mpd_length} ${alignr}${mpd_percent}%
+
+${endif}${color orange}FORTUNE ${hr 2}$color
+${execi 600 fortune -s | tr "\n" " " | sed -r 's/\s+/ /' | fold -w38 -s}
+
+${color orange}Using My Computer ${hr 2}$color
+
+You can run programs with Super+Space,
+change windows by moving the mouse,
+and close them with Super+q.
+
+Super is one key right of bottom left.
