@@ -1,0 +1,23 @@
+#!/bin/bash
+
+TEMPLATE=$1
+echo "
+/*
+NAME: pavpanc1
+PROB: $TEMPLATE
+LANG: C++
+*/
+
+#include <fstream>
+#include <iostream>
+using namespace std;
+
+int main() {
+    ofstream fout(\"$TEMPLATE.out\");
+    ifstream fin(\"$TEMPLATE.in\");
+
+
+    flush(fout);
+    return 0;
+}
+"

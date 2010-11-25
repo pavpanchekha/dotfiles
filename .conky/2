@@ -1,0 +1,38 @@
+own_window yes
+own_window_transparent yes
+own_window_type override
+
+times_in_seconds yes
+double_buffer yes
+
+update_interval 5.0
+minimum_size 400
+maximum_width 400
+uppercase no
+
+use_xft yes
+xftfont Mensch:size=12
+
+no_buffers yes
+alignment tm
+
+text_buffer_size 10000
+
+gap_y 30
+
+mail_spool /var/spool/mail/pavpanchekha
+
+TEXT
+
+${color orange}${font Ariel:bold:size=22}${time %a %b %d}$alignr${time %H:%M}${color}${font}
+
+${color orange}Events ${hr 2}$color
+
+${execi 3600 gcal --nc}
+${color orange}Mail ${hr 2}$color
+
+New mails: ${new_mails}
+
+${color orange}To Do ${hr 2}$color
+
+${exec cat ~/notes/index.wiki | tail -n +2 | python -c "import sys; sys.stdout.write(sys.stdin.read().replace('\n', '\n\n'))"}

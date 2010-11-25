@@ -1,0 +1,33 @@
+own_window_transparent yes
+own_window_type override
+
+double_buffer yes
+use_xft yes
+xftfont Mensch:size=12
+
+update_interval 2.0
+minimum_size 350
+maximum_width 350
+uppercase no
+
+text_buffer_size 10000
+no_buffers yes
+alignment tr
+
+gap_x 20
+gap_y 30
+
+TEXT
+${color orange}Hacker News ${hr 2}$color
+
+${execi 60 hn}
+
+
+
+
+
+
+
+
+
+

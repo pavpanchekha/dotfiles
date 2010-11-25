@@ -1,0 +1,39 @@
+#!/bin/bash
+
+if [[ "x$1" == "x-h" && $# -le 1 ]]; then
+    echo "Manage command-line scripts"
+    echo
+    echo "USAGE: scripts <name> <cmd> ...   Create new script named <name> that runs <cmd>s"
+    echo "     | scripts -l                 List all personal scripts"
+    echo "     | scripts -d <name>          Delete script named <name>"
+    echo "     | scripts -e <name>          Edit script named <name>"
+    echo "     | scripts -h <name>          Get help on script named <name>"
+elif [[ "$1" == "-h" ]]; then # We are asking for help on a script
+    ~/usr/bin/$2 -h | head -n1
+elif [ "x$1" == "x-d" ]; then
+    rm ~/usr/bin/$2 -i
+elif [ "x$1" == "x-e" ]; then
+    $EDITOR ~/usr/bin/$2
+elif [ "x$1" == "x-l" ]; then
+    for script in $( ls ~/usr/bin) ; do
+        printf '%s\t\t%s\n' $script "$( ~/usr/bin/$script -h | head -n1 )"
+    done
+else
+    name=$1
+
+    if [[ $name == "" ]]; then
+        echo "ERROR: No arguments specified; did you mean \`scripts -l\`?"
+        exit
+    fi
+
+    shift
+    if [[ -e "$HOME/usr/bin/$name" ]]; then
+        echo "ERROR: File exists"
+    else
+        command=$@
+        echo "#!/bin/bash" > ~/usr/bin/$name
+        echo "" >> ~/usr/bin/$name
+        echo $command >> ~/usr/bin/$name
+        chmod +x ~/usr/bin/$name
+    fi
+fi

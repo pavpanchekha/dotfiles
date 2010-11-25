@@ -1,0 +1,106 @@
+#!/usr/bin/env python
+import sys, os
+sys.path.append(os.path.expanduser("~/usr/lib/run"))
+
+__VERSION__ = "1.0"
+
+import exts
+import subprocess
+
+class FiletypeError(ValueError): pass
+
+def get_type(f):
+    ptype = f.split(".")
+    if len(ptype) > 1:
+        return ptype[-1]
+    else:
+        return None
+
+def tempdir():
+    import tempfile
+    import shutil
+    import atexit
+
+    path = tempfile.mkdtemp()
+    atexit.register(shutil.rmtree, path)
+    return path
+
+def run(f, args, measure=False, filetype=None):
+    if filetype == None:
+        filetype = get_type(f)
+
+    if filetype not in exts.registry or not hasattr(exts.registry[filetype], "run"):
+        if filetype:
+            raise ValueError("Unsupported file type")
+        else:
+            raise FiletypeError("Unable to divine file type")
+    commands = exts.registry[filetype].run
+    d = tempdir()
+
+    for cmd in commands[:-1]:
+        sh = cmd(f=f, args=args, tempdir=d)
+        if sh: subprocess.call(sh)
+
+    finalcmd = commands[-1](f=f, args=args, tempdir=d)
+    if measure:
+        finalcmd = ["time", "-f", "[time] %Us user %Ss sys %P cpu %t mem (total: %e)"] + finalcmd
+    if finalcmd: subprocess.Popen(finalcmd).wait()
+
+def compile(f, args, outfile=None, filetype=None):
+    if filetype == None:
+        filetype = get_type(f)
+
+    if filetype not in exts.registry or not hasattr(exts.registry[filetype], "compile"):
+        if filetype:
+            raise ValueError("Unsupported file type")
+        else:
+            raise FiletypeError("Unable to divine file type")
+    commands = exts.registry[filetype].compile
+
+    if outfile == None:
+        outfile = exts.registry[filetype].outfile(f)
+
+    d = tempdir()
+
+    for cmd in commands[:-1]:
+        sh = cmd(f=f, args=args, tempdir=d, target=outfile)
+        if sh: subprocess.call(sh)
+
+    finalcmd = commands[-1](f=f, args=args, tempdir=d, target=outfile)
+    if finalcmd: return subprocess.Popen(finalcmd).wait()
+
+if __name__ == "__main__":
+    from optparse import OptionParser
+
+    parser = OptionParser(usage="Compile and run files of various types\n\nUSAGE: %prog [OPTIONS] file [-- args]", version="%prog " + __VERSION__)
+    parser.add_option("-c", "--compile", action="store_true", dest="compile", help="Compile file instead of just running it", default=False)
+    parser.add_option("-m", "--measure", action="store_true", dest="measure", help="Measure program runtime with `time`", default=False)
+    parser.add_option("-o", "--outfile", action="store", type="string", dest="outfile", help="Location of compiled code; use with `--compile`", default=None)
+    parser.add_option("-t", "--type", action="store", type="string", dest="filetype", help="Type of code in file", default=None)
+
+    def print_help():
+        print "Compile and run files of various types"
+        print
+        print "USAGE: run <file>                Run <file>"
+        print "     | run -m <file>             Run <file>, and measure runtime"
+        print "     | run -c <file>             Compile <file>"
+        print "     | run -c <file> -o <dest>   Compile <file> into file <dest>"
+        print
+        print "One can also always pass the option `-t <type>` to specify the type of <file>"
+
+    parser.print_help = print_help
+    options, args = parser.parse_args()
+    
+    if options.outfile and not options.compile:
+        parser.error("`--outfile` requires `--compile` to be set")
+
+    if options.compile and options.measure:
+        parser.error("Setting both `--measure` and `--compile` makes no sense; what would I measure?")
+    
+    if len(args) == 0:
+        parser.error("At least one argument must be specified!")
+
+    if options.compile:
+        compile(args[0], args[1:], outfile=options.outfile, filetype=options.filetype)
+    else:
+        run(args[0], args[1:], measure=options.measure, filetype=options.filetype)

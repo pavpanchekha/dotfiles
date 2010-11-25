@@ -1,0 +1,7 @@
+[ui]
+username = Pavel Panchekha <pavpanchekha@gmail.com>
+
+[extensions]
+hgext.record=
+transplant=
+rebase=
