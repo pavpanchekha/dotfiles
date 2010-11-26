@@ -9,6 +9,8 @@
 .subversion
 .shotwell/thumbs
 .pulse
+.ecryptfs
+.Skype
 
 .xsession-errors*
 .recently-used*
@@ -61,6 +63,7 @@ priv
 pub
 school
 mail
+.Private
 
 *.pyc
 *.hi
