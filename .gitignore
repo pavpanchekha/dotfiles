@@ -63,6 +63,7 @@ priv
 pub
 school
 mail
+calendar
 .Private
 
 *.pyc
