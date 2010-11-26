@@ -1,0 +1,23 @@
+; mahjongg GtkAccelMap rc-file         -*- scheme -*-
+; this file is an automated accelerator map dump
+;
+; (gtk_accel_path "<Actions>/LaunchpadIntegration/LaunchpadAppTranslate" "")
+; (gtk_accel_path "<Actions>/LaunchpadIntegration/LaunchpadAppInfo" "")
+; (gtk_accel_path "<Actions>/group/About" "")
+; (gtk_accel_path "<Actions>/group/RedoMove" "<Shift><Control>z")
+; (gtk_accel_path "<Actions>/group/NewGame" "<Control>n")
+; (gtk_accel_path "<Actions>/group/GameMenu" "")
+; (gtk_accel_path "<Actions>/group/HelpMenu" "")
+; (gtk_accel_path "<Actions>/group/SettingsMenu" "")
+; (gtk_accel_path "<Actions>/group/Hint" "<Control>h")
+; (gtk_accel_path "<Actions>/group/Quit" "<Control>q")
+; (gtk_accel_path "<Actions>/group/Preferences" "")
+; (gtk_accel_path "<Actions>/group/Contents" "F1")
+; (gtk_accel_path "<Actions>/group/LeaveFullscreen" "F11")
+; (gtk_accel_path "<Actions>/group/Fullscreen" "F11")
+; (gtk_accel_path "<Actions>/group/RestartGame" "")
+; (gtk_accel_path "<Actions>/group/ShowToolbar" "")
+; (gtk_accel_path "<Actions>/group/ResumeGame" "Pause")
+; (gtk_accel_path "<Actions>/group/PauseGame" "Pause")
+; (gtk_accel_path "<Actions>/group/UndoMove" "<Control>z")
+; (gtk_accel_path "<Actions>/group/Scores" "")
