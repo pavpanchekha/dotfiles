@@ -1,0 +1,18 @@
+PATH=/bin:/usr/bin:/usr/local/bin 
+VERBOSE=off  
+DEFAULT=/var/spool/mail/pavpanchekha
+MAILDIR=$HOME/mail            
+LOGFILE=/tmp/procmail.log
+# Recipes below this comment:
+
+:0
+* ^Subject: .*\[Reuse\]
+$MAILDIR/reuse.mit/
+
+:0
+* ^To: amun-web-list@lists.academymodelun.org
+$MAILDIR/amun/
+
+:0
+* ^(To|Cc): .*lisp-hug@lispworks.com
+$MAILDIR/lisp-hug/
