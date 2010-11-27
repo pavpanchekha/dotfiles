@@ -28,7 +28,8 @@ ${color orange}${font Ariel:bold:size=22}${time %a %b %d}$alignr${time %H:%M}${c
 
 ${color orange}Events ${hr 2}$color
 
-${execi 3600 gcal --nc}
+${exec (cd calendar && calendar)}
+
 ${color orange}Mail ${hr 2}$color
 
 New mails: ${new_mails}
