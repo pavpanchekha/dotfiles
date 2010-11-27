@@ -50,8 +50,8 @@
 .gimp-*
 .ghc
 .cabal
-.vimperator/info/default/history-*
 .lesshst
+.googlecl
 
 media
 icons

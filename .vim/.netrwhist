@@ -1,9 +1,0 @@
-let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =7
-let g:netrw_dirhist_1='/home/pavpanchekha/dev/forp/.git'
-let g:netrw_dirhist_2='/home/pavpanchekha/quicklisp'
-let g:netrw_dirhist_3='/home/pavpanchekha/quicklisp/quicklisp'
-let g:netrw_dirhist_4='/home/pavpanchekha/quicklisp'
-let g:netrw_dirhist_5='/home/pavpanchekha'
-let g:netrw_dirhist_6='/home/pavpanchekha/.emacs.d/auto-save-list'
-let g:netrw_dirhist_7='/home/pavpanchekha/.ghc'
