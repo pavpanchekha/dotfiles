@@ -9,6 +9,8 @@
 .subversion
 .shotwell/thumbs
 .pulse
+.ecryptfs
+.Skype
 
 .xsession-errors*
 .recently-used*
@@ -48,6 +50,8 @@
 .gimp-*
 .ghc
 .cabal
+.lesshst
+.googlecl
 
 media
 icons
@@ -61,6 +65,8 @@ priv
 pub
 school
 mail
+calendar
+.Private
 
 *.pyc
 *.hi

@@ -4,6 +4,9 @@ set encoding=utf8
 " Manage buffers
 set hidden
 
+" Modelines
+set modeline
+
 " Tabbing and folding defaults
 set autoindent shiftwidth=4 tabstop=4 softtabstop=4 expandtab foldmethod=indent
 au BufWinLeave ?* mkview

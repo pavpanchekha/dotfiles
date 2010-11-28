@@ -35,7 +35,8 @@ export EDITOR PAGER TERM HOSTNAME GPGKEY PYTHONSTARTUP MAIL
 alias temp="cat > /dev/null"
 calc() { awk "BEGIN{ print $* }" ;}
 pset() { run -c $1 -o /tmp/`basename $PWD`.pdf && scp /tmp/`basename $PWD`.pdf mit:print-queue ;}
-remind() { echo notify-send "'$2'" -u critical -i gtk-info | at `date +%H:%M --date="+$1 min"` 2>&1 >/dev/null;}
+alarm() { echo notify-send "'$2'" -u critical -i gtk-info | at `date +%H:%M --date="+$1 min"` 2>&1 >/dev/null;}
+calendar() { (cd calendar && command calendar "$@") }
 
 # Mathematica fonts need setting over SSH
 if [ -d /usr/local/mathematica/fonts/Type1 ]; then
@@ -43,3 +44,5 @@ if [ -d /usr/local/mathematica/fonts/Type1 ]; then
     xset fp+ /usr/local/mathematica/fonts/BDF
 fi
 
+FIGNORE=".o:~:.hi:.pyc"
+HISTFILE="/tmp/zsh-history-pavpanchekha"
