@@ -1,7 +1,7 @@
 PATH=/bin:/usr/bin:/usr/local/bin 
-VERBOSE=off  
-DEFAULT=/var/spool/mail/pavpanchekha
-MAILDIR=$HOME/mail            
+MAILDIR=$HOME/mail
+DEFAULT=$HOME/mail/inbox
+VERBOSE=off
 LOGFILE=/tmp/procmail.log
 # Recipes below this comment:
 

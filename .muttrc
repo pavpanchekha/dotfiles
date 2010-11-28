@@ -6,7 +6,7 @@ set use_from = yes
 set envelope_from ="yes"
 
 set sendmail="/usr/bin/msmtp"
-set spoolfile=/var/spool/mail/pavpanchekha
+set spoolfile=/home/pavpanchekha/mail/inbox
 
 set sort = 'threads'
 set sort_aux = 'last-date-received'
@@ -23,20 +23,16 @@ unignore From: Subject: To: Date:
 set editor="vim"
 set edit_headers=no
 
-set alias_file = ~/mail/aliases
-source ~/mail/aliases
-set sort_alias=alias
-
 set markers
 set smart_wrap
 set pager_context=5
 set status_on_top
 push <show-version>
 
-mailboxes ! +inbox +reuse.mit +amun +lisp-hug
-bind index,pager \CP sidebar-prev
-bind index,pager \CN sidebar-next
-bind index,pager \CO sidebar-open
+mailboxes +inbox +reuse.mit +amun +lisp-hug
+bind index,pager K sidebar-prev
+bind index,pager J sidebar-next
+bind index,pager O sidebar-open
 
 set followup_to=yes
 set honor_followup_to=yes
