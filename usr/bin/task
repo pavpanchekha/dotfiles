@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [[ $# -eq 0 ]]; then
+    cat ~/notes/index.wiki | tail -n +2 | head -n -1 | cut -c4-
+else
+    echo -e "`head -n1 ~/notes/index.wiki`\n    * $@\n`cat ~/notes/index.wiki | tail -n +2`" > ~/notes/index.wiki
+fi
+

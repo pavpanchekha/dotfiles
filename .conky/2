@@ -28,8 +28,8 @@ ${color orange}${font Ariel:bold:size=22}${time %a %b %d}$alignr${time %H:%M}${c
 
 ${color orange}Events ${hr 2}$color
 
-${exec (cd calendar && calendar)}
+${exec event}
 
 ${color orange}To Do ${hr 2}$color
 
-${exec cat ~/notes/index.wiki | tail -n +2 | python -c "import sys; sys.stdout.write(sys.stdin.read().replace('\n', '\n\n'))"}
+${exec task}
