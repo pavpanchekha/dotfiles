@@ -50,11 +50,3 @@ ${mpd_elapsed}/${mpd_length} ${alignr}${mpd_percent}%
 
 ${endif}${color orange}FORTUNE ${hr 2}$color
 ${execi 600 fortune -s | tr "\n" " " | sed -r 's/\s+/ /' | fold -w38 -s}
-
-${color orange}Using My Computer ${hr 2}$color
-
-You can run programs with Super+Space,
-change windows by moving the mouse,
-and close them with Super+q.
-
-Super is one key right of bottom left.

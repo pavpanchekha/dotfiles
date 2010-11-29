@@ -1,0 +1,24 @@
+#!/bin/bash
+
+usage() {
+    echo "View and add to your calendar"
+    echo
+    echo "USAGE: event                      Show calendar"
+    echo "     | event <date> <event>       Add <event> at <date>"
+    echo "     | event <d> <m> <event>      Add <event> at <m>/<d>"
+    echo "     | event <d> <m> <y> <event>  Add <event> at <m>/<d>/<y>"
+}
+
+if [[ $1 == "-h" ]]; then
+    usage
+elif [[ $# -eq 0 ]]; then
+    cd ~/calendar && calendar
+elif [[ $# -eq 2 ]]; then
+    echo -e "$1\t$2" >> ~/calendar/active
+elif [[ $# -eq 3 ]]; then
+    echo -e "$1 $2\t$3" >> ~/calendar/active
+elif [[ $# -eq 4 ]]; then
+    echo -e "$1 $2 $3\t$4" >> ~/calendar/active
+else
+    usage
+fi
