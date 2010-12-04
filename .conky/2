@@ -28,8 +28,8 @@ ${color orange}${font Ariel:bold:size=22}${time %a %b %d}$alignr${time %H:%M}${c
 
 ${color orange}Events ${hr 2}$color
 
-${exec event}
+${exec event | awk -F\\t '{ print " * " $2 }' | orprint No events}
 
 ${color orange}To Do ${hr 2}$color
 
-${exec task}
+${exec task | orprint No tasks}
