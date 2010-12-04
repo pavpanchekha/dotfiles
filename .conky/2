@@ -20,8 +20,6 @@ text_buffer_size 10000
 
 gap_y 30
 
-mail_spool /var/spool/mail/pavpanchekha
-
 TEXT
 
 ${color orange}${font Ariel:bold:size=22}${time %a %b %d}$alignr${time %H:%M}${color}${font}
