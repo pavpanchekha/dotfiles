@@ -40,8 +40,8 @@ ${color orange}DISK ${hr 2}$color
 /     ${fs_free_perc /}% ${fs_bar 6 /}$color
 /home ${fs_free_perc /home}% ${fs_bar 6 /home}$color
 
-${color orange}NETWORK (${addr eth1}) ${hr 2}$color
-eth0: ${downspeed eth1} ${alignc} DOWN ${alignr} ${upspeed eth1} UP
+${color orange}NETWORK (${addr wlan1}) ${hr 2}$color
+wlan1: ${downspeed wlan1} ${alignc} DOWN ${alignr} ${upspeed wlan1} UP
 
 ${if_mpd_playing}${color orange}MUSIC [${mpd_status}] ${hr 2}$color
 ${mpd_smart}
