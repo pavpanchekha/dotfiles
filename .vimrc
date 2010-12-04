@@ -93,8 +93,7 @@ syntax on
 let mapleader = ","
 
 " Toolbars and other GUI stuff
-set guioptions-=T
-set guioptions-=r
+set guioptions=acgimR
 
 " Taglist variables
 " Display function name in status bar:
