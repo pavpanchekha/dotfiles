@@ -10,13 +10,12 @@ import qualified Data.Map        as M
 
 import XMonad.Actions.CycleWS
 import XMonad.Prompt
-import XMonad.Prompt.DirExec
+import XMonad.Prompt.Input
 
 myPrompt = defaultXPConfig {
              bgColor = "#32322D"
            , height = 24
            , promptBorderWidth = 0
-           , autoComplete = Just 1
            }
 
 myScratchPads = [NS "terminal" spawnTerm findTerm manageTerm] where
@@ -27,6 +26,10 @@ myScratchPads = [NS "terminal" spawnTerm findTerm manageTerm] where
     w = 1 + 10/1024  -- Width
     t = 1 - h - 15 / 1024 -- Distance from top
     l = 1 - w + 8/1024-- Distance from left
+
+myApps = ["gvim", "firefox", "terminal", "task", "event", "alarm", "msg", "reply"]
+
+execPrompt = inputPromptWithCompl myPrompt "//xmonad:%> " (mkComplFunFromList myApps) ?+ \c-> spawn ("bash -ic \"" ++ c ++ "\"")
 
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     [ ((modm .|. shiftMask, xK_x), spawn $ XMonad.terminal conf)
@@ -66,7 +69,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask, xK_q     ), io (exitWith ExitSuccess))
     -- Restart xmonad
     , ((modm .|. shiftMask, xK_r     ), spawn "xmonad --recompile; xmonad --restart")
-    , ((modm              , xK_space ), dirExecPromptNamed myPrompt spawn "/home/pavpanchekha/.xmonad/apps" "$> ")
+    , ((modm              , xK_space ), execPrompt)
     
     , ((modm,               xK_Right),  nextWS)
     , ((modm,               xK_Left),   prevWS)

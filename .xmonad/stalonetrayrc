@@ -1,5 +1,5 @@
 background "#32322D"
-geometry 1x1-5-0
+geometry 1x1-150-0
 grow_gravity SE
 icon_gravity SE
 icon_size 24
