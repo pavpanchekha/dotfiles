@@ -1,6 +1,6 @@
-Config { font = "xft:Ubuntu-12:"
+Config { font = "xft:Mensch-11:"
        , bgColor = "#32322D"
-       , fgColor = "#B4D0A9"
+       , fgColor = "white"
        , position = Bottom
        , lowerOnStart = True
        , commands = [ Run Com "python" ["/home/pavpanchekha/dev/lastnot.py"] "nots" 1
@@ -10,6 +10,6 @@ Config { font = "xft:Ubuntu-12:"
                     ]
        , sepChar = "%"
        , alignSep = "}{"
-       , template = "%mbox% | %nots%}{| %memory% | %date% "
+       , template = " %mbox% | %nots%}{| %memory% | %date% "
        }
 

@@ -52,6 +52,8 @@
 .cabal
 .lesshst
 .googlecl
+.latexdraw
+.java
 
 media
 icons
@@ -67,6 +69,8 @@ school
 mail
 calendar
 .Private
+.fetchmailrc
+.msmtprc
 
 *.pyc
 *.hi

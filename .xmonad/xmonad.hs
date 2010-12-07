@@ -24,12 +24,12 @@ myScratchPads = [NS "terminal" spawnTerm findTerm manageTerm] where
   manageTerm = customFloating $ W.RationalRect l t w h where
     h = 0.4 -- Terminal height
     w = 1 + 10/1024  -- Width
-    t = 1 - h - 15 / 1024 -- Distance from top
+    t = 1 - h - 13 / 1024 -- Distance from top
     l = 1 - w + 8/1024-- Distance from left
 
 myApps = ["gvim", "firefox", "terminal", "task", "event", "alarm", "msg", "reply"]
 
-execPrompt = inputPromptWithCompl myPrompt "//xmonad:%> " (mkComplFunFromList myApps) ?+ \c-> spawn ("bash -ic \"" ++ c ++ "\"")
+execPrompt = inputPromptWithCompl myPrompt "//xmonad:%> " (mkComplFunFromList myApps) ?+ \c-> spawn ("bash -ic \"notify-cmd " ++ c ++ "\"")
 
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     [ ((modm .|. shiftMask, xK_x), spawn $ XMonad.terminal conf)

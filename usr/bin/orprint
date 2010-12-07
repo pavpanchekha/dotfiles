@@ -1,11 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env python
 
-ISEMPTY="#f"
-while read -r line; do
-    ISEMPTY="#t"
-    echo "$line"
-done
+import sys
+anything = False
+for line in sys.stdin:
+    sys.stdout.write(line)
+    anything = True
 
-if [[ $ISEMPTY == "#f" ]]; then
-    echo "$@"
-fi
+if not anything:
+    print " ".join(sys.argv[1:])
