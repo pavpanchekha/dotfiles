@@ -76,8 +76,8 @@ imap <F4> <Esc>:call ToggleSpell()<CR>a
 imap <c-space> <c-x><c-o>
 
 " My compile commands
-nmap <F5> :! zsh -c "~/usr/bin/run %"<CR>
-nmap <F6> :! zsh -c "~/usr/bin/run -c %"<CR>
+nmap <F5> :! zsh -c "~/usr/bin/run %"<CR><CR>
+nmap <F6> :! zsh -c "~/usr/bin/run -c %"<CR><CR>
 
 " Extra python autocomplete dictionary
 autocmd FileType python set complete+=k~/.vim/syntax/python.vim
