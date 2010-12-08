@@ -43,10 +43,7 @@ HISTFILE="/tmp/zsh-history-pavpanchekha"
 
 ssh-connect () {
     ssh-add
-    ssh -MN server &disown
-    ssh -MN dlaw &disown
-    ssh -MN dlaw2 &disown
-    ssh -MN localhost &disown
+    ssh -MN home &disown
 }
 
 alias math="rlwrap math"
