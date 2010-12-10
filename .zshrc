@@ -47,5 +47,3 @@ ssh-connect () {
 }
 
 alias math="rlwrap math"
-alias mpc="ssh media@server mpc"
-alias plan9="qemu-kvm -enable-kvm /media/virtual/plan9/plan9.qcow -no-acpi -net nic,vlan=1 -net user,vlan=1"
