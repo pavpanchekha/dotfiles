@@ -3,7 +3,7 @@ own_window_type override
 
 double_buffer yes
 use_xft yes
-xftfont Mensch:size=12
+xftfont Terminus:size=15
 
 update_interval 2.0
 minimum_size 350

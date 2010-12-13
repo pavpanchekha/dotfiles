@@ -11,7 +11,7 @@ maximum_width 400
 uppercase no
 
 use_xft yes
-xftfont Mensch:size=12
+xftfont Terminus:size=15
 
 no_buffers yes
 alignment tm

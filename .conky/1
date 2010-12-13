@@ -9,7 +9,7 @@ minimum_size 370
 maximum_width 370
 uppercase no
 use_xft yes
-xftfont Mensch:size=12
+xftfont Terminus:size=15
 
 mpd_host localhost
 mpd_port 6600
