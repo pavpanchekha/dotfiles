@@ -1,13 +1,14 @@
-#!/bin/zsh
+#!/bin/bash
 
 xmobar ~/.xmonad/xmobar.hs &
-stalonetray -c ~/.xmonad/stalonetrayrc &
 xbindkeys
-gnome-settings-daemon
-gnome-keyring-daemon
+xmodmap .keys
+
 fetchmail -d60
-empathy &
 dropbox start
-.conky/run
+gajim &disown
+PATH="$PATH:$HOME/usr/bin" .conky/run
+
 xhost +local: >/dev/null
+
 exec ssh-agent xmonad

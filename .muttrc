@@ -30,16 +30,17 @@ set status_on_top
 push <show-version>
 
 mailboxes +inbox +reuse.mit +amun +lisp-hug
-bind index,pager K sidebar-prev
-bind index,pager J sidebar-next
-bind index,pager O sidebar-open
 
 set followup_to=yes
 set honor_followup_to=yes
 
 # Google contacts
-set query_command="goobook query '%s'"
+set query_command="abook --mutt-query '%s'"
+macro generic,index,pager \ca "<shell-escape>abook<return>" "launch abook"
+macro index,pager A "<pipe-message>abook --add-email<return>" "add the sender address to abook"
 bind editor <Tab> complete-query
+
+source /etc/Muttrc.gpg.dist
 
 #---- Mutt Colors for default Background -------
 color   hdrdefault   blue              default
@@ -58,5 +59,3 @@ color   tilde        brightmagenta     default
 color   index        blue              default ~F
 color   index        red               default "~N|~O"
 
-macro index <f5> "<save-message>=school<enter>"
-macro index <f6> "<save-message>=2010<enter>"

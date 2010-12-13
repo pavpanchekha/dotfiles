@@ -19,17 +19,17 @@ myPrompt = defaultXPConfig {
            }
 
 myScratchPads = [NS "terminal" spawnTerm findTerm manageTerm] where
-  spawnTerm  = "sakura --name scratchpad"
+  spawnTerm  = "exec sakura --name scratchpad"
   findTerm   = resource =? "scratchpad"
   manageTerm = customFloating $ W.RationalRect l t w h where
     h = 0.4 -- Terminal height
     w = 1 + 10/1024  -- Width
-    t = 1 - h - 13 / 1024 -- Distance from top
+    t = 1 - h - 17 / 1024 -- Distance from top
     l = 1 - w + 8/1024-- Distance from left
 
-myApps = ["gvim", "firefox", "terminal", "task", "event", "alarm", "msg", "reply"]
+myApps = ["gvim", "firefox", "terminal", "task", "event", "alarm", "msg", "reply", "gajim-remote toggle_roster_appearance"]
 
-execPrompt = inputPromptWithCompl myPrompt "//xmonad:%> " (mkComplFunFromList myApps) ?+ \c-> spawn ("bash -ic \"notify-cmd " ++ c ++ "\"")
+execPrompt = inputPromptWithCompl myPrompt "//xmonad:%> " (mkComplFunFromList myApps) ?+ \c-> spawn ("exec " ++ c)
 
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     [ ((modm .|. shiftMask, xK_x), spawn $ XMonad.terminal conf)
