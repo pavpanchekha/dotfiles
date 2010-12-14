@@ -47,3 +47,5 @@ ssh-connect () {
 }
 
 alias math="rlwrap math"
+alias mpd-stream="cvlc http://pavpanchekha.mit.edu:35789 &disown"
+alias mpc="ssh server mpc"
