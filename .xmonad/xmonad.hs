@@ -2,6 +2,7 @@ import XMonad
 import XMonad.Config.Desktop (desktopLayoutModifiers)
 import XMonad.Config.Gnome
 import XMonad.Util.NamedScratchpad
+import XMonad.Layout.NoBorders
 import Data.Monoid
 import System.Exit
  
@@ -13,7 +14,9 @@ import XMonad.Prompt
 import XMonad.Prompt.Input
 
 myPrompt = defaultXPConfig {
-             bgColor = "#32322D"
+             bgColor = "black"
+           , fgColor = "white"
+           , font = "xft:Terminus-15"
            , height = 24
            , promptBorderWidth = 0
            }
@@ -27,9 +30,9 @@ myScratchPads = [NS "terminal" spawnTerm findTerm manageTerm] where
     t = 1 - h - 17 / 1024 -- Distance from top
     l = 1 - w + 8/1024-- Distance from left
 
-myApps = ["gvim", "firefox", "terminal", "task", "event", "alarm", "msg", "reply", "gajim-remote toggle_roster_appearance"]
+myApps = ["gvim", "firefox", "terminal", "task", "event", "alarm", "msg", "reply", "gajim-remote toggle_roster_appearance", "zathura", "jumanji"]
 
-execPrompt = inputPromptWithCompl myPrompt "//xmonad:%> " (mkComplFunFromList myApps) ?+ \c-> spawn ("exec " ++ c)
+execPrompt = inputPromptWithCompl myPrompt "$" (mkComplFunFromList myApps) ?+ \c-> spawn ("exec " ++ c)
 
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     [ ((modm .|. shiftMask, xK_x), spawn $ XMonad.terminal conf)

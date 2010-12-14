@@ -1,5 +1,5 @@
 Config { font = "xft:Terminus-15:"
-       , bgColor = "#32322D"
+       , bgColor = "black"
        , fgColor = "white"
        , position = Bottom
        , lowerOnStart = True

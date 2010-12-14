@@ -1,0 +1,11 @@
+searchengine google https://www.google.com/search?q=%s
+searchengine wikipedia https://secure.wikimedia.org/wikipedia/en/w/index.php?search=%s
+
+set homepage about://blank
+set auto_save 60
+
+set download_dir /tmp
+
+set font Terminus normal 12
+
+script ~/.config/jumanji/scripts/input_hinting_mode.js
