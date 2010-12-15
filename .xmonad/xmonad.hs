@@ -1,8 +1,8 @@
 import XMonad
 import XMonad.Config.Desktop (desktopLayoutModifiers)
-import XMonad.Config.Gnome
 import XMonad.Util.NamedScratchpad
 import XMonad.Layout.NoBorders
+import XMonad.Hooks.ManageDocks
 import Data.Monoid
 import System.Exit
  
@@ -107,9 +107,11 @@ myManageHook = [ resource  =? "Do"         --> doIgnore
                , className =? "Guake.py"   --> doFloat
                , className =? "stalonetray"--> doIgnore
                , namedScratchpadManageHook myScratchPads]
-               
-main = xmonad defaults
-defaults = gnomeConfig {
+
+myLayout = smartBorders $ avoidStruts $ tiled ||| Mirror tiled ||| Full
+    where tiled = Tall 1 (3/100) (1/2)
+
+main = xmonad defaultConfig {
       -- simple stuff
         terminal           = "sakura",
         focusFollowsMouse  = True,
@@ -124,6 +126,6 @@ defaults = gnomeConfig {
         keys               = myKeys,
         mouseBindings      = myMouseBindings,
 
-        manageHook = manageHook gnomeConfig <+> composeAll myManageHook,
-        layoutHook = layoutHook gnomeConfig
+        manageHook = composeAll myManageHook,
+        layoutHook = myLayout
     }

@@ -18,7 +18,7 @@ TERM=xterm
 
 # Some Variables
 TZ="America/New_York"
-GPGKEY="0A7D7BAA"
+GPGKEY="371E352C"
 PYTHONSTARTUP="$HOME/.pythonrc"
 MAIL="$HOME/mail/inbox"
 umask 077
@@ -51,3 +51,4 @@ ssh-connect () {
 
 alias math="rlwrap math"
 alias mpc="ssh media@server mpc"
+alias plan9="qemu-kvm -enable-kvm /media/virtual/plan9/plan9.qcow"

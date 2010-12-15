@@ -26,7 +26,7 @@ autodetect_browser_mailer = False
 audio_input_volume = 50
 ft_add_hosts_to_send = 
 chat-msgwin-width = 638
-autoaway = True
+autoaway = False
 outmsgtxtcolor = #555753
 tabs_close_button = True
 search_engine = http://www.google.com/search?&q=%s&sourceid=gajim
@@ -144,7 +144,7 @@ show_roster_on_startup = False
 stun_server = 
 show_transports_group = True
 time_stamp = [%X] 
-autoxa = True
+autoxa = False
 muc_restore_timeout = 60
 vcard_avatar_height = 200
 rst_formatting_outgoing_messages = False
