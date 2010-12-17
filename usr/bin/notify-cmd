@@ -1,9 +1,0 @@
-#!/bin/bash
-
-CMDNAME=$1
-OUTPUT=`$@ | tail -n1`
-
-if [[ $OUTPUT != "" ]]; then
-    notify-send "\$ $@ :" "$OUTPUT"
-fi
-
