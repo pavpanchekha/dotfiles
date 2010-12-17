@@ -3,13 +3,13 @@ Config { font = "xft:Terminus-15:"
        , fgColor = "white"
        , position = Bottom
        , lowerOnStart = True
-       , commands = [ Run PipeReader "/home/pavpanchekha/.cache/notification.pipe" "nots"
+       , commands = [ Run StdinReader
                     , Run MBox [("", "inbox", "green")] ["-d", "/home/pavpanchekha/mail/", "-s", " Emails"] "mbox"
                     , Run Memory ["-t","Mem: <usedratio>%"] 10
                     , Run Date "%H:%M" "date" 10
                     ]
        , sepChar = "%"
        , alignSep = "}{"
-       , template = " %mbox% | %nots%}{| %memory% | %date% "
+       , template = " %mbox% | %StdinReader%}{| %memory% | %date% "
        }
 

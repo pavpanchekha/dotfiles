@@ -1,6 +1,5 @@
 #!/bin/bash
 
-xmobar ~/.xmonad/xmobar.hs &
 xbindkeys
 xmodmap .keys
 
