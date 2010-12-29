@@ -57,7 +57,7 @@
 
 
 xkb_keymap {
-  xkb_keycodes  { include "xfree86+aliases(qwerty)" };
+  xkb_keycodes  { include "evdev+aliases(qwerty)" };
   xkb_types     { include "complete"      };
   xkb_compat    { include "complete"
   
@@ -81,7 +81,7 @@ xkb_keymap {
   
   };
   xkb_symbols   {
-    include "pc(pc105)"
+    include "pc+us+inet(evdev)"
 
 // Here's the line to make capslock into the modifier key.
     key <CAPS> { type[Group1] = "ONE_LEVEL", symbols[Group1] = [ ISO_Level3_Shift ] };
@@ -164,5 +164,5 @@ xkb_keymap {
 
 
   };
-  xkb_geometry  { include "pc(pc104)"     };
+  xkb_geometry  { include "pc(pc105)"     };
 };
