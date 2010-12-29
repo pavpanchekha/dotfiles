@@ -12,7 +12,10 @@ usage() {
 if [[ $1 == "-h" ]]; then
     usage
 elif [[ $# -eq 0 ]]; then
-    cd ~/calendar && calendar -y *
+    cd ~/calendar
+    for i in `ls`; do
+        calendar -f $i
+    done
 elif [[ $# -eq 2 ]]; then
     echo -e "$1\t$2" >> ~/calendar/active
 elif [[ $# -eq 3 ]]; then

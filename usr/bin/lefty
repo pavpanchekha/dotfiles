@@ -1,6 +1,10 @@
 #!/bin/bash
 
-if [[ -e "/tmp/old.xkb" ]]; then
+if [[ "$1" == "-h" ]]; then
+    echo "Switch to a left-hand-only keymap"
+    echo
+    echo "USAGE: lefty          Switch between normal and lefty keyboards"
+elif [[ -e "/tmp/old.xkb" ]]; then
     xkbcomp /tmp/old.xkb $DISPLAY 2> /dev/null
     rm /tmp/old.xkb
 else
