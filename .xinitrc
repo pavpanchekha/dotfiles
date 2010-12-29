@@ -2,10 +2,11 @@
 
 xbindkeys
 xmodmap .keys
+xsetroot -solid black
 
 stalonetray -c ~/.xmonad/stalonetrayrc &
-fetchmail -d60
 nm-applet &
+synclient JumpyCursorThreshold=100
 
 dropbox start
 gajim &disown
