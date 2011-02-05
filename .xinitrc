@@ -2,9 +2,8 @@
 
 xbindkeys
 xmodmap .keys
-xsetroot -solid black
+xsetroot -solid '#111111'
 
-stalonetray -c ~/.xmonad/stalonetrayrc &
 nm-applet &
 synclient JumpyCursorThreshold=100
 
@@ -13,5 +12,5 @@ gajim &disown
 PATH="$PATH:$HOME/usr/bin" .conky/run
 
 xhost +local: >/dev/null
-
-exec ssh-agent xmonad
+bash $HOME/.config/dwm/bar.sh &disown
+exec ssh-agent dwm
