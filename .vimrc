@@ -114,3 +114,5 @@ let Tlist_File_Fold_Auto_Close = 1
 
 " VimWiki
 let g:vimwiki_list = [{"path": "~/notes/"}]
+
+map <leader>s :ConqueTerm zsh<CR>
