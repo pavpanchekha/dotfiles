@@ -1,0 +1,27 @@
+# abook addressbook file
+
+[format]
+program=abook
+version=0.6.0pre2
+
+
+[0]
+name=Alexey Panchekha
+email=panchekha@gmail.com
+
+[1]
+name=Esther Jang
+email=infrared@MIT.EDU,esther.jang@gmail.com
+
+[2]
+name=David Lawrence
+email=dlaw@MIT.EDU
+
+[3]
+name=Charles Tam
+email=charlest@mit.edu
+
+[4]
+name=Michael Morris-Pearce
+email=mikemp@MIT.EDU
+
