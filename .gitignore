@@ -81,3 +81,4 @@ calendar
 .*_cache
 *.cache
 *.pid
+*~

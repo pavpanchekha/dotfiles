@@ -11,9 +11,6 @@ uppercase no
 use_xft yes
 xftfont Terminus:size=15
 
-mpd_host localhost
-mpd_port 6600
-
 no_buffers yes
 text_buffer_size 10000
 alignment tl
@@ -40,13 +37,5 @@ ${color orange}DISK ${hr 2}$color
 /     ${fs_free_perc /}% ${fs_bar 6 /}$color
 /home ${fs_free_perc /home}% ${fs_bar 6 /home}$color
 
-${color orange}NETWORK (${addr eth1}) ${hr 2}$color
-eth0: ${downspeed eth1} ${alignc} DOWN ${alignr} ${upspeed eth1} UP
-
-${if_mpd_playing}${color orange}MUSIC [${mpd_status}] ${hr 2}$color
-${mpd_smart}
-${mpd_bar}
-${mpd_elapsed}/${mpd_length} ${alignr}${mpd_percent}%
-
-${endif}${color orange}FORTUNE ${hr 2}$color
+${color orange}FORTUNE ${hr 2}$color
 ${execi 600 fortune -s | tr "\n" " " | sed -r 's/\s+/ /' | fold -w38 -s}

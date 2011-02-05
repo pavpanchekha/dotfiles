@@ -270,3 +270,10 @@ settings = {
   };
   "fe-text" = { actlist_sort = "refnum"; };
 };
+ignores = (
+  {
+    mask = "JOINS";
+    level = "PARTS QUITS NICKS";
+    channels = ( "#battlecode" );
+  }
+);

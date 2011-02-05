@@ -4,3 +4,15 @@
 [github]
 	user = pavpanchekha
 	token = fd537c3b1369db67376084f52f9c548d
+[core]
+	autocrlf = input
+    safecrlf = true
+[alias]
+    co = checkout
+    ci = commit
+    st = status
+    br = branch
+    hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+    type = cat-file -t
+    dump = cat-file -p
+
