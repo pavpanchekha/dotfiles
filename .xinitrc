@@ -13,4 +13,4 @@ dropbox start
 gajim &disown
 PATH="$PATH:$HOME/usr/bin" .conky/run
 
-exec ssh-agent dwm
+PATH="$PATH:$HOME/usr/bin" exec ssh-agent dwm

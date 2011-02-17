@@ -40,6 +40,7 @@ search_engines = {
     debbugs     = "http://bugs.debian.org/{0}",
     imdb        = "http://imdb.com/find?s=all&q={0}",
     sourceforge = "http://sf.net/search/?words={0}",
+    wa          = "http://www.wolframalhpa.com/input/?i={0}",
 }
 
 -- Set google as fallback search engine

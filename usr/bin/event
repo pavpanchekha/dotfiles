@@ -12,13 +12,13 @@ usage() {
 if [[ $1 == "-h" ]]; then
     usage
 elif [[ $# -eq 0 ]]; then
-    cd ~/calendar && calendar -y -p 3 * | sort -n
+    cd ~/calendar && remind -c -s active | sed 's/ \*/ /g' | sort -n
 elif [[ $# -eq 2 ]]; then
-    echo -e "$1\t$2" >> ~/calendar/active
+    echo -e "REM $1\tMSG $2" >> ~/calendar/active
 elif [[ $# -eq 3 ]]; then
-    echo -e "$1 $2\t$3" >> ~/calendar/active
+    echo -e "REM $1 $2\tMSG $3" >> ~/calendar/active
 elif [[ $# -eq 4 ]]; then
-    echo -e "$1 $2 $3\t$4" >> ~/calendar/active
+    echo -e "REM $1 $2 $3\tMSG $4" >> ~/calendar/active
 else
     usage
 fi
