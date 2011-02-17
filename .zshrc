@@ -11,6 +11,10 @@ bindkey -e
 autoload colors; colors
 export PROMPT="%{$fg[cyan]%}%2c%{$reset_color%}:%#> "
 
+PATH="$PATH:$HOME/usr/bin"
+TEXINPUTS=".:$HOME/dev/resume.tex:$HOME/dev/simple.tex:"
+
+export PATH TEXINPUTS
 # Program definitions
 EDITOR="vim"
 PAGER=less
@@ -31,6 +35,7 @@ export EDITOR PAGER TERM HOSTNAME GPGKEY PYTHONSTARTUP MAIL LANG LC_ALL
 alias temp="cat > /dev/null"
 calc() { awk "BEGIN{ print $* }" ;}
 pset() { run -c $1 -o /tmp/`basename $PWD`.pdf && scp /tmp/`basename $PWD`.pdf mit:print-queue ;}
+wiki() { dig +short txt $1.wp.dg.cx }
 
 # Mathematica fonts need setting over SSH
 if [ -d /usr/local/mathematica/fonts/Type1 ]; then
@@ -41,11 +46,8 @@ fi
 FIGNORE=".o:~:.hi:.pyc"
 HISTFILE="/tmp/zsh-history-pavpanchekha"
 
-ssh-connect () {
-    ssh-add
-    ssh -MN home &disown
-}
-
 alias math="rlwrap math"
-alias mpd-stream="cvlc http://pavpanchekha.mit.edu:35789 &disown"
-alias mpc="ssh server mpc"
+alias sbcl="rlwrap sbcl"
+alias sbcl="rlwrap scheme"
+alias mpc="ssh media@server mpc"
+alias plan9="qemu-kvm -enable-kvm /media/virtual/plan9/plan9.qcow -no-acpi -net nic,vlan=1 -net user,vlan=1"
