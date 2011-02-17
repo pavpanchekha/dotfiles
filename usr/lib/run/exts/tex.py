@@ -3,7 +3,7 @@ import os
 
 run = [
       lambda f, tempdir, args: ["rubber", "-d", "--into", tempdir, f] + args
-    , lambda f, tempdir, args: ["evince", os.path.join(tempdir, os.path.split(outfile(f))[1])]
+    , lambda f, tempdir, args: ["zathura", os.path.join(tempdir, os.path.split(outfile(f))[1])]
     ]
 
 
