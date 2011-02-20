@@ -40,8 +40,6 @@ macro generic,index,pager \ca "<shell-escape>abook<return>" "launch abook"
 macro index,pager A "<pipe-message>abook --add-email<return>" "add the sender address to abook"
 bind editor <Tab> complete-query
 
-source /etc/Muttrc.gpg.dist
-
 #---- Mutt Colors for default Background -------
 color   hdrdefault   blue              default
 color   quoted       blue              default

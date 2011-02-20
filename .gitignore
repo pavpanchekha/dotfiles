@@ -49,6 +49,9 @@
 .dbus
 .gegl-*
 .gimp-*
+.gajim
+.m2
+.mplayer
 .ghc
 .cabal
 .lesshst
@@ -57,7 +60,10 @@
 .java
 .pentadactyl
 
+*~
+
 media
+to-read
 icons
 dev
 Dropbox

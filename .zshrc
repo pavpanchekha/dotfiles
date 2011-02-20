@@ -46,11 +46,8 @@ fi
 FIGNORE=".o:~:.hi:.pyc"
 HISTFILE="/tmp/zsh-history-pavpanchekha"
 
-ssh-connect () {
-    ssh-add
-}
-
 alias math="rlwrap math"
 alias sbcl="rlwrap sbcl"
+alias sbcl="rlwrap scheme"
 alias mpc="ssh media@server mpc"
 alias plan9="qemu-kvm -enable-kvm /media/virtual/plan9/plan9.qcow -no-acpi -net nic,vlan=1 -net user,vlan=1"

@@ -2,7 +2,7 @@
 
 [format]
 program=abook
-version=0.6.0pre2
+version=0.5.6
 
 
 [0]
@@ -11,7 +11,38 @@ email=panchekha@gmail.com
 
 [1]
 name=Esther Jang
-email=infrared@MIT.EDU,esther.jang@gmail.com
+email=infrared@mit.edu
+address=37-16 65th Street
+address2=Apartment 4C woodside
+city=New York
+state=New York
+zip=11377
+mobile=(646) 266-3154
+custom1=September 17,1992
+
+[2]
+name=David Lawrence
+email=dmlawrence@gmail.com
+
+[3]
+name=Tom Seo
+email=tomseo92@gmail.com
+
+[4]
+name=Mark Velednitsky
+email=marvel2010@gmail.com
+
+[5]
+name=Patricia Stichnoth
+email=pstichnoth@gmail.com
+
+[6]
+name=Anna Panchekha
+email=apanchekha@gmail.com
+
+[7]
+name=Tianqi Wang
+email=akaikatana@gmail.com
 
 [2]
 name=David Lawrence

@@ -2,6 +2,11 @@
 
 if [[ $# -eq 0 ]]; then
     cat ~/todo/tasks | sed 's/^/ * /g'
+elif [[ "$1" == "-h" ]]; then
+    echo "Manage tasks"
+    echo
+    echo "USAGE: task           Print list of tasks"
+    echo "     | task <task>    Add new task"
 else
     echo "$@" >> ~/todo/tasks
 fi
