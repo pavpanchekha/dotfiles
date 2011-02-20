@@ -18,10 +18,14 @@ else
     shift
     touch "$FILE"
     RESPONSE="`dmenu \"$@\" < $FILE`"
+    if [[ -z $RESPONSE ]]; then
+        exit
+    fi
+
     if grep -q $RESPONSE $FILE; then
         true
     else
         echo `first $RESPONSE` >> "$FILE"
     fi
-    exec $RESPONSE
+    $RESPONSE &disown
 fi
