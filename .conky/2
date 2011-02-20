@@ -7,7 +7,7 @@ double_buffer yes
 
 update_interval 5.0
 minimum_size 400
-maximum_width 400
+maximum_width 450
 uppercase no
 
 use_xft yes
@@ -20,8 +20,6 @@ text_buffer_size 10000
 
 gap_y 30
 
-mail_spool /var/spool/mail/pavpanchekha
-
 TEXT
 
 ${color orange}${font Ariel:bold:size=22}${time %a %b %d}$alignr${time %H:%M}${color}${font}
@@ -33,3 +31,8 @@ ${exec event | orprint No events}
 ${color orange}To Do ${hr 2}$color
 
 ${exec task | orprint No tasks}
+
+${color orange}To Read ${hr 2}$color
+
+${exec ls todo | grep -v '^tasks$' | grep -v '^someday$' | sed 's/^/ * /g'}
+

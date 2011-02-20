@@ -6,8 +6,8 @@ use_xft yes
 xftfont Terminus:size=15
 
 update_interval 2.0
-minimum_size 350
-maximum_width 350
+minimum_size 390
+maximum_width 390
 uppercase no
 
 text_buffer_size 10000
@@ -18,16 +18,7 @@ gap_x 20
 gap_y 30
 
 TEXT
-${color orange}Hacker News ${hr 2}$color
+${color orange}Someday ${hr 2}$color
 
-${execi 60 hn}
-
-
-
-
-
-
-
-
-
+${exec cat todo/someday}
 

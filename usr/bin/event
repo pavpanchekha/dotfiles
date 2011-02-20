@@ -9,10 +9,17 @@ usage() {
     echo "     | event <d> <m> <y> <event>  Add <event> at <m>/<d>/<y>"
 }
 
+num2date () {
+    sed 's_01/_Jan _g' | sed 's_02/_Feb _g' | sed 's_03/_Mar _g' |
+        sed 's_04/_Apr _g' | sed 's_05/_May _g' | sed 's_06/_Jun _g' |
+        sed 's_07/_Jul _g' | sed 's_08/_Aug _g' | sed 's_09/_Sep _g' |
+        sed 's_10/_Oct _g' | sed 's_11/_Nov _g' | sed 's_12/_Dec _g'
+}
+
 if [[ $1 == "-h" ]]; then
     usage
 elif [[ $# -eq 0 ]]; then
-    cd ~/calendar && remind -c -s active | sed 's/ \*/ /g' | sort -n
+    cd ~/calendar && remind -c -s+0 active | sed 's/ \* \* \* \*/  /g' | sed 's_2011/__g' | num2date
 elif [[ $# -eq 2 ]]; then
     echo -e "REM $1\tMSG $2" >> ~/calendar/active
 elif [[ $# -eq 3 ]]; then

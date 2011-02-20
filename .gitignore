@@ -63,12 +63,13 @@ dev
 Dropbox
 bac
 doc
-hw
 notes
 priv
 pub
 school
 mail
+lib
+todo
 calendar
 .Private
 .fetchmailrc

@@ -39,3 +39,7 @@ ${color orange}DISK ${hr 2}$color
 
 ${color orange}FORTUNE ${hr 2}$color
 ${execi 600 fortune -s | tr "\n" " " | sed -r 's/\s+/ /' | fold -w38 -s}
+
+${color orange}Hacker News ${hr 2}$color
+
+${execi 600 hn 6}
