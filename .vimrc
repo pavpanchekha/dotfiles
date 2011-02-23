@@ -18,14 +18,14 @@ autocmd FileType c        set cindent
 autocmd FileType cpp      set cindent
 autocmd FileType lisp     set nocindent
 autocmd FileType java     set cindent
-autocmd FileType xhtml    set cindent
 autocmd FileType xml      source ~/.vim/ftplugin/xml.vim
 autocmd FileType python   set nocindent
 autocmd FileType python   set smartindent cinwords=if,elif,else,for,while,try,except,finally,def,class,with
 autocmd FileType tex,rst  set tw=72 spell
 autocmd FileType plaintex set tw=72 spell
-autocmd FileType xml      set foldmethod=indent ts=2 shiftwidth=2
-autocmd FileType html     set foldmethod=indent ts=2 shiftwidth=2
+autocmd FileType xml      set foldmethod=indent ts=2 shiftwidth=2 softtabstop=2
+autocmd FileType xhtml    set foldmethod=indent ts=2 shiftwidth=2 softtabstop=2
+autocmd FileType html     set foldmethod=indent ts=2 shiftwidth=2 softtabstop=2
 autocmd FileType txt      set tw=72 spell
 autocmd FileType rst      set tw=72 spell
 

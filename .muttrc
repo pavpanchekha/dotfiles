@@ -1,59 +1,37 @@
-set from = "pavpanchekha@gmail.com"
 set realname = "Pavel Panchekha"
-set signature = "~/.signature"
 
-set use_from = yes
-set envelope_from ="yes"
-
-set sendmail="/usr/bin/msmtp"
-set spoolfile=/home/pavpanchekha/mail/inbox
-
+# Interface
 set sort = 'threads'
-set sort_aux = 'last-date-received'
-
-set folder = "~/mail"
-set record="+sent"
-set postponed="+postponed"
-set mbox_type = Maildir
-set move = no
+set sort_aux = 'date-received'
+set attribution = '%n wrote:'
+set pager_context=5
+set status_on_top
 
 ignore *
 unignore From: Subject: To: Date:
 
+# Composing mail
 set editor="vim"
 set edit_headers=no
+set sendmail="/usr/bin/msmtp"
+set signature = "~/.signature"
 
-set markers
-set smart_wrap
-set pager_context=5
-set status_on_top
-push <show-version>
-
+# Mailboxes
+set folder = "~/mail"
+set spoolfile = "+inbox"
+set record = "+sent"
+set postponed="+postponed"
+set mbox_type = Maildir
 mailboxes +inbox +reuse.mit +amun +lisp-hug
 
-set followup_to=yes
-set honor_followup_to=yes
-
-# Google contacts
+# Contacts
 set query_command="abook --mutt-query '%s'"
 macro generic,index,pager \ca "<shell-escape>abook<return>" "launch abook"
 macro index,pager A "<pipe-message>abook --add-email<return>" "add the sender address to abook"
-bind editor <Tab> complete-query
 
-#---- Mutt Colors for default Background -------
-color   hdrdefault   blue              default
-color   quoted       blue              default
-color   signature    blue              default
-color   attachment   red               default
-color   message      brightred         default
-color   error        brightred         default
+# Colors
 color   indicator    default             red
 color   status       brightgreen       blue
-color   tree         white             default
-color   normal       white             default
 color   markers      red               default
 color   search       white             default
-color   tilde        brightmagenta     default
-color   index        blue              default ~F
-color   index        red               default "~N|~O"
 

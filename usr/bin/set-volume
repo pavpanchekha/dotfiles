@@ -1,0 +1,12 @@
+#!/bin/bash
+
+TIME=`date +%02H`
+
+case $TIME in
+    0[0-6]) VOL="25";;
+    0[7-9]|1[0-3]) VOL="33";;
+    1[4-9]) VOL="40";;
+    2[0-4]) VOL="33";;
+esac
+
+amixer -q set Master "$VOL%"
