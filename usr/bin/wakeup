@@ -1,0 +1,10 @@
+#!/bin/bash
+
+
+amixer -q set Master 50
+echo "Wake up! Wake up! Time to get up you lazy slob!" | festival --tts
+amixer -q set Master 30
+announce | festival --tts &
+sleep 15
+set-volume
+ssh server mpc play

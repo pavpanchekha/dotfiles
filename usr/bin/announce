@@ -1,0 +1,108 @@
+#!/usr/bin/env python2.7
+
+from lxml import etree
+import urllib
+import time
+import subprocess
+
+STATION = "KMACAMBR9" # MIT Green Building Roof
+
+def station_url(name):
+    return "http://api.wunderground.com/weatherstation/WXCurrentObXML.asp?ID=%s" % STATION
+
+def station_info(name, keys):
+    url = station_url(name);
+    xml = urllib.urlopen(url).read()
+    tree = etree.fromstring(xml)
+
+    return tuple(tree.find(key).text for key in keys)
+
+def interpret_temp(temp):
+    if temp < -5:
+        return "Fucking Cold"
+    elif temp < 5:
+        return "Cold"
+    elif temp < 10:
+        return "Chilly"
+    elif temp < 25:
+        return "Nice Out"
+    elif temp < 33:
+        return "Warm"
+    elif temp < 38:
+        return "Hot"
+    else:
+        return "Fucking Hot"
+
+def interpret_wind(speed):
+    if speed < 1:
+        return "Calm"
+    elif speed < 12:
+        return "Breezy"
+    elif speed < 30:
+        return "Windy"
+    else:
+        return "Fucking Windy"
+
+def describe_weather(name):
+    degc, mph = station_info(name, ("temp_c", "wind_mph"))
+    degc = float(degc); mph = float(mph)
+
+    return "It's " + interpret_wind(mph) + " and " + interpret_temp(degc) + " out."
+
+def describe_time():
+    hour, min, am_pm = time.strftime("%I:%M:%p").split(":")
+    return "The time is %d:%d%s on %s." % (int(hour), int(min), am_pm, time.strftime("%d %B"))
+
+def describe_events(start=None):
+    if start == None:
+        start = time.strftime("%b %d")
+
+    events = subprocess.Popen(
+            ["/bin/bash", "/home/pavpanchekha/usr/bin/event"],
+            stdout=subprocess.PIPE).communicate()[0].split("\n")
+    today_events = [e.split(" ", 2)[-1].strip() for e in events if e.startswith(start)]
+
+    result = []
+    for event in today_events:
+        if event[2] == ":" and event[:2].isdigit() and event[3:5].isdigit():
+            t = time.strptime(event[:5], "%H:%M")
+            now = time.localtime()
+            dt = (t.tm_hour - now.tm_hour) * 3600 + (t.tm_min - now.tm_min) * 60 + (t.tm_sec - now.tm_sec) 
+
+            if dt > -60:
+                result.append((dt, event.split(" ", 1)[1]))
+        else:
+            result.append((None, event))
+
+    sents = []
+    for (t, event) in result:
+        if t is None:
+            sents.append("Today is %s." % event)
+        else:
+            sents.append("%s is %s." % (event, describe_timedelta(dt)))
+
+    return sents
+
+def describe_timedelta(d):
+    d /= 60
+
+    if d > 0:
+        if d < 5:
+            return "now"
+        elif d < 60:
+            return "in %d minutes" % (int(d / 5) * 5)
+        elif d < 120:
+            return "in one hour %d minues" % (int(d / 15) * 15 - 60)
+        else:
+            return "in %d hours" % round(d / 60)
+    else:
+        return "%d minutes ago" % (int(-d / 5) * 5)
+
+def describe():
+    return [describe_time(), describe_weather(STATION)] + describe_events()
+
+def announce():
+    return " ".join(describe())
+
+if __name__ == "__main__":
+    print announce()
