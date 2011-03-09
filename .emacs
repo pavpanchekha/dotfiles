@@ -2,11 +2,6 @@
 (setq user-mail-address "pavpanchekha@gmail.com")
 (setq user-full-name "Pavel Panchekha")
 
-;; Color Theme
-(require 'color-theme)
-(color-theme-initialize)
-(color-theme-dark-laptop)
-
 ;; Some Standardization
 (setq make-backup-files nil)        ; Stupid file~
 (setq require-final-newline t)      ; Files must end in a newline
@@ -23,30 +18,24 @@
 (setq scroll-margin 5) ; Keep at least five lines around point
 
 ;; Key Bindings
-(global-set-key "\C-m" 'newline-and-indent) ; Newline indents
+(global-set-key [C-m] 'newline-and-indent) ; Newline indents
 (global-set-key [delete] 'delete-char)      ; [Delete] deletes
 (setq kill-whole-line t)                    ; C-k at the start of the line kills the whole line
 
 ;; Modes
 (setq auto-mode-alist
-      (append '(("\\.h$" . c++-mode) ("\\.txt$" . rst-mode) ("\\.cl$" . common-lisp-mode))
+      (append '(("\\.h$" . c++-mode)
+		("\\.txt$" . rst-mode)
+		("\\.cl$" . common-lisp-mode))
               auto-mode-alist))
 (add-hook 'rst-mode 'auto-fill-mode)
-(add-hook 'LaTeX-mode 'auto-fill-mode)
-(add-hook 'rst-mode ' flyspell-mode)
+(add-hook 'rst-mode 'flyspell-mode)
 (setq rst-level-face-base-light 20)
 
-; Flymake breaks latex
+(add-hook 'LaTeX-mode 'auto-fill-mode)
 
-
-;; Interface
-(custom-set-variables
- '(indicate-empty-lines t)
- '(inhibit-startup-screen t)
- '(menu-bar-mode t)
- '(scroll-bar-mode nil)
- '(tool-bar-mode nil))
-
+(setq custom-file "~/.emacs.d/custom.el")
+(load custom-file 'noerror)
 
 ;; My run command
 (defun run* ()
@@ -60,21 +49,11 @@
 (global-set-key (kbd "<f5>") 'run*)
 (global-set-key (kbd "C-<f5>") 'compile*)
 
-;; Some shortcuts
-(defun open-todo ()
-  (interactive)
-  (find-file "~/notes/todo.org"))
-
-;; Using gnome-keyring support (through Python!)
-(pymacs-load "keyring" "keyring-")
-
-; ERC gets keyring lovin'
-(setq erc-password (keyring-get-password "ERC" "pavpanchekha"))
-(setq erc-prompt-for-password nil)
+;; w3m
 
 (setq w3m-use-cookies t)
 
-
+;; Score files
 (setq tetris-score-file "~/.emacs.d/scores/tetris"
       snake-score-file "~/.emacs.d/scores/snake")
 
@@ -94,11 +73,15 @@
               (use-local-map (copy-keymap (current-local-map))))
             (local-set-key (kbd "C-x k") 'server-edit)))
 
-;(load-file "~/.emacs.d/config/jabber.el")
-(load-file "~/.emacs.d/config/org.el")
-(load-file "~/.emacs.d/config/notify.el")
-(load-file "~/.emacs.d/config/c-mode.el")
+(setq load-path (append load-path
+                        '("/usr/share/emacs/site-lisp/clojure-mode"
+                          "/usr/share/emacs/site-lisp/haskell-mode"
+                          "/usr/share/emacs/site-lisp/git")))
+
+(require 'w3m-load)
+(require 'clojure-mode)
+(require 'haskell-mode)
+(require 'git)
+
 (load-file "~/.emacs.d/config/rmail.el")
 (load-file "~/.emacs.d/config/vim.el")
-(load-file "~/.emacs.d/config/tabbar.el")
-(load-file "~/.emacs.d/config/python.el")
