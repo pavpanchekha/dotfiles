@@ -34,5 +34,5 @@ ${exec task | orprint No tasks}
 
 ${color orange}To Read ${hr 2}$color
 
-${exec ls todo | grep -v '^tasks$' | grep -v '^someday$' | sed 's/^/ * /g'}
+${exec ls todo | grep -v '^tasks$' | grep -v '^someday$' | grep -v '^to-buy$' | sed 's/^/ * /g'}
 

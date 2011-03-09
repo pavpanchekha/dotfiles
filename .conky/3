@@ -18,6 +18,10 @@ gap_x 20
 gap_y 30
 
 TEXT
+${color orange}Shopping List ${hr 2}$color
+
+${exec cat todo/to-buy | sed 's/^/ * /g'}
+
 ${color orange}Someday ${hr 2}$color
 
 ${exec cat todo/someday}

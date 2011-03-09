@@ -19,7 +19,7 @@ num2date () {
 if [[ $1 == "-h" ]]; then
     usage
 elif [[ $# -eq 0 ]]; then
-    cd ~/calendar && remind -c -s+0 active | sed 's/ \* \* \* \*/  /g' | sed 's_2011/__g' | num2date
+    cd ~/calendar && remind -s+2 active | sed 's/ \* \* \* \*/  /g' | sed 's_2011/__g' | num2date
 elif [[ $# -eq 2 ]]; then
     echo -e "REM $1\tMSG $2" >> ~/calendar/active
 elif [[ $# -eq 3 ]]; then
