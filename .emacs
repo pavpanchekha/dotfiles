@@ -79,9 +79,11 @@
                           "/usr/share/emacs/site-lisp/git")))
 
 (require 'w3m-load)
-(require 'clojure-mode)
+(setq browse-url-browser-function 'w3m-browse-url)
+(autoload 'w3m-browse-url "w3m" "Ask a WWW browser to show a URL." t)
+(global-set-key "\C-xm" 'browse-url-at-point)
 (require 'haskell-mode)
-(require 'git)
 
 (load-file "~/.emacs.d/config/rmail.el")
+(load-file "~/.emacs.d/config/w3m.el")
 (load-file "~/.emacs.d/config/vim.el")
