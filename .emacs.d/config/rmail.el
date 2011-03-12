@@ -7,4 +7,8 @@
  mail-signature-file "~/mail/signature"
  sendmail-program "/usr/bin/msmtp")
 
-(add-hook 'rmail-mode 'rmail-summary)
+(add-hook 'rmail-mode-hook (lambda ()
+  (define-key rmail-summary-mode-map (kbd "j") 'next-line)
+  (define-key rmail-summary-mode-map (kbd "k") 'previous-line)))
+
+(add-hook 'rmail-mode-hook 'rmail-summary)

@@ -30,9 +30,9 @@
               auto-mode-alist))
 (add-hook 'rst-mode 'auto-fill-mode)
 (add-hook 'rst-mode 'flyspell-mode)
-(setq rst-level-face-base-light 20)
 
-(add-hook 'LaTeX-mode 'auto-fill-mode)
+(add-hook 'LaTeX-mode-hook 'auto-fill-mode)
+(add-hook 'LaTeX-mode-hook 'flyspell-mode)
 
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file 'noerror)
@@ -78,11 +78,12 @@
                           "/usr/share/emacs/site-lisp/haskell-mode"
                           "/usr/share/emacs/site-lisp/git")))
 
-(require 'w3m-load)
-(setq browse-url-browser-function 'w3m-browse-url)
-(autoload 'w3m-browse-url "w3m" "Ask a WWW browser to show a URL." t)
-(global-set-key "\C-xm" 'browse-url-at-point)
+(require 'w3m)
 (require 'haskell-mode)
+(require 'clojure-mode)
+(require 'git)
+(load "auctex.el" nil t t)
+(load "preview-latex.el" nil t t)
 
 (load-file "~/.emacs.d/config/rmail.el")
 (load-file "~/.emacs.d/config/w3m.el")

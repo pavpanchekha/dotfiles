@@ -33,7 +33,6 @@
 .gconf
 .gconfd
 .esd_auth
-.emacs.d/session*
 .qalculate
 .mozilla
 .openoffice.org
