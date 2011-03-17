@@ -82,6 +82,7 @@
 (require 'haskell-mode)
 (require 'clojure-mode)
 (require 'git)
+(require 'jabber)
 (load "auctex.el" nil t t)
 (load "preview-latex.el" nil t t)
 

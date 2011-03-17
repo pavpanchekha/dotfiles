@@ -10,5 +10,3 @@
 (add-hook 'rmail-mode-hook (lambda ()
   (define-key rmail-summary-mode-map (kbd "j") 'next-line)
   (define-key rmail-summary-mode-map (kbd "k") 'previous-line)))
-
-(add-hook 'rmail-mode-hook 'rmail-summary)

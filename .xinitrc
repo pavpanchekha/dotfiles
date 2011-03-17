@@ -10,7 +10,6 @@ xhost +local: >/dev/null
 # Applications
 fetchmail -d60
 dropbox start
-gajim &disown
 PATH="$PATH:$HOME/usr/bin" .conky/run
 xflux -z 02142
 
