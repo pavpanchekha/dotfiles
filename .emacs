@@ -55,7 +55,7 @@
 
 ;; Score files
 (setq tetris-score-file "~/.emacs.d/scores/tetris"
-      snake-score-file "~/.emacs.d/scores/snake")
+      snake-score-file  "~/.emacs.d/scores/snake")
 
 ;; Emacs with Mutt
 (add-to-list 'auto-mode-alist '("mutt-" . mail-mode))
