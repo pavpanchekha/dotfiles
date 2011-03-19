@@ -72,12 +72,6 @@
                           "/usr/share/emacs/site-lisp/haskell-mode"
                           "/usr/share/emacs/site-lisp/git")))
 
-(require 'haskell-mode)
-(require 'clojure-mode)
-(require 'magit)
-(load "auctex.el" nil t t)
-(load "preview-latex.el" nil t t)
-
 (load-file "~/.emacs.d/config/doc-view.el")
 (load-file "~/.emacs.d/config/eshell.el")
 (load-file "~/.emacs.d/config/ispell.el")
