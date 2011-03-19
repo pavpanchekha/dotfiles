@@ -60,12 +60,6 @@
 ;; Emacs with Mutt
 (add-to-list 'auto-mode-alist '("mutt-" . mail-mode))
 
-;; Better term colors
-(setq ansi-color-names-vector ; better contrast colors
-      ["black" "red4" "green4" "yellow4"
-       "blue7" "magenta4" "cyan4" "white"])
-(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
-
 ;; Emacsclient/server hook
 (add-hook 'server-switch-hook 
           (lambda ()
@@ -78,14 +72,16 @@
                           "/usr/share/emacs/site-lisp/haskell-mode"
                           "/usr/share/emacs/site-lisp/git")))
 
-(require 'w3m)
 (require 'haskell-mode)
 (require 'clojure-mode)
 (require 'git)
-(require 'jabber)
 (load "auctex.el" nil t t)
 (load "preview-latex.el" nil t t)
 
+(load-file "~/.emacs.d/config/doc-view.el")
+(load-file "~/.emacs.d/config/eshell.el")
+(load-file "~/.emacs.d/config/ispell.el")
 (load-file "~/.emacs.d/config/rmail.el")
 (load-file "~/.emacs.d/config/w3m.el")
 (load-file "~/.emacs.d/config/vim.el")
+(load-file "~/.emacs.d/config/jabber.el")

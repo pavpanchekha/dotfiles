@@ -1,7 +1,20 @@
+(custom-set-variables
+ '(rmail-file-name "~/mail/inbox")
+ '(rmail-default-body-file "~/mail/out")
+ '(rmail-default-file "~/mail")
+ '(rmail-primary-inbox-list (quote ("/var/spool/mail/pavpanchekha" "~/mail/reuse.mit" "~/mail/remind-fans" "lisp-hug")))
+ '(rmail-redisplay-summary t)
+ '(rmail-secondary-file-directory "~/mail")
+ '(rmail-secondary-file-regexp "~/mail/*")
+
+ '(rmail-mime-show-images nil)
+ '(rmail-displayed-headers "^To:\\|From:\\|Date:\\|Subject:")
+
+ '(rmail-display-summary t)
+ '(rmail-summary-scroll-between-messages nil))
+
+
 (setq
- rmail-displayed-headers "^To:\\|From:\\|Date:\\|Subject:"
- rmail-file-name "~/mail/inbox"
- rmail-primary-inbox-list '("/var/spool/mail/pavpanchekha" "~/mail/reuse.mit")
  mail-default-directory "~/mail/"
  mail-personal-alias-file "~/mail/aliases"
  mail-signature-file "~/mail/signature"

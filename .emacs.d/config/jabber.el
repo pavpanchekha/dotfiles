@@ -1,42 +1,29 @@
+(require 'jabber)
 
+; Some variables
 (custom-set-variables
+ '(jabber-account-list (quote (("pavpanchekha@gmail.com" (:network-server . "talk.google.com") (:connection-type . ssl)))))
+ '(jabber-avatar-cache-directory "/tmp/jabber-avatars")
+ '(jabber-backlog-days 3.0)
  '(jabber-chat-buffer-show-avatar nil)
- '(jabber-chat-foreign-prompt-format "%t] ")
- '(jabber-chat-header-line-format (quote (" " (:eval (jabber-jid-displayname jabber-chatting-with)) " " (:eval (let ((buddy (jabber-jid-symbol jabber-chatting-with))) (propertize (or (cdr (assoc (get buddy (quote show)) jabber-presence-strings)) (get buddy (quote show))) (quote face) (or (cdr (assoc (get buddy (quote show)) jabber-presence-faces)) (quote jabber-roster-user-online))))) " " jabber-chatstates-message)))
- '(jabber-chat-local-prompt-format "%t] ")
- '(jabber-chat-system-prompt-format "%t] *** ")
- '(jabber-groupchat-prompt-format "%t] %n> ")
- '(jabber-roster-line-format " %c %-20n")
+ '(jabber-chat-foreign-prompt-format "> ")
+ '(jabber-chat-local-prompt-format "> ")
+ '(jabber-chat-system-prompt-format "*** ")
+ '(jabber-chat-time-format "%H:%M")
+ '(jabber-default-show "")
+ '(jabber-groupchat-prompt-format "%n> ")
+ '(jabber-muc-private-foreign-prompt-format "%g/%n> ")
+ '(jabber-roster-line-format "%c %-25n %u %-8s  %S")
  '(jabber-roster-show-title nil)
- '(jabber-show-offline-contacts nil)
- '(jabber-show-resources nil)
- '(jabber-sort-order (quote ("chat" "" "dnd" "away" "xa")))
- '(jabber-vcard-avatars-retrieve nil))
+ '(jabber-show-offline-contacts nil))
 
 (custom-set-faces
- '(jabber-chat-prompt-foreign ((t (:foreground "coral"))))
- '(jabber-chat-prompt-local ((t (:foreground "sky blue"))))
- '(jabber-rare-time-face ((t (:foreground "light green" :underline t))))
- '(jabber-roster-user-away ((t (:foreground "gold" :slant italic :weight normal))))
- '(jabber-roster-user-dnd ((t (:foreground "coral" :slant italic :weight normal))))
- '(jabber-roster-user-online ((t (:foreground "pale green" :slant normal :weight semi-light))))
- '(jabber-title-large ((t (:inherit variable-pitch :weight bold :height 2.0 :width ultra-expanded))))
- '(jabber-title-medium ((t (:inherit variable-pitch :weight bold :height 1.4 :width expanded)))))
-
-(setq jabber-account-list
-      `(("pavpanchekha@gmail.com"
-         (:network-server . "talk.google.com")
-         (:connection-type . ssl)
-         (:password . ,(keyring-get-password "Jabber" "pavpanchekha")))))
-
-; The jabber window goes into its own frame
-(setq 
-  special-display-regexps 
-  '(("*-jabber-roster-*" 
-      (width . 34)
-      (tool-bar-lines . 0)
-      (menu-bar-lines 0)
-      (left . 80))))
+ '(jabber-chat-prompt-foreign ((t (:foreground "red"))))
+ '(jabber-chat-prompt-local ((t (:foreground "blue"))))
+ '(jabber-chat-prompt-system ((t (:foreground "dark green" :weight bold))))
+ '(jabber-roster-user-away ((t (:foreground "orange"))))
+ '(jabber-roster-user-chatty ((t (:foreground "green"))))
+ '(jabber-roster-user-online ((t (:foreground "dark green")))))
 
 ; Auto-urlize urls
 (add-hook 'jabber-chat-mode-hook 'goto-address)
