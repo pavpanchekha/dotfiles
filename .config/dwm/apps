@@ -12,3 +12,4 @@ import
 feh
 xflux
 emacsclient -c
+emacs

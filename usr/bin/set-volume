@@ -10,4 +10,3 @@ case $TIME in
 esac
 
 amixer set Master "$VOL%" > /tmp/set-volume.log
-
