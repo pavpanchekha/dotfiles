@@ -6,11 +6,11 @@ export PATH="$PATH:$HOME/usr/bin"
 xbindkeys
 xmodmap .keys
 xsetroot -solid '#000000'
-xset +fp /usr/share/fonts/local/
-xhost +local: >/dev/null
+
+# Laptop Stuff
+synclient JumpyCursorThreshold=100
 
 # Applications
-fetchmail -d60
 dropbox start
 conky -d
 xflux -z 02142

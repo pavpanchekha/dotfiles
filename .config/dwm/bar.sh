@@ -15,6 +15,10 @@ email() {
     fi
 }
 
+batt () {
+    acpi -b | cut -f4 -d" " | sed 's/,//g'
+}
+
 while sleep 3; do
-    print "`email`| `dropbox status` | `date +%H:%M`"
+    print "`email`| `batt` | `dropbox status` | `date +%H:%M`"
 done
