@@ -67,11 +67,6 @@
               (use-local-map (copy-keymap (current-local-map))))
             (local-set-key (kbd "C-x k") 'server-edit)))
 
-(setq load-path (append load-path
-                        '("/usr/share/emacs/site-lisp/clojure-mode"
-                          "/usr/share/emacs/site-lisp/haskell-mode"
-                          "/usr/share/emacs/site-lisp/git")))
-
 (load-file "~/.emacs.d/config/doc-view.el")
 (load-file "~/.emacs.d/config/eshell.el")
 (load-file "~/.emacs.d/config/ispell.el")
