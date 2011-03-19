@@ -26,8 +26,6 @@ ${cpugraph 000000 ffffff}
 NAME               CPU     MEM
 ${top name 1} ${top cpu 1} ${top mem 1}
 ${top name 2} ${top cpu 2} ${top mem 2}
-${top name 3} ${top cpu 3} ${top mem 3}
-${top name 4} ${top cpu 4} ${top mem 4}
 
 ${color orange}MEMORY ${hr 2}$color
 RAM:  $memperc% ${membar 6}$color
@@ -41,4 +39,4 @@ ${execi 600 fortune -s | tr "\n" " " | sed -r 's/[[:space:]]+/ /' | fold -w38 -s
 
 ${color orange}Hacker News ${hr 2}$color
 
-${execi 600 hn 6}
+${execi 600 hn 4}
