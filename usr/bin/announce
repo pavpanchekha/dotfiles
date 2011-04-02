@@ -65,7 +65,10 @@ def describe_events(start=None):
     result = []
     for event in today_events:
         if event[2] == ":" and event[:2].isdigit() and event[3:5].isdigit():
-            t = time.strptime(event[:5], "%H:%M")
+            try:
+                t = time.strptime(event[:5], "%H:%M")
+            except:
+                t = time.strptime("23:59", "%H:%M")
             now = time.localtime()
             dt = (t.tm_hour - now.tm_hour) * 3600 + (t.tm_min - now.tm_min) * 60 + (t.tm_sec - now.tm_sec) 
 
