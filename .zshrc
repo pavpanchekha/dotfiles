@@ -11,7 +11,7 @@ bindkey -e
 autoload colors; colors
 export PROMPT="%{$fg[cyan]%}%2c%{$reset_color%}:%#> "
 
-PATH="$PATH:$HOME/usr/bin"
+PATH="$HOME/usr/bin:$PATH"
 TEXINPUTS=".:$HOME/dev/resume.tex:$HOME/dev/simple.tex:"
 
 export PATH TEXINPUTS

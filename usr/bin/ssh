@@ -1,0 +1,29 @@
+#!/bin/bash
+
+SSH=/usr/bin/ssh
+
+want-kerberos-tickets () {
+    if [ -z "`klist 2>/dev/null | grep ATHENA.MIT.EDU`" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+want-ssh-add () {
+    if [ -z "`ssh-add -l 2>/dev/null`" ]; then
+        return 1
+    elif [ -z "`ssh-add -l | grep '/home/pavpanchekha/.ssh'`" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+if [ "$1" == "mit" ]; then
+    want-kerberos-tickets && kinit pavpan
+elif want-ssh-add && [ -z "$1" ]; then
+    ssh-add
+fi
+
+/usr/bin/ssh "$@"
