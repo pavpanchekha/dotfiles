@@ -1,0 +1,4 @@
+keymap d CLOSE_TAB
+
+keymap F TAB_LINK
+keymap f GOTO_LINK
