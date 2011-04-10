@@ -40,11 +40,11 @@
 ;; My run command
 (defun run* ()
   (interactive)
-  (shell-command (concat "run " (buffer-file-name))))
+  (shell-command (concat "run " (buffer-file-name) " &")))
 
 (defun compile* ()
   (interactive)
-  (shell-command (concat "run -c " (buffer-file-name))))
+  (shell-command (concat "run -c " (buffer-file-name) " &")))
 
 (global-set-key (kbd "<f5>") 'run*)
 (global-set-key (kbd "C-<f5>") 'compile*)
