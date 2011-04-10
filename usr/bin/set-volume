@@ -9,4 +9,4 @@ case $TIME in
     24|0[0-1]) VOL="60";;
 esac
 
-amixer set Master "$VOL%" > /tmp/set-volume.log
+amixer set Master "$VOL%" > /dev/null
