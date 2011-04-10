@@ -10,16 +10,28 @@ usage() {
 }
 
 num2date () {
-    sed 's_01/_Jan _g' | sed 's_02/_Feb _g' | sed 's_03/_Mar _g' |
-        sed 's_04/_Apr _g' | sed 's_05/_May _g' | sed 's_06/_Jun _g' |
-        sed 's_07/_Jul _g' | sed 's_08/_Aug _g' | sed 's_09/_Sep _g' |
-        sed 's_10/_Oct _g' | sed 's_11/_Nov _g' | sed 's_12/_Dec _g'
+    sed 's_^01/_Jan _' | sed 's_^02/_Feb _' | sed 's_^03/_Mar _' |
+        sed 's_^04/_Apr _' | sed 's_^05/_May _' | sed 's_^06/_Jun _' |
+        sed 's_^07/_Jul _' | sed 's_^08/_Aug _' | sed 's_^09/_Sep _' |
+        sed 's_^10/_Oct _' | sed 's_^11/_Nov _' | sed 's_^12/_Dec _'
+}
+
+kill-past-today () {
+    YEAR=`date +%Y`
+    MONTH=`date +%m`
+    DAY=`date +%d`
+    sed -r 's_([0-9/]+)_\1/_' | awk -F/ "
+(\$1 >= $YEAR) && (\$2 >= $MONTH) && (\$3 >= $DAY) {
+    print
+}
+"
 }
 
 if [[ $1 == "-h" ]]; then
     usage
 elif [[ $# -eq 0 ]]; then
-    cd ~/calendar && remind -s+2 active | sed 's/ \* \* \* \*/  /g' | sed 's_2011/__g' | num2date
+    cd ~/calendar && remind -s+2 active | sort -n | kill-past-today | sed 's/ \* \* \* \*/  /g' | sed -r 's_[0-9]+/([0-9]+)/([0-9]+)/_\1/\2_g' | num2date
+
 elif [[ $# -eq 2 ]]; then
     echo -e "REM $1\tMSG $2" >> ~/calendar/active
 elif [[ $# -eq 3 ]]; then
