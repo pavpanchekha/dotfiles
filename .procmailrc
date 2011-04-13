@@ -1,22 +1,22 @@
 PATH=/bin:/usr/bin:/usr/local/bin 
 MAILDIR=$HOME/mail
-DEFAULT=$HOME/mail/inbox
+DEFAULT=$HOME/mail/inbox.spool
 VERBOSE=off
 LOGFILE=/tmp/procmail.log
 # Recipes below this comment:
 
 :0
 * ^Subject: .*\[Reuse\]
-$MAILDIR/reuse.mit/
+$MAILDIR/reuse.mit.spool
 
 :0
 * ^Subject: .*\[Remind-Fans\]
-$MAILDIR/remind-fans/
+$MAILDIR/remind-fans.spool
 
 :0
 * ^To: amun-web-list@lists.academymodelun.org
-$MAILDIR/amun/
+$MAILDIR/amun.spool
 
 :0
 * ^(To|Cc): .*lisp-hug@lispworks.com
-$MAILDIR/lisp-hug/
+$MAILDIR/lisp-hug.spool
