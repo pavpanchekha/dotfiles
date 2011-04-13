@@ -3,5 +3,5 @@
 (setq viper-mode t)
 (require 'viper)
 
-(setq load-path (append load-path '("~/.emacs.d/load-path")))
+(add-to-list 'load-path "~/.emacs.d/load-path")
 (require 'vimpulse)
