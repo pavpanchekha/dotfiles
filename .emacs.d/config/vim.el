@@ -5,3 +5,5 @@
 
 (add-to-list 'load-path "~/.emacs.d/load-path")
 (require 'vimpulse)
+
+(windmove-default-keybindings 'hyper)

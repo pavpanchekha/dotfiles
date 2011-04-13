@@ -21,10 +21,20 @@
 (autoload 'w3m-browse-url "w3m" "Ask a WWW browser to show a URL." t)
 (global-set-key "\C-xm" 'browse-url-at-point)
 
+(defun clean-slate-goto-url (url)
+  (interactive (list (w3m-input-url nil "" nil nil 'feeling-lucky)))
+  (w3m-goto-url url))
+
+(defun clean-slate-goto-url-new-session (url)
+  (interactive (list (w3m-input-url nil "" nil nil 'feeling-lucky)))
+  (w3m-goto-url-new-session url))
+
+(define-key w3m-mode-map (kbd "o")   'clean-slate-goto-url)
 (define-key w3m-mode-map (kbd "O")   'w3m-goto-url)
 (define-key w3m-mode-map (kbd "C-o") 'w3m-view-previous-page)
 (define-key w3m-mode-map (kbd "d")   'w3m-delete-buffer)
-(define-key w3m-mode-map (kbd "t")   'w3m-goto-url-new-session)
+(define-key w3m-mode-map (kbd "t")   'clean-slate-goto-url-new-session)
+(define-key w3m-mode-map (kbd "T")   'w3m-goto-url-new-session)
 
 (define-key w3m-mode-map (kbd "f")   'w3m-view-this-url)
 (define-key w3m-mode-map (kbd "F")   'w3m-view-this-url-new-session)
