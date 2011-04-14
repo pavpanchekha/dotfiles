@@ -1,8 +1,11 @@
+(require 'rmail-extras)
+
 (custom-set-variables
- '(rmail-file-name "~/mail/inbox")
- '(rmail-default-body-file "~/mail/out")
+ '(rmail-default-body-file "/tmp/pavpanchekha-compose")
  '(rmail-default-file "~/mail")
- '(rmail-primary-inbox-list (quote ("/var/spool/mail/pavpanchekha" "~/mail/reuse.mit" "~/mail/remind-fans" "lisp-hug")))
+ '(rmail-file-name "~/mail/inbox.spool")
+ '(rmail-preserve-inbox t)
+ '(rmail-inbox-list '("~/mail/inbox.spool" "~/mail/reuse.mit.spool" "~/mail/remind-fans.spool" "~/mail/lisp-hug.spool"))
  '(rmail-redisplay-summary t)
  '(rmail-secondary-file-directory "~/mail")
  '(rmail-secondary-file-regexp "~/mail/*")
@@ -12,7 +15,6 @@
 
  '(rmail-display-summary t)
  '(rmail-summary-scroll-between-messages nil))
-
 
 (setq
  mail-default-directory "~/mail/"

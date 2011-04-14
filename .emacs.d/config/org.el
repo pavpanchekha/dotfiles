@@ -1,6 +1,6 @@
 
 (setq org-directory "~/notes"
-      org-agenda-files '("~/notes/todo.org")
+      org-agenda-files '("~/notes/")
       org-todo-keywords '(
         (sequence "TODO" "|" "DONE" "WAIT")
         (sequence "SOMEDAY" "|" "DONE")

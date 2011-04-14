@@ -16,5 +16,5 @@ email() {
 }
 
 while sleep 3; do
-    print "`email` | `dropbox status` | `date +%H:%M`"
+    print "`email`| `dropbox status` | `date +%H:%M`"
 done

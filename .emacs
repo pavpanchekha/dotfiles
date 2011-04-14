@@ -86,3 +86,4 @@
 (load-file "~/.emacs.d/config/vim.el")
 (load-file "~/.emacs.d/config/jabber.el")
 (load-file "~/.emacs.d/config/slime.el")
+(autoload 'magit-status "magit" nil)
