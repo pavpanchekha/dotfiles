@@ -1,2 +1,1 @@
-(custom-set-variables
- '(eshell-directory-name "~/.emacs.d/eshell"))
+(setq eshell-directory-name "~/.emacs.d/eshell")
