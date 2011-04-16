@@ -25,6 +25,9 @@ TZ="America/New_York"
 GPGKEY="371E352C"
 PYTHONSTARTUP="$HOME/.pythonrc"
 MAIL="$HOME/mail/inbox"
+
+# MPD stuff
+MPD_HOST=pavpanchekha.mit.edu
 umask 077
 
 alias py=python

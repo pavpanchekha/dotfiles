@@ -1,3 +1,4 @@
+(add-to-list 'load-path "~/.emacs.d/load-path")
 (require 'rmail-extras)
 
 (setq rmail-default-body-file "/tmp/pavpanchekha-compose"

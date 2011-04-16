@@ -74,7 +74,7 @@
 
 (require 'haskell-mode)
 (require 'clojure-mode)
-(require 'git)
+(require 'magit)
 (load "auctex.el" nil t t)
 (load "preview-latex.el" nil t t)
 
@@ -82,8 +82,10 @@
 (load-file "~/.emacs.d/config/eshell.el")
 (load-file "~/.emacs.d/config/ispell.el")
 (load-file "~/.emacs.d/config/rmail.el")
+(load-file "~/.emacs.d/config/org.el")
 (load-file "~/.emacs.d/config/w3m.el")
 (load-file "~/.emacs.d/config/vim.el")
 (load-file "~/.emacs.d/config/jabber.el")
 (load-file "~/.emacs.d/config/slime.el")
 (autoload 'magit-status "magit" nil)
+(load-file "~/.emacs.d/config/newsticker.el")
