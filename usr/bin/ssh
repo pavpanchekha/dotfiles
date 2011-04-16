@@ -22,7 +22,7 @@ want-ssh-add () {
 
 if [ "$1" == "mit" ]; then
     want-kerberos-tickets && kinit pavpan
-elif want-ssh-add && [ -z "$1" ]; then
+elif want-ssh-add && [ -n "$1" ]; then
     ssh-add
 fi
 
