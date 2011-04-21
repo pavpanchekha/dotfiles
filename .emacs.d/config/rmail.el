@@ -5,8 +5,7 @@
       rmail-default-file "~/mail"
       rmail-file-name "~/mail/inbox.spool"
       rmail-preserve-inbox t
-      rmail-inbox-list '("~/mail/inbox.spool"
-                         "~/mail/reuse.mit.spool"
+      rmail-inbox-list '("~/mail/reuse.mit.spool"
                          "~/mail/remind-fans.spool"
                          "~/mail/lisp-hug.spool")
       rmail-redisplay-summary t
