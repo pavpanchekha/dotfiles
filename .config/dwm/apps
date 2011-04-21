@@ -1,16 +1,18 @@
 firefox
 zathura
-vlc
 evince
 inkscape
 transmission-gtk
 mathematica
 homebank
 slock
-gparted
 import
 feh
-xflux
 emacsclient -c
 drracket
 gimp
+mpc
+sakura
+pkill
+gvim
+amixer

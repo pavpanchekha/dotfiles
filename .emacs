@@ -89,3 +89,4 @@
 (load-file "~/.emacs.d/config/slime.el")
 (autoload 'magit-status "magit" nil)
 (load-file "~/.emacs.d/config/newsticker.el")
+(load-file "~/.emacs.d/config/apps.el")

@@ -13,5 +13,6 @@
 (defapp "s-M" (rmail))
 (defapp "s-L" (slime))
 (defapp "s-J" (jabber-switch-to-roster-buffer))
+(defapp "s-A" (org-agenda-list))
 (defapp "s-Z" (w3m))
 (defapp "s-G" (magit-status "~/"))
