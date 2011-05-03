@@ -3,11 +3,11 @@
 
 (setq org-directory "~/notes"
       org-agenda-files '("~/notes/")
+      org-default-notes-file (concat org-directory "pavel.org")
       org-todo-keywords '(
         (sequence "TODO" "|" "DONE" "WAIT")
         (sequence "SOMEDAY" "|" "DONE")
         (sequence "TODO" "READY" "CODED" "TESTED" "FIXED" "DONE"))
-      org-default-notes-files "~/notes.notes.org"
       org-agenda-ndays 7
       org-agenda-show-all-dates t
       org-M-RET-may-split-line '((default))
@@ -37,3 +37,4 @@
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)
 (global-set-key "\C-cb" 'org-iswitchb)
+(global-set-key "\C-cc" 'org-capture)
