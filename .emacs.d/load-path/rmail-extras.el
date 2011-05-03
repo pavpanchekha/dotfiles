@@ -248,8 +248,7 @@
                     ;; because it's a nuisance to use the homedir
                     ;; if that is on a full disk and this rmail
                     ;; file isn't.
-                    (file-name-directory
-                     (expand-file-name buffer-file-name))))
+                    "/tmp/"))
 
       ;; inboxes w/the same name mess things up
       (while (member tofile delete-files)

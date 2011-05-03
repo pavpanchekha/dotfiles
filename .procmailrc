@@ -20,3 +20,7 @@ $MAILDIR/amun.spool
 :0
 * ^(To|Cc): .*lisp-hug@lispworks.com
 $MAILDIR/lisp-hug.spool
+
+:0
+* ^(To|Cc): .*esp.*@mit.edu
+$MAILDIR/esp.spool

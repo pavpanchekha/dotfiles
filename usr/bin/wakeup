@@ -3,9 +3,14 @@
 ssh server mpc pause
 sleep 15
 amixer -q set Master 50 > /dev/null
-echo "Wake up! Wake up! Time to get up you lazy slob!" | festival --tts > /dev/null
+echo "Wake up! Wake up! Time to get up you lazy slob!" | festival --tts > /dev/null &
+F1PID=$?
 amixer -q set Master 30 > /dev/null
 announce | festival --tts > /dev/null &
+F2PID=$?
 sleep 15
 set-volume
-ssh server mpc play
+mpc play
+kill -9 $F1PID
+kill -9 $F2PID
+pkill festival

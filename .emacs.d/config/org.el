@@ -14,6 +14,16 @@
       org-reverse-note-order t
       org-remember-templates '((116 "* TODO %?\n  %u" "~/todo.org" "Tasks") (110 "* %u %?" "~/notes.org" "Notes")))
 
+(setq org-pretty-entities t
+      org-entities-user '(("CC" "\\CC" t "&#8450;" "C" "C" "ℂ")
+                          ("FF" "\\FF" t "&#120125;" "F" "F" "𝔽")
+                          ("HH" "\\HH" t "&#8461;" "H" "H" "ℍ")
+                          ("NN" "\\NN" t "&#8469;" "N" "N" "ℕ")
+                          ("PP" "\\PP" t "&#8473;" "P" "P" "ℙ")
+                          ("QQ" "\\QQ" t "&#8474;" "Q" "Q" "ℚ")
+                          ("RR" "\\RR" t "&#8477;" "R" "R" "ℝ")
+                          ("ZZ" "\\ZZ" t "&#8484;" "Z" "Z" "ℤ")))
+
 (add-hook 'remember-mode-hook 'org-remember-apply-template)
 (define-key global-map [(control meta ?r)] 'remember)
 
