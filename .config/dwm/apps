@@ -1,14 +1,10 @@
 firefox
-zathura
-evince
-inkscape
 transmission-gtk
 mathematica
-homebank
 slock
+homebank
 import
 feh
-emacsclient -c
 drracket
 gimp
 mpc
@@ -16,3 +12,4 @@ sakura
 pkill
 gvim
 amixer
+luakit

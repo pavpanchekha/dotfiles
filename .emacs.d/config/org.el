@@ -5,7 +5,7 @@
         (sequence "TODO" "|" "DONE" "WAIT")
         (sequence "SOMEDAY" "|" "DONE")
         (sequence "TODO" "READY" "CODED" "TESTED" "FIXED" "DONE"))
-      org-default-notes-files "~/notes.notes.org"
+      org-default-notes-file (concat org-directory "/pavel.org")
       org-agenda-ndays 7
       org-agenda-show-all-dates t
       org-agenda-skip-deadline-if-done t
@@ -30,3 +30,4 @@
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)
 (global-set-key "\C-cb" 'org-iswitchb)
+(global-set-key "\C-cc" 'org-capture)
