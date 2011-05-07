@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export PATH="$PATH:$HOME/usr/bin"
+
 # X server stuff
 xbindkeys
 xmodmap .keys
@@ -10,8 +12,8 @@ xhost +local: >/dev/null
 # Applications
 fetchmail -d60
 dropbox start
-PATH="$PATH:$HOME/usr/bin" .conky/run
+conky -d
 xflux -z 02142
 
 bash $HOME/.config/dwm/bar.sh &disown
-PATH="$PATH:$HOME/usr/bin" exec ssh-agent dwm
+exec ssh-agent dwm
