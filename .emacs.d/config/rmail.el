@@ -7,6 +7,9 @@
       rmail-preserve-inbox t
       rmail-inbox-list '("~/mail/reuse.mit.spool"
                          "~/mail/remind-fans.spool"
+                         "~/mail/esp.spool"
+                         "~/mail/racket.spool"
+                         "~/mail/hmmt.spool"
                          "~/mail/lisp-hug.spool")
       rmail-redisplay-summary t
       rmail-secondary-file-directory "~/mail"

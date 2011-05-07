@@ -24,3 +24,11 @@ $MAILDIR/lisp-hug.spool
 :0
 * ^(To|Cc): .*esp.*@mit.edu
 $MAILDIR/esp.spool
+
+:0
+* ^(To|Cc): .*@racket-lang.org
+$MAILDIR/racket.spool
+
+:0
+* ^(To|Cc): .*hmmt.*@mit.edu
+$MAILDIR/hmmt.spool
