@@ -8,12 +8,15 @@
  '(indicate-empty-lines t)
  '(inhibit-startup-screen t)
  '(menu-bar-mode t)
+ '(org-export-creator-info nil)
+ '(org-export-mark-todo-in-toc t)
+ '(org-export-run-in-background t)
+ '(org-export-with-section-numbers nil)
+ '(org-export-with-toc 1)
  '(preview-scale-function 1.1)
  '(scroll-bar-mode nil)
  '(size-indication-mode t)
- '(tool-bar-mode nil)
- '(tramp-default-user nil)
- '(tramp-default-user-alist (quote (("synce" nil nil) ("imaps" nil "pavpanchekha") ("imap" nil "pavpanchekha") ("socks" nil "pavpanchekha") ("tunnel" nil "pavpanchekha") ("fish" nil "pavpanchekha") ("smb" nil "") ("\\`su\\(do\\)?\\'" nil "pavpanchekha") ("\\`r\\(em\\)?\\(cp\\|sh\\)\\|telnet\\|plink1?\\'" nil "pavpanchekha")))))
+ '(tool-bar-mode nil))
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.

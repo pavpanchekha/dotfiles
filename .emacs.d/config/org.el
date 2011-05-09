@@ -1,3 +1,5 @@
+(require 'org-install)
+(require 'org-publish)
 
 (setq org-directory "~/notes"
       org-agenda-files '("~/notes/")
@@ -8,11 +10,16 @@
       org-default-notes-file (concat org-directory "/pavel.org")
       org-agenda-ndays 7
       org-agenda-show-all-dates t
+      org-M-RET-may-split-line '((default))
+      org-modules '(org-bbdb org-bibtex org-docview org-info org-jsinfo org-irc
+                             org-rmail org-w3m org-eshell org-wikinodes)
+      org-startup-indented t
       org-agenda-skip-deadline-if-done t
       org-agenda-skip-scheduled-if-done t
       org-agenda-start-on-weekday nil
       org-reverse-note-order t
-      org-remember-templates '((116 "* TODO %?\n  %u" "~/todo.org" "Tasks") (110 "* %u %?" "~/notes.org" "Notes")))
+      org-remember-templates '((116 "* TODO %?\n  %u" "~/todo.org" "Tasks")
+                               (110 "* %u %?" "~/notes.org" "Notes")))
 
 (setq org-pretty-entities t
       org-entities-user '(("CC" "\\CC" t "&#8450;" "C" "C" "ℂ")
