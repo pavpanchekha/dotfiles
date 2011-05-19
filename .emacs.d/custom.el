@@ -8,6 +8,7 @@
  '(indicate-empty-lines t)
  '(inhibit-startup-screen t)
  '(menu-bar-mode t)
+ '(org-capture-templates (quote (("e" "Event" entry (file "~/notes/events.org") "* %^{Description} %^t" :prepend t :immediate-finish t) ("t" "Todo Entry" entry (file "~/notes/pavel.org") "TODO %^{Description}" :prepend t :immediate-finish t))))
  '(org-export-creator-info nil)
  '(org-export-mark-todo-in-toc t)
  '(org-export-run-in-background t)
