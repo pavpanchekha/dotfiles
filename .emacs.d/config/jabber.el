@@ -28,6 +28,5 @@
 
 ; Auto-urlize urls
 (add-hook 'jabber-chat-mode-hook 'goto-address)
-(add-hook 'jabber-chat-mode-hook (lambda () (setq fill-column 34)))
 (jabber-connect-all)
 

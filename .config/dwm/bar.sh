@@ -5,7 +5,7 @@ print() {
 
 email() {
     local A
-    A=`cat mail/*.spool | grep From\  -c`
+    A=`cat mail/inbox.spool | grep ^From\  | wc -l`
 
     if [[ -z "$A" || "$A" = "0" ]]; then
         return
