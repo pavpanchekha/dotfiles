@@ -37,7 +37,7 @@ ${color orange}DISK ${hr 2}$color
 /home ${fs_free_perc /home}% ${fs_bar 6 /home}$color
 
 ${color orange}FORTUNE ${hr 2}$color
-${execi 600 fortune -s | tr "\n" " " | sed 's/\s+/ /' | fold -w38 -s}
+${execi 600 fortune -s | tr "\n" " " | sed -r 's/[[:space:]]+/ /' | fold -w38 -s}
 
 ${color orange}Hacker News ${hr 2}$color
 
