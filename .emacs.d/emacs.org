@@ -474,13 +474,30 @@ Also, I send mail with =msmtp=.
 (setq sendmail-program "/usr/bin/msmtp")
 #+END_SRC
 
+** Message Sending
+Firstly, I don't want to see the =In-Reply-To= header, so I add it to
+the list.
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'message-hidden-headers "^In-Reply-To:")
+#+END_SRC
+
+There's also the issue of =message= creating drafts in the =~/Mail=
+folder; this is annoying since I don't generally have such a folder.
+So to make it stop, I change its default folder:
+
+#+BEGIN_SRC emacs-lisp
+(setq message-directory "~/mail/")
+(setq mml-default-directory "~/mail/")
+#+END_SRC
+
 ** Summaries
 Some tweaking of the summary buffers takes place here.
 
 #+BEGIN_SRC emacs-lisp
 (setq rmail-display-summary t)
 
-(setq rmail-displayed-headers "^To:\\|From:\\|Date:\\|Subject:")
+(setq rmail-displayed-headers "^To:\\|From:\\|Date:\\Subject:")
 
 (setq rmail-summary-window-size 10)
 (setq rmail-summary-scroll-between-messages nil)
