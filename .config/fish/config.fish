@@ -1,14 +1,14 @@
 set BROWSER w3m
 set CDPATH .
-set PATH ~/usr/bin /bin /usr/bin /usr/local/bin
-set EDITOR vim
-set PAGER less
-set TEXINPUTS ".:$HOME/dev/resume.tex:$HOME/dev/simple.tex:"
-set GPGKEY "371E352C"
-set MPD_HOST pavpanchekha.mit.edu
+set -x PATH ~/usr/bin /bin /usr/bin /usr/local/bin /sbin /usr/sbin
+set -x EDITOR vim
+set -x PAGER less
+set -x TEXINPUTS ".:$HOME/dev/resume.tex:$HOME/dev/simple.tex:"
+set -x GPGKEY 371E352C
+set -x MPD_HOST pavpanchekha.mit.edu
 
 # Mathematica fonts need setting over SSH
-if -d /usr/local/mathematica/fonts/Type1;
+if [ -d /usr/local/mathematica/fonts/Type1 ];
     xset fp+ /usr/local/mathematica/fonts/Type1
     xset fp+ /usr/local/mathematica/fonts/BDF
 end
