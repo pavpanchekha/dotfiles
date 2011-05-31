@@ -18,7 +18,6 @@ export PATH TEXINPUTS
 # Program definitions
 EDITOR="vim"
 PAGER=less
-TERM=xterm
 
 # Some Variables
 TZ="America/New_York"
@@ -32,12 +31,12 @@ umask 077
 
 alias py=python
 
-export EDITOR PAGER TERM HOSTNAME GPGKEY PYTHONSTARTUP MAIL LANG LC_ALL
+export EDITOR PAGER HOSTNAME GPGKEY PYTHONSTARTUP MAIL LANG LC_ALL
 
 # Short programs
 alias temp="cat > /dev/null"
 calc() { awk "BEGIN{ print $* }" ;}
-pset() { run -c $1 -o /tmp/`basename $PWD`.pdf && scp /tmp/`basename $PWD`.pdf mit:print-queue ;}
+pset() { run -c $1 -o /tmp/`basename $PWD`.pdf && scp /tmp/`basename $PWD`.pdf mit: ;}
 wiki() { dig +short txt $1.wp.dg.cx }
 
 # Mathematica fonts need setting over SSH
@@ -54,3 +53,4 @@ alias sbcl="rlwrap sbcl"
 alias scheme="rlwrap scheme"
 alias mpc="ssh media@server mpc"
 alias plan9="qemu-kvm -enable-kvm /media/virtual/plan9/plan9.qcow -no-acpi -net nic,vlan=1 -net user,vlan=1"
+alias zephyr="tmux -L zephyr attach"

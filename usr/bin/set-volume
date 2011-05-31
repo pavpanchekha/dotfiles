@@ -3,10 +3,10 @@
 TIME=`date +%02H`
 
 case $TIME in
-    0[2-6]) VOL="60";;
-    0[7-9]|1[0-1]) VOL="70";;
+    0[5-9]) VOL="70";;
+    1[0-1]) VOL="75";;
     1[2-9]|2[0-3]) VOL="80";;
-    24|0[0-1]) VOL="70";;
+    24|0[0-4]) VOL="75";;
 esac
 
 amixer set Master "$VOL%" > /dev/null
