@@ -260,12 +260,10 @@ First things first!  We should set up the file structure.
 (setq org-default-notes-file (concat org-directory "pavel.org"))
 #+END_SRC
 
-As I stylistic thing, I like the indented mode of Org.  Also, let's
-throw in a very minor editing thing (Hitting =M-RET= shouldn't split a
-bullet point in two).
+Let's throw in a very minor editing thing (Hitting =M-RET= shouldn't
+split a bullet point in two).
 
 #+BEGIN_SRC emacs-lisp
-(setq org-startup-indented t)
 (setq org-M-RET-may-split-line '((default)))
 #+END_SRC
 
@@ -479,7 +477,11 @@ Firstly, I don't want to see the =In-Reply-To= header, so I add it to
 the list.
 
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'message-hidden-headers "^In-Reply-To:")
+  (add-hook 'message-mode-hook
+            (lambda ()
+              (add-to-list 'message-hidden-headers "^In-Reply-To:")
+              (turn-on-orgstruct++)))
+  
 #+END_SRC
 
 There's also the issue of =message= creating drafts in the =~/Mail=
@@ -497,7 +499,7 @@ Some tweaking of the summary buffers takes place here.
 #+BEGIN_SRC emacs-lisp
 (setq rmail-display-summary t)
 
-(setq rmail-displayed-headers "^To:\\|From:\\|Date:\\Subject:")
+(setq rmail-displayed-headers "^To:\\|From:\\|Date:\\|Subject:")
 
 (setq rmail-summary-window-size 10)
 (setq rmail-summary-scroll-between-messages nil)

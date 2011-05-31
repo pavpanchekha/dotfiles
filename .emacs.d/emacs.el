@@ -106,7 +106,6 @@
 (setq org-agenda-files '("~/notes/"))
 (setq org-default-notes-file (concat org-directory "pavel.org"))
 
-(setq org-startup-indented t)
 (setq org-M-RET-may-split-line '((default)))
 
 (setq org-agenda-ndays 7)
@@ -200,10 +199,17 @@
 
 (setq sendmail-program "/usr/bin/msmtp")
 
-(setq rmail-display-summary t)
-(setq rmail-redisplay-summary t)
+(add-hook 'message-mode-hook
+          (lambda ()
+            (add-to-list 'message-hidden-headers "^In-Reply-To:")
+            (turn-on-orgstruct++)))
 
-(setq rmail-displayed-headers "^To:\\|From:\\|Date:\\Subject:")
+(setq message-directory "~/mail/")
+(setq mml-default-directory "~/mail/")
+
+(setq rmail-display-summary t)
+
+(setq rmail-displayed-headers "^To:\\|From:\\|Date:\\|Subject:")
 
 (setq rmail-summary-window-size 10)
 (setq rmail-summary-scroll-between-messages nil)
