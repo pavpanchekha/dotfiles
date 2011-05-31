@@ -1,0 +1,567 @@
+#+TITLE: Emacs Initialization Script
+
+All of my Emacs initialization is contained within this one Literate
+Babel file.  I use the Babel system in Org-mode to evaluate the code
+within on Emacs startup, which lets me write nice descriptive text for
+my code.  My =.emacs.d/init.el= file contains only:
+
+: (require 'org-install)
+: (require 'ob-tangle)
+: (mapc #'org-babel-load-file (directory-files "~/.emacs.d/" t "\\.org$"))
+
+More on this method can be found [[http://orgmode.org/worg/org-contrib/babel/intro.html#sec-8_2][in the Babel tutorial]].
+
+* Basic Initialization and Options
+** Personal Info
+Emacs uses some information all over the place, might as well tell it
+now.  This is, in particular, my name and email address.
+
+#+BEGIN_SRC emacs-lisp
+(setq user-full-name "Pavel Panchekha")
+(setq user-mail-address "me@pavpanchekha.com")
+#+END_SRC
+
+** File Information
+To make sure that Emacs can load some extra libraries that I've set
+up, I need to add my local =load-path= to the list.
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'load-path "~/.emacs.d/load-path")
+#+END_SRC
+
+Also, I like to keep my custom-set variables from poluting my other
+files, so I like to move the =custom-file=.
+
+#+BEGIN_SRC emacs-lisp
+(setq custom-file "~/.emacs.d/custom.el")
+(load custom-file 'noerror)
+#+END_SRC
+
+It's also important that score files are placed correctly (can't lose
+my tetris high scores!):
+
+#+BEGIN_SRC emacs-lisp
+(setq tetris-score-file "~/.emacs.d/scores/tetris")
+(setq snake-score-file  "~/.emacs.d/scores/snake")
+#+END_SRC
+
+** File Behavior
+Emacs has some stupid defaults, such as making those =file~= files and
+using tabs for indentation.  I also make Emacs add final newlines and
+to prompt me for only single characters (why is that default?).
+
+#+BEGIN_SRC emacs-lisp
+(setq make-backup-files nil)
+(setq-default indent-tabs-mode nil)
+(setq require-final-newline t)
+(fset 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+
+** Searching and Scrolling
+For searching, I enable highlighting as-I-search for both searches and
+search/replaces.  Also, searches are made case-insensitive.  For
+scrolling, I ask Emacs to scroll at most five lines at a time and to
+keep 5 lines between the cursor and the top/bottom of the page.
+
+#+BEGIN_SRC emacs-lisp
+(setq search-highlight t)
+(setq query-replace-highlight t)
+(setq case-fold-search t)
+
+(setq scroll-conservatively 5)
+(setq scroll-margin 5)
+#+END_SRC
+
+** Emacsclient configuration
+I want =emacsclient= files always to open in a new buffer --- that way
+unenlightened tools like Firefox, which do not allow arguments, can
+still have =emacsclient= set as their PDF viewer.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'server-switch-hook
+          (lambda nil
+            (let ((server-buf (current-buffer)))
+              (bury-buffer)
+              (switch-to-buffer-other-frame server-buf))))
+(add-hook 'server-done-hook
+          (lambda ()
+            (delete-frame)
+            (kill-buffer nil)))
+#+END_SRC
+
+* Key Bindings
+** Vim Key Bindings
+The most obvious key-binding setup is viper mode.
+
+#+BEGIN_SRC emacs-lisp
+  (setq viper-inhibit-startup-message t)
+  (setq viper-expert-level 5)
+  (setq viper-mode t)
+  
+  (require 'viper)
+#+END_SRC
+
+Viper mode is extended (with things like visual mode) in Vimpulse.  I
+add my personal load path because Vimpulse is not yet a part of the
+default Emacs distribution.
+
+#+BEGIN_SRC emacs-lisp
+(require 'vimpulse)
+#+END_SRC
+
+Finally, I really like the Vim-style =C-w h/j/k/l= key bindings for
+moving between windows, so I turn those on as well:
+
+#+BEGIN_SRC emacs-lisp
+(windmove-default-keybindings 'hyper)
+#+END_SRC
+
+** General
+I prefer to work with indented text at all times, so =RET= should be
+bound to =newline-and-indent=, and some terminals have problems with
+the delete key or something, so I keep the following bindings around
+as well.  The last line there make =C-k= kill the whole line.
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key [C-m] 'newline-and-indent)
+(global-set-key [delete] 'delete-char)
+(setq kill-whole-line t)
+#+END_SRC
+** =run= Command
+Normal boring definitions, just run a shell command.
+
+#+BEGIN_SRC emacs-lisp
+(defun run-command ()
+  (interactive)
+  (shell-command (concat "run " (buffer-file-name) " &")))
+
+(defun compile-command ()
+  (interactive)
+  (shell-command (concat "run -c " (buffer-file-name) " &")))
+#+END_SRC
+
+Then we attach them to =[f5]= and =[C-f5]= (because that's always the
+"run" keybinding)
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "<f5>") 'run-command)
+(global-set-key (kbd "C-<f5>") 'compile-command)
+#+END_SRC
+
+*** TODO Update these to use =(interactive)= over =(buffer-file-name)=
+
+** Doc-View (PDF Viewer)
+The PDF viewer is in sore need of Vim-style h/j/k/l movement keys
+
+#+BEGIN_SRC emacs-lisp
+(require 'doc-view)
+(define-key doc-view-mode-map (kbd "j") 'doc-view-next-line-or-next-page)
+(define-key doc-view-mode-map (kbd "k") 'doc-view-previous-line-or-previous-page)
+(define-key doc-view-mode-map (kbd "h") 'image-backward-hscroll)
+(define-key doc-view-mode-map (kbd "l") 'image-forward-hscroll)
+#+END_SRC
+
+* Mode-specific Behaviors
+** Text-like Modes
+Since I like Org-mode so much, I feel it should be default for text
+files.
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'auto-mode-alist '("\\.txt$" . org-mode))
+#+END_SRC
+
+Other modes I use quite a bit are Restructured Text (for writing
+Python code) and $\LaTeX$ (for class):
+
+#+BEGIN_SRC emacs-lisp
+(defun text-minor-modes ()
+  (interactive)
+  (auto-fill-mode)
+  (flyspell-mode))
+
+(add-hook 'text-mode-hook 'text-minor-modes)
+(add-hook 'LaTeX-mode-hook 'text-minor-modes)
+(add-hook 'org-mode-hook 'text-minor-modes)
+#+END_SRC
+
+Of course, if we're activating ISpell, we should set it up.  Firstly
+we want to tell it to use =ispell=, to check spelling against American
+English, and where my dictionary is.
+
+#+BEGIN_SRC emacs-lisp
+(setq ispell-program-name "/usr/bin/ispell")
+(setq ispell-dictionary "american")
+(setq ispell-personal-dictionary "~/.emacs.d/dict")
+#+END_SRC
+
+** LaTeX
+LaTeX requires a bit more setup, simply because *of course* I want
+AucTeX.
+
+#+BEGIN_SRC emacs-lisp
+(load "auctex.el" nil t t)
+(load "preview-latex.el" nil t t)
+#+END_SRC
+
+** Language Modes
+Some modes I just need to =(require)= in.  First, =load-path= need
+setting up.
+
+#+BEGIN_SRC emacs-lisp
+(setq load-path
+      (append load-path
+              '("/usr/share/emacs/site-lisp/clojure-mode"
+                "/usr/share/emacs/site-lisp/haskell-mode")))
+#+END_SRC
+
+Now we can require in Haskell and Clojure modes.
+
+#+BEGIN_SRC emacs-lisp
+(require 'haskell-mode)
+(require 'clojure-mode)
+#+END_SRC
+
+** Slime
+First, we tell Emacs where to find SLIME and load it.
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'load-path "/usr/share/emacs/site-lisp/slime")
+(require 'slime)
+#+END_SRC
+
+Slime needs to be tols where to find my specific Swank loader (I
+change what directory to dump FASLs in).  And, I set the Lisp to SBCL.
+
+#+BEGIN_SRC emacs-lisp
+(setq slime-backend "~/.emacs.d/slime/loader.lsp")
+(setq inferior-lisp-program "/usr/bin/sbcl")
+#+END_SRC
+
+Now Slime can be set up.
+
+#+BEGIN_SRC emacs-lisp
+(slime-setup)
+#+END_SRC
+** Org Mode
+We first include Org mode, and tell it which modules to use.
+
+#+BEGIN_SRC emacs-lisp
+(require 'org-install)
+
+(setq org-modules '(org-bibtex org-docview org-info org-jsinfo org-irc
+                    org-rmail org-w3m org-eshell))
+#+END_SRC
+
+First things first!  We should set up the file structure.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-directory "~/notes/")
+(setq org-agenda-files '("~/notes/"))
+(setq org-default-notes-file (concat org-directory "pavel.org"))
+#+END_SRC
+
+Let's throw in a very minor editing thing (Hitting =M-RET= shouldn't
+split a bullet point in two).
+
+#+BEGIN_SRC emacs-lisp
+(setq org-M-RET-may-split-line '((default)))
+#+END_SRC
+
+*** Agenda View
+I use the agenda view a lot, so we should customize it a bit.  The
+agenda should show seven days (including, yes, the ones without
+events); it shouldn't show me things I've done; and I won't worry
+about starting on a weekend or weekday.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-agenda-ndays 7)
+(setq org-agenda-show-all-dates t)
+(setq org-agenda-skip-deadline-if-done t)
+(setq org-agenda-skip-scheduled-if-done t)
+(setq org-agenda-start-on-weekday nil)
+#+END_SRC
+
+*** Todo Keywords
+I also have several possible workflows for TODO-style labels, so I add
+those keywords.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-todo-keywords '(
+        (sequence "TODO" "|" "DONE" "WAIT" "WONT")
+        (sequence "SOMEDAY" "|" "DONE")
+        (sequence "TODO" "READY" "CODED" "TESTED" "FIXED" "DONE")))
+#+END_SRC
+
+*** Entities
+Since I use things like \RR so often, I made them into entities, so that
+Org can typeset them nicely.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-pretty-entities t
+      org-entities-user '(("CC" "\\CC" t "&#8450;" "C" "C" "ℂ")
+                          ("FF" "\\FF" t "&#120125;" "F" "F" "𝔽")
+                          ("HH" "\\HH" t "&#8461;" "H" "H" "ℍ")
+                          ("NN" "\\NN" t "&#8469;" "N" "N" "ℕ")
+                          ("PP" "\\PP" t "&#8473;" "P" "P" "ℙ")
+                          ("QQ" "\\QQ" t "&#8474;" "Q" "Q" "ℚ")
+                          ("RR" "\\RR" t "&#8477;" "R" "R" "ℝ")
+                          ("ZZ" "\\ZZ" t "&#8484;" "Z" "Z" "ℤ")))
+#+END_SRC
+
+*** Keybindings
+Some keybindings are not bound by Org automatically, so I have to bind
+them myself.
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key "\C-cl" 'org-store-link)
+(global-set-key "\C-ca" 'org-agenda)
+(global-set-key "\C-cb" 'org-iswitchb)
+(global-set-key "\C-cc" 'org-capture)
+#+END_SRC
+
+* Magit
+Magit needs a =(require)= and an autoload.
+
+#+BEGIN_SRC emacs-lisp
+(require 'magit)
+(autoload 'magit-status "magit" nil)
+#+END_SRC
+
+* Doc-View
+I generally use doc-vew for long PDFs, so I find it best to have
+continuous scrolling.
+
+#+BEGIN_SRC emacs-lisp
+(setq doc-view-continuous t)
+#+END_SRC
+
+Also, I often end up zooming a lot on PDFs, so I like rendering them
+at high resolution.
+
+#+BEGIN_SRC emacs-lisp
+(setq doc-view-resolution 192)
+#+END_SRC
+
+* W3M Browser
+#+BEGIN_SRC emacs-lisp
+(require 'w3m)
+#+END_SRC
+
+First off, W3M should use UTF8 everywhere it can.
+
+#+BEGIN_SRC emacs-lisp
+(setq w3m-coding-system 'utf-8
+      w3m-default-coding-system 'utf-8
+      w3m-file-coding-system 'utf-8
+      w3m-file-name-coding-system 'utf-8
+      w3m-terminal-coding-system 'utf-8)
+#+END_SRC
+
+I change a few file locations.
+
+#+BEGIN_SRC emacs-lisp
+(setq w3m-default-save-directory "/tmp/")
+(setq w3m-icon-directory "/tmp/")
+#+END_SRC
+
+W3M has some features that are, for whatever reason, off by default
+(they're /experimental/; eh, work fine).
+
+#+BEGIN_SRC emacs-lisp
+(setq w3m-use-cookies t w3m-use-favicon t)
+#+END_SRC
+
+Finally I set up my homepage.
+
+#+BEGIN_SRC emacs-lisp
+(setq w3m-home-page "about:blank")
+#+END_SRC
+
+** Default Browser
+I prefer to set W3M as Emacs's default browser.
+
+#+BEGIN_SRC emacs-lisp
+(setq browse-url-browser-function 'w3m-browse-url)
+(autoload 'w3m-browse-url "w3m" "Ask a WWW browser to show a URL." t)
+#+END_SRC
+
+I also make a quick keybinding for browsing a URL.
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key "\C-xm" 'browse-url-at-point)
+#+END_SRC
+
+** Keybindings
+=f= for "follow" is a very nice and intuitive keybinding for following
+links.
+
+#+BEGIN_SRC emacs-lisp
+(define-key w3m-mode-map (kbd "f") 'w3m-view-this-url)
+(define-key w3m-mode-map (kbd "F") 'w3m-view-this-url-new-session)
+#+END_SRC
+
+I prefer there to be a key to enter a new URL, blank-slate; and =o=
+for "open" sounds like a good keybinding.
+
+#+BEGIN_SRC emacs-lisp
+(defun clean-slate-goto-url (url)
+  (interactive (list (w3m-input-url nil "" nil nil 'feeling-lucky)))
+  (w3m-goto-url url))
+
+(define-key w3m-mode-map (kbd "o")   'clean-slate-goto-url)
+(define-key w3m-mode-map (kbd "O")   'w3m-goto-url)
+(define-key w3m-mode-map (kbd "C-o") 'w3m-view-previous-page)
+#+END_SRC
+
+The symmetric operations should clearly exist for tabs.
+
+#+BEGIN_SRC emacs-lisp
+(defun clean-slate-goto-url-new-session (url)
+  (interactive (list (w3m-input-url nil "" nil nil 'feeling-lucky)))
+  (w3m-goto-url-new-session url))
+
+(define-key w3m-mode-map (kbd "t") 'clean-slate-goto-url-new-session)
+(define-key w3m-mode-map (kbd "T") 'w3m-goto-url-new-session)
+#+END_SRC
+
+=d= for "delete" is pretty common.
+
+#+BEGIN_SRC emacs-lisp
+(define-key w3m-mode-map (kbd "d") 'w3m-delete-buffer)
+#+END_SRC
+
+Finally, I try to implement Vim-style tab switching.  This is a bit
+more work...
+
+#+BEGIN_SRC emacs-lisp
+(define-prefix-command 'vim-tab-switching)
+(define-key w3m-mode-map (kbd "g") 'vim-tab-switching)
+
+(define-key vim-tab-switching "t" 'w3m-next-buffer)
+(define-key vim-tab-switching "T" 'w3m-previous-buffer)
+#+END_SRC
+
+Continuing on the Vim tradition, a good key for searching is =/=.
+
+#+BEGIN_SRC emacs-lisp
+(define-key w3m-mode-map "/" 'isearch-forward)
+#+END_SRC
+
+* RMail
+First of all, we'll be using the features of the =rmail-extras=
+package, so let's include that right off.
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'load-path "~/.emacs.d/load-path/")
+(require 'rmail-extras)
+#+END_SRC
+
+My setup is that I have an inbox at =~/mail/inbox.spool= that I fetch
+mail onto on my desktop.  So one should remove files from that.
+
+#+BEGIN_SRC emacs-lisp
+(setq rmail-default-file "~/mail/")
+(setq rmail-file-name "~/mail/inbox.spool")
+(setq rmail-preserve-inbox t)
+(setq mail-default-directory "~/mail/")
+#+END_SRC
+
+Also, I send mail with =msmtp=.
+
+#+BEGIN_SRC emacs-lisp
+(setq sendmail-program "/usr/bin/msmtp")
+#+END_SRC
+
+** Message Sending
+Firstly, I don't want to see the =In-Reply-To= header, so I add it to
+the list.
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'message-mode-hook
+            (lambda ()
+              (add-to-list 'message-hidden-headers "^In-Reply-To:")
+              (turn-on-orgstruct++)))
+  
+#+END_SRC
+
+There's also the issue of =message= creating drafts in the =~/Mail=
+folder; this is annoying since I don't generally have such a folder.
+So to make it stop, I change its default folder:
+
+#+BEGIN_SRC emacs-lisp
+(setq message-directory "~/mail/")
+(setq mml-default-directory "~/mail/")
+#+END_SRC
+
+** Summaries
+Some tweaking of the summary buffers takes place here.
+
+#+BEGIN_SRC emacs-lisp
+(setq rmail-display-summary t)
+
+(setq rmail-displayed-headers "^To:\\|From:\\|Date:\\|Subject:")
+
+(setq rmail-summary-window-size 10)
+(setq rmail-summary-scroll-between-messages nil)
+#+END_SRC
+
+** Linkify URLs
+Same basic code as elsewhere; useful given how often I'm sent links.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'rmail-show-message-hook (lambda () (goto-address-mode 1)))
+#+END_SRC
+
+** Archive
+The archive is a file, =~/mail/archive.spool=, where I save all
+emails.  The method for this is to write messages there before
+deletion.
+
+#+BEGIN_SRC emacs-lisp
+(defun rmail-archive ()
+  (interactive)
+  (rmail-output "~/mail/archive.spool")
+  (rmail-delete-forward))
+
+(defun rmail-toggle-view-archive ()
+  (interactive)
+  (delete-other-windows)
+  (if (or (string= (buffer-name) "inbox.spool")
+          (string= (buffer-name) "inbox.spool-summary"))
+    (rmail-input "~/mail/archive.spool")
+    (rmail-input "~/mail/inbox.spool")))
+#+END_SRC
+
+Of course, these need some keybindings:
+
+#+BEGIN_SRC emacs-lisp
+(define-key rmail-mode-map (kbd "d") 'rmail-archive)
+(define-key rmail-mode-map (kbd "D") 'rmail-delete-forward)
+(define-key rmail-mode-map (kbd "I") 'rmail-toggle-view-archive)
+
+(add-hook 'rmail-mode-hook
+          (lambda ()
+            (define-key rmail-summary-mode-map (kbd "d") 'rmail-archive)
+            (define-key rmail-summary-mode-map (kbd "D") 'rmail-delete-forward)
+            (define-key rmail-summary-mode-map (kbd "I") 'rmail-toggle-view-archive)))
+#+END_SRC
+
+This system has some downsides, in that lots of annoying things happen
+if the archive file is open in a buffer.
+
+*** TODO Fix bugs with the rmail archiving solution
+* Shells
+Eshell doesn't actually require that much prodding.  The only thing I
+do is change its directory.
+
+#+BEGIN_SRC emacs-lisp
+(setq eshell-directory-name "~/.emacs.d/eshell/")
+#+END_SRC
+
+Multiterm requires a bit more setup.
+
+#+BEGIN_SRC emacs-lisp
+(require 'multi-term)
+(setq multi-term-program "/usr/bin/fish")
+(add-to-list 'term-unbind-key-list "C-w")
+#+END_SRC
