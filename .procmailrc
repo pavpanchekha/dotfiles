@@ -1,33 +1,43 @@
 MAILDIR=$HOME/mail/
-DEFAULT=$HOME/mail/inbox.spool
-VERBOSE=off
+DEFAULT=$MAILDIR/inbox.spool
 LOGFILE=/tmp/procmail.log
 
-:0f
-* ^Subject: .*\[Reuse\]
-| formail -a "X-RMAIL-KEYWORDS: reuse"
 
-:0f
-* ^Subject: .*\[Remind-Fans\]
-| formail -a "X-RMAIL-KEYWORDS: remind"
+:0
+* ^(To|Cc): .*reuse@mit.edu
+{
+    :0f
+    | formail -a 'X-RMAIL-KEYWORDS: reuse'
+    
+    :0:
+    archive.spool
+}
 
-:0f
-* ^To: amun-web-list@lists.academymodelun.org
-| formail -a "X-RMAIL-KEYWORDS: amun"
+:0
+* ^(To|Cc): .*@racket-lang.org
+{
+    :0f
+    | formail -a 'X-RMAIL-KEYWORDS: racket'
+    
+    :0:
+    archive.spool
+}
 
-:0f
+:0
 * ^(To|Cc): .*lisp-hug@lispworks.com
-| formail -a "X-RMAIL-KEYWORDS: lisp"
+{
+    :0f
+    | formail -a 'X-RMAIL-KEYWORDS: lisp'
+    
+    :0:
+    archive.spool
+}
 
 :0f
 * ^(To|Cc): .*esp.*@mit.edu
-| formail -a "X-RMAIL-KEYWORDS: esp"
-
-:0f
-* ^(To|Cc): .*@racket-lang.org
-| formail -a "X-RMAIL-KEYWORDS: racket"
+| formail -a 'X-RMAIL-KEYWORDS: esp'
 
 :0f
 * ^(To|Cc): .*hmmt.*@mit.edu
-| formail -a "X-RMAIL-KEYWORDS: hmmt"
+| formail -a 'X-RMAIL-KEYWORDS: hmmt'
 
