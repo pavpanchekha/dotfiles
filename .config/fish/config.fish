@@ -16,6 +16,9 @@ end
 function fish_greeting -d "Silence the greeting"
 end
 
+function fish_title -d "Emacs doesn't like title changing"
+end
+
 function fish_prompt -d "Display the prompt"
     printf '%s%s%s:$> ' (set_color $fish_color_cwd) (prompt_pwd) (set_color normal)
 end
