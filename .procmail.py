@@ -5,24 +5,28 @@ set:MAILDIR    val:$HOME/mail/
 set:DEFAULT    val:$MAILDIR/inbox.spool
 set:LOGFILE    val:/tmp/procmail.log
 
+archive:
+
 to:reuse@mit.edu \
-    keyword:reuse  archive:
+    keyword:reuse
 to:@racket-lang.org \
-    keyword:racket archive:
+    keyword:racket
 to:lisp-hug@lispworks.com \
-    keyword:lisp   archive:
+    keyword:lisp
 to:esp.*@mit.edu \
     keyword:esp
+to:ruscon@mit.edu \
+    keyword:rusclub
 to:hmmt.*@mit.edu \
     keyword:hmmt
+subject:\[LSC \
+    keyword:lsc
 """
 
-def action(condition, keyword=None, archive=None):
+def action(condition, keyword=None):
     actions = []
     if keyword is not None:
         actions.append(("f", "| formail -a 'X-RMAIL-KEYWORDS: %s'" % keyword))
-    if archive is not None:
-        actions.append((":", "archive.spool"))
     
     if len(actions) == 1:
         return ":0%(flags)s\n%(condition)s\n%(action)s\n" % \
@@ -48,8 +52,16 @@ def to(email, **kwargs):
     return action("* ^(To|Cc): .*%s" % email, **kwargs)
 
 @command
+def subject(email, **kwargs):
+    return action("* ^Subject: .*%s" % email, **kwargs)
+
+@command
 def set(variable, val=""):
     return "%s=%s" % (variable, val)
+
+@command
+def archive(_):
+    return ":0c\narchive.spool"
 
 lines = DATA.strip().replace("\\\n", "").split("\n")
 for line in lines:
