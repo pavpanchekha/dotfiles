@@ -11,6 +11,7 @@
 .pulse
 .ecryptfs
 .Skype
+.pki
 
 .xsession-errors*
 .recently-used*

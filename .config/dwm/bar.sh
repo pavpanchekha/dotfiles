@@ -5,7 +5,11 @@ print() {
 
 email() {
     local A
-    A=`cat mail/inbox.spool | grep ^From\  | wc -l`
+    if [[ ! -d "$HOME/mail/inbox/new" ]]; then
+        return
+    fi
+
+    A=`ls ~/mail/inbox/new  | wc -l`
 
     if [[ -z "$A" || "$A" = "0" ]]; then
         return

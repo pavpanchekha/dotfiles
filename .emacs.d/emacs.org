@@ -44,8 +44,8 @@ programmer patience.
 
 #+BEGIN_SRC emacs-lisp
 (setq inhibit-startup-screen t)
-(setq tool-bar-mode nil)
-(setq scroll-bar-mode nil)
+(set-scroll-bar-mode nil)
+(tool-bar-mode nil)
 #+END_SRC
 
 I'm not yet pro enough to forsake =menu-bar-mode=, though one day I'll
@@ -64,7 +64,7 @@ display the time, and for the position display, have it give the column
 number and file size:
 
 #+BEGIN_SRC emacs-lisp
-(setq display-time-mode t)
+(display-time-mode t)
 (setq column-number-mode t)
 (setq size-indication-mode t)
 #+END_SRC
@@ -617,6 +617,113 @@ Of course, these need some keybindings:
             (define-key rmail-summary-mode-map (kbd "I") 'rmail-toggle-view-archive)))
 #+END_SRC
 
+* Gnus
+
+I'm slowly trying to switch over to Gnus as my mail reader, given how
+powerful people say it is.  The below is a configuration I stole from
+the Internet[fn:where] which tells Gnus where to get my mail
+
+#+BEGIN_SRC emacs-lisp
+(setq mail-sources '((maildir :path "~/mail/inbox")))
+(setq mail-source-delete-incoming t)
+#+END_SRC
+
+We also want to explain to Gnus where to fine mail.  This is the
+inverse operation.  We're going to tell Gnus to use the =ml= format;
+one file per message seems cleanest.
+
+#+BEGIN_SRC emacs-lisp
+(setq gnus-select-method '(nntp "news"))
+(setq gnus-secondary-select-methods
+  '((nnml ""
+     (nnml-directory "~/mail/")
+     (nnml-active-file "~/mail/active")
+     (nnml-get-new-mail t))))
+#+END_SRC
+
+Archiving emails is different; it is put by-group into the "archive"
+folder".
+
+#+BEGIN_SRC emacs-lisp
+(setq gnus-message-archive-method
+      '(nnfolder "archive"
+		 (nnfolder-directory    "~/mail/archive")
+		 (nnfolder-active-file  "~/mail/archive/active")
+		 (nnfolder-get-new-mail nil)))
+#+END_SRC
+
+[fn:where] http://neverbow.blogspot.com/2006/09/gnus-works-with-fetchmail.html
+
+* Jabber
+
+=jabber.el= is a great, great invention: it lets me view my Google
+Chat in Emacs!  Require it, post-haste!
+
+#+BEGIN_SRC emacs-lisp
+(require 'jabber)
+#+END_SRC
+
+I also give =jabber.el= my account details.
+
+#+BEGIN_SRC emacs-lisp
+; Some variables
+(setq jabber-account-list '(("pavpanchekha@gmail.com" 
+                             (:network-server . "talk.google.com") 
+                             (:connection-type . ssl))))
+#+END_SRC
+
+Now, =jabber.el= has a bunch of honestly very odd defaults.  Firstly,
+it tries to store avatars somewhere in my home folder.  Yep, more
+shit there is definitely what I need.
+
+#+BEGIN_SRC emacs-lisp
+(setq jabber-avatar-cache-directory "/tmp/jabber-avatars")
+#+END_SRC
+
+The default prompts are just awefully wordy.  We fix this.
+
+#+BEGIN_SRC emacs-lisp
+(setq jabber-chat-buffer-show-avatar nil
+      jabber-chat-foreign-prompt-format "> "
+      jabber-chat-local-prompt-format "> "
+      jabber-chat-system-prompt-format "*** "
+      jabber-chat-time-format "%H:%M"
+      jabber-default-show ""
+      jabber-groupchat-prompt-format "%n> "
+      jabber-muc-private-foreign-prompt-format "%g/%n> ")
+#+END_SRC
+
+There are also some assorted variables over here.  One day I'll
+document them better.
+
+#+BEGIN_SRC emacs-lisp
+(setq jabber-backlog-days 3.0
+      jabber-roster-line-format "%c %-25n %u %-8s  %S"
+      jabber-roster-show-title nil
+      jabber-show-offline-contacts nil)
+#+END_SRC
+
+Some faces I want to set to make chatting more pleasant.
+
+#+BEGIN_SRC emacs-lisp
+(custom-set-faces
+ '(jabber-chat-prompt-foreign ((t (:foreground "red"))))
+ '(jabber-chat-prompt-local ((t (:foreground "blue"))))
+ '(jabber-chat-prompt-system ((t (:foreground "dark green" :weight bold))))
+ '(jabber-roster-user-away ((t (:foreground "orange"))))
+ '(jabber-roster-user-chatty ((t (:foreground "green"))))
+ '(jabber-roster-user-online ((t (:foreground "dark green")))))
+#+END_SRC
+
+Lastly, I sometimes IM my friends URLs, and it's nice to make them all
+hyperlinky.
+
+#+BEGIN_SRC emacs-lisp
+; Auto-urlize urls
+(add-hook 'jabber-chat-mode-hook 'goto-address)
+(jabber-connect-all)
+#+END_SRC
+
 * Shells
 ** Eshell
 
@@ -644,4 +751,45 @@ For simplicity, I also add the =mterm= command to just call
 (defun mterm ()
   (interactive)
   (multi-term))
+#+END_SRC
+* Pianobar
+
+I currently use Pianobar to listen to my music. To do that from Emacs,
+I use the wonderful [[http://www.emacswiki.org/emacs/pianobar.el][=pianobar.el=]].
+
+#+BEGIN_SRC emacs-lisp
+(autoload 'pianobar "pianobar" nil t)
+#+END_SRC
+
+I don't give it my password (since this =emacs.org= file goes
+online...) but I do set my username and station.
+
+#+BEGIN_SRC emacs-lisp
+(setq pianobar-username "pavpanchekha@gmail.com")
+(setq pianobar-station "2")
+(defadvice pianobar (before query-password activate)
+  "Queries me for my password to pianobar"
+  ; Warning: purposely dynamic scoping!!!
+  (setq pianobar-password (read-passwd "Pianobar password: ")))
+#+END_SRC
+
+* Meta
+
+I actually edit my Emacs configuration a lot.  I call it "cultivating"
+my Emacs configuration.  So here are some utility functions for that.
+
+The first function just reloads the Emacs configuration.
+
+#+BEGIN_SRC emacs-lisp
+(defun reconfigure ()
+  (interactive)
+  (load-file "~/.emacs.d/init.el"))
+#+END_SRC
+
+The second function opens the configuration up for editing.
+
+#+BEGIN_SRC emacs-lisp
+(defun edconfigure ()
+  (interactive)
+  (find-file "~/.emacs.d/emacs.org"))
 #+END_SRC
