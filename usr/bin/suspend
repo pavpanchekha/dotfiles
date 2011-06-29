@@ -1,0 +1,9 @@
+#!/bin/bash
+
+slock &
+
+if [[ "$1" == "-h" ]]; then
+    sudo pm-hibernate
+else
+    sudo pm-suspend
+fi
