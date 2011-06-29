@@ -471,6 +471,9 @@ Magit needs a =(require)= and an autoload.
 
 * W3M Browser
 
+W3M is a nice web browser to use for tasks such as reading Hacker
+News.  If it got a bit more love, it would be perfect...
+
 #+BEGIN_SRC emacs-lisp
 (require 'w3m)
 #+END_SRC
@@ -585,42 +588,50 @@ Continuing on the Vim tradition, a good key for searching is =/=.
 (define-key w3m-mode-map "/" 'isearch-forward)
 #+END_SRC
 
-* RMail
+* Gnus
 
-First of all, we'll be using the features of the =rmail-extras=
-package, so let's include that right off.
-
-#+BEGIN_SRC emacs-lisp
-(add-to-list 'load-path "~/.emacs.d/load-path/")
-(require 'rmail-extras)
-#+END_SRC
-
-My setup is that I have an inbox at =~/mail/inbox.spool= that I fetch
-mail onto on my desktop.  So one should remove files from that.
+I'm slowly trying to switch over to Gnus as my mail reader, given how
+powerful people say it is.  The below is a configuration I stole from
+the Internet[fn:where] which tells Gnus where to get my mail...
 
 #+BEGIN_SRC emacs-lisp
-(setq rmail-default-file "~/mail/")
-(setq rmail-file-name "~/mail/inbox.spool")
-(setq rmail-preserve-inbox t)
+(setq mail-sources '((maildir :path "~/mail/inbox")))
+(setq mail-source-delete-incoming t)
 (setq mail-default-directory "~/mail/")
 #+END_SRC
 
-Also, I send mail with =msmtp=.
+... and how to send it.
 
 #+BEGIN_SRC emacs-lisp
 (setq sendmail-program "/usr/bin/msmtp")
 #+END_SRC
 
+We also want to explain to Gnus where to put mail.  This is the
+inverse operation of the above.  We're going to tell Gnus to use the
+=ml= format; one file per message seems cleanest.
+
+#+BEGIN_SRC emacs-lisp
+(setq gnus-select-method '(nntp "news"))
+(setq gnus-secondary-select-methods
+  '((nnml ""
+     (nnml-directory "~/mail/")
+     (nnml-active-file "~/mail/active")
+     (nnml-get-new-mail t))))
+#+END_SRC
+
+[fn:where] http://neverbow.blogspot.com/2006/09/gnus-works-with-fetchmail.html
+
 ** Message Sending
+
 Firstly, I don't want to see the =In-Reply-To= header, so I add it to
 the list.
 
 #+BEGIN_SRC emacs-lisp
-  (add-hook 'message-mode-hook
-            (lambda ()
-              (add-to-list 'message-hidden-headers "^In-Reply-To:")
-              (visual-line-mode)))
-  
+(add-hook 'message-mode-hook
+          (lambda ()
+            (add-to-list 'message-hidden-headers "^In-Reply-To:")
+            (visual-line-mode)))
+
 #+END_SRC
 
 There's also the issue of =message= creating drafts in the =~/Mail=
@@ -632,74 +643,7 @@ So to make it stop, I change its default folder:
 (setq mml-default-directory "~/mail/")
 #+END_SRC
 
-** Summaries
-Some tweaking of the summary buffers takes place here.
-
-#+BEGIN_SRC emacs-lisp
-(setq rmail-display-summary t)
-
-(setq rmail-displayed-headers "^To:\\|From:\\|Date:\\|Subject:")
-
-(setq rmail-summary-window-size 10)
-(setq rmail-summary-scroll-between-messages nil)
-#+END_SRC
-
-** Linkify URLs
-Same basic code as elsewhere; useful given how often I'm sent links.
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'rmail-show-message-hook (lambda () (goto-address-mode 1)))
-#+END_SRC
-
-** Archive
-
-The archive is a file, =~/mail/archive.spool=, where I save all
-emails.  The method for this is to write messages there before
-deletion.
-
-#+BEGIN_SRC emacs-lisp
-(defun rmail-toggle-view-archive ()
-  (interactive)
-  (delete-other-windows)
-  (if (or (string= (buffer-name) "inbox.spool")
-          (string= (buffer-name) "inbox.spool-summary"))
-    (rmail-input "~/mail/archive.spool")
-    (rmail-input "~/mail/inbox.spool")))
-#+END_SRC
-
-Of course, these need some keybindings:
-
-#+BEGIN_SRC emacs-lisp
-(define-key rmail-mode-map (kbd "I") 'rmail-toggle-view-archive)
-
-(add-hook 'rmail-mode-hook
-          (lambda ()
-            (define-key rmail-summary-mode-map (kbd "I") 'rmail-toggle-view-archive)))
-#+END_SRC
-
-* Gnus
-
-I'm slowly trying to switch over to Gnus as my mail reader, given how
-powerful people say it is.  The below is a configuration I stole from
-the Internet[fn:where] which tells Gnus where to get my mail
-
-#+BEGIN_SRC emacs-lisp
-(setq mail-sources '((maildir :path "~/mail/inbox")))
-(setq mail-source-delete-incoming t)
-#+END_SRC
-
-We also want to explain to Gnus where to fine mail.  This is the
-inverse operation.  We're going to tell Gnus to use the =ml= format;
-one file per message seems cleanest.
-
-#+BEGIN_SRC emacs-lisp
-(setq gnus-select-method '(nntp "news"))
-(setq gnus-secondary-select-methods
-  '((nnml ""
-     (nnml-directory "~/mail/")
-     (nnml-active-file "~/mail/active")
-     (nnml-get-new-mail t))))
-#+END_SRC
+** Archiving
 
 Archiving emails is different; it is put by-group into the "archive"
 folder".
@@ -712,7 +656,33 @@ folder".
 		 (nnfolder-get-new-mail nil)))
 #+END_SRC
 
-[fn:where] http://neverbow.blogspot.com/2006/09/gnus-works-with-fetchmail.html
+** Splitting
+
+Since I subscribe to several lists, I need Gnus to split my mail for me.
+
+#+BEGIN_SRC emacs-lisp
+  (setq nnmail-split-methods
+    '(("racket"   "^(To\\|Cc): .*@racket-lang.org")
+      ("lisp-hug" "^(To\\|Cc): .*lisp-hug@lispworks.com")
+      ("reuse"    "^(To\\|Cc): .*reuse(-.*)?@mit.edu")
+      ("esp"      "^(To\\|Cc): .*esp(-.*)?@mit.edu")
+      ("ruscon"   "^(To\\|Cc): .*ruscon@mit.edu")
+      ("hmmt"     "^(To\\|Cc): .*hmmt(-.*)?@mit.edu")
+      ("lsc"      "^Subject: .*\\[LSC")
+      ("inbox"    "")))
+#+END_SRC
+
+* BBDB
+
+I use the Big Brother Database for storing contact, so I've gotta
+require it in.  Given my heavy Gnus use, I obviously tell BBDB to load
+up Gnus support.
+
+#+BEGIN_SRC emacs-lisp
+(require 'bbdb)
+(bbdb-initialize 'gnus 'message)
+(bbdb-insinuate-gnus)
+#+END_SRC
 
 * Jabber
 
