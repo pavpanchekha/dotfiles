@@ -380,8 +380,7 @@ We first include Org mode, and tell it which modules to use.
 #+BEGIN_SRC emacs-lisp
 (require 'org-install)
 
-(setq org-modules '(org-bibtex org-docview org-info org-jsinfo org-irc
-                    org-rmail org-w3m org-eshell))
+(setq org-modules '(org-docview org-jsinfo org-irc org-gnus org-w3m))
 #+END_SRC
 
 First things first!  We should set up the file structure.
@@ -400,10 +399,11 @@ split a bullet point in two).
 #+END_SRC
 
 ** Agenda View
-I use the agenda view a lot, so we should customize it a bit.  The
-agenda should show seven days (including, yes, the ones without
-events); it shouldn't show me things I've done; and I won't worry
-about starting on a weekend or weekday.
+
+I use the agenda view a lot, so I customize it a bit.  The agenda
+should show seven days (including, yes, the ones without events); it
+shouldn't show me things I've done; and I won't worry about starting
+on a weekend or weekday.
 
 #+BEGIN_SRC emacs-lisp
 (setq org-agenda-ndays 7)
@@ -413,18 +413,12 @@ about starting on a weekend or weekday.
 (setq org-agenda-start-on-weekday nil)
 #+END_SRC
 
-** Templates
+** TODO Templates
 
 Org-capture is what I use for editing templated events (it's so much
-nicer than the old =remember= system...)
-
-#+BEGIN_SRC emacs-lisp
-(setq org-capture-templates
-      '(("e" "Event" entry (file "~/notes/events.org")
-         "* %^{Description} %^t" :prepend t :immediate-finish t)
-        ("t" "Todo Entry" entry (file "~/notes/pavel.org")
-         "* TODO %^{Description}" :prepend t :immediate-finish t)))
-#+END_SRC
+nicer than the old =remember= system...)  Unfortunately, I've been
+reorganizing recently, so all of my old templates are gone, the above
+TODO in their place.
 
 ** Todo Keywords
 I also have several possible workflows for TODO-style labels, so I add
@@ -432,9 +426,7 @@ those keywords.
 
 #+BEGIN_SRC emacs-lisp
 (setq org-todo-keywords '(
-        (sequence "TODO" "|" "DONE" "WAIT" "WONT")
-        (sequence "SOMEDAY" "|" "DONE")
-        (sequence "TODO" "READY" "CODED" "TESTED" "FIXED" "DONE")))
+        (sequence "TODO" "SOMEDAY" "MORE" "|" "DONE" "WAIT" "WONT")))
 #+END_SRC
 
 ** Entities
@@ -460,7 +452,6 @@ them myself.
 #+BEGIN_SRC emacs-lisp
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)
-(global-set-key "\C-cb" 'org-iswitchb)
 (global-set-key "\C-cc" 'org-capture)
 #+END_SRC
 
