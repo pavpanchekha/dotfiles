@@ -783,7 +783,6 @@ Multiterm requires a bit more setup.
 #+BEGIN_SRC emacs-lisp
 (require 'multi-term)
 (setq multi-term-program "/usr/bin/fish")
-(add-to-list 'term-unbind-key-list "C-w")
 #+END_SRC
 
 For simplicity, I also add the =mterm= command to just call
@@ -794,6 +793,20 @@ For simplicity, I also add the =mterm= command to just call
   (interactive)
   (multi-term))
 #+END_SRC
+
+One annoyance is that the screen bounces in multi-term due to my
+=scroll-margin=.  But there's a solution: file-local variables.  We
+attach a handler to =term-mode-hook= that makes =scroll-margin= local
+and then sets it to =0=.  Because =make-local-variable= returns the
+variable (as a symbol), we can call =set= (that's right: not =setq=,
+but =set=, since we already have the variable quoted for us) to set
+it.
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'term-mode-hook (lambda ()
+  (set (make-local-variable 'scroll-margin) 0)))
+#+END_SRC
+
 * Pianobar
 
 I currently use Pianobar to listen to my music. To do that from Emacs,
