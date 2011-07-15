@@ -661,15 +661,15 @@ folder".
 Since I subscribe to several lists, I need Gnus to split my mail for me.
 
 #+BEGIN_SRC emacs-lisp
-  (setq nnmail-split-methods
-    '(("racket"   "^(To\\|Cc): .*@racket-lang.org")
-      ("lisp-hug" "^(To\\|Cc): .*lisp-hug@lispworks.com")
-      ("reuse"    "^(To\\|Cc): .*reuse(-.*)?@mit.edu")
-      ("esp"      "^(To\\|Cc): .*esp(-.*)?@mit.edu")
-      ("ruscon"   "^(To\\|Cc): .*ruscon@mit.edu")
-      ("hmmt"     "^(To\\|Cc): .*hmmt(-.*)?@mit.edu")
-      ("lsc"      "^Subject: .*\\[LSC")
-      ("inbox"    "")))
+(setq nnmail-split-methods
+  '(("racket"   "^\\(To\\|Cc\\):.*@racket-lang.org")
+    ("lisp-hug" "^\\(To\\|Cc\\):.*lisp-hug@lispworks.com")
+    ("reuse"    "^\\(To\\|Cc\\):.*reuse.*@mit.edu")
+    ("esp"      "^\\(To\\|Cc\\):.*esp.*@mit.edu")
+    ("ruscon"   "^\\(To\\|Cc\\):.*ruscon@mit.edu")
+    ("hmmt"     "^\\(To\\|Cc\\):.*hmmt.*@mit.edu")
+    ("lsc"      "^Subject:.*[LSC")
+    ("inbox"    "")))
 #+END_SRC
 
 * BBDB
@@ -681,7 +681,14 @@ up Gnus support.
 #+BEGIN_SRC emacs-lisp
 (require 'bbdb)
 (bbdb-initialize 'gnus 'message)
-(bbdb-insinuate-gnus)
+(add-hook 'gnus-startup-hook 'bbdb-insinuate-gnus)
+#+END_SRC
+
+I want BBDB to automatically notice people I actually send mail to.
+
+#+BEGIN_SRC emacs-lisp
+(setq bbdb/mail-auto-create-p t)
+(setq bbdb-notice-hook '(bbdb-auto-notes-hook))
 #+END_SRC
 
 * Jabber
