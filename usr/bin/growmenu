@@ -27,5 +27,5 @@ else
     else
         echo `first $RESPONSE` >> "$FILE"
     fi
-    $RESPONSE &disown
+    exec $RESPONSE &disown
 fi
