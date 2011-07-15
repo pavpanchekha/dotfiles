@@ -2,41 +2,22 @@ own_window yes
 own_window_transparent yes
 own_window_type override
 
+maximum_width 800
 double_buffer yes
 
 update_interval 3.0
-minimum_size 370
-maximum_width 370
-uppercase no
 use_xft yes
 xftfont Terminus:size=15
 
-no_buffers yes
-text_buffer_size 10000
-alignment tr
-
-gap_x 20
-gap_y 30
+text_buffer_size 4096
+alignment mm
 
 TEXT
-${color orange}CPU ${hr 2}$color
-${freq}MHz ${alignr} ${loadavg}
-$cpubar
-${cpugraph 000000 ffffff}
-NAME               CPU     MEM
-${top name 1} ${top cpu 1} ${top mem 1}
-${top name 2} ${top cpu 2} ${top mem 2}
+${font bold:size=24}${time %A, %m %B} $alignr ${time %H:%M}$font
+${color light grey}
+CPU:  $cpu% ${cpubar 6}
+RAM:  $memperc% ${membar 6}
 
-${color orange}MEMORY ${hr 2}$color
-RAM:  $memperc% ${membar 6}$color
+${hr 2}
 
-${color orange}DISK ${hr 2}$color
-/     ${fs_free_perc /}% ${fs_bar 6 /}$color
-/home ${fs_free_perc /home}% ${fs_bar 6 /home}$color
-
-${color orange}FORTUNE ${hr 2}$color
-${execi 600 fortune -s | tr "\n" " " | sed -r 's/[[:space:]]+/ /' | fold -w38 -s}
-
-${color orange}Hacker News ${hr 2}$color
-
-${execi 600 hn 4}
+${execi 600 fortune -s}
