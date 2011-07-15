@@ -452,7 +452,7 @@ there are lots of sites W3M just doesn't work that well on.
 
 #+BEGIN_SRC emacs-lisp
 (setq browse-url-browser-function 'browse-url-generic)
-(setq browse-url-generic-program "chromium")
+(setq browse-url-generic-program "google-chrome")
 #+END_SRC
 
 However, I still like the ability to throw open W3M easily.
