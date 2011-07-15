@@ -13,7 +13,8 @@ synclient JumpyCursorThreshold=100
 # Applications
 dropbox start
 conky -d
-xflux -z 02142
+xflux -z 94701
+fetchmail -d60
 
 bash $HOME/.config/dwm/bar.sh &disown
 exec ssh-agent dwm
