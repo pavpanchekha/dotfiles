@@ -140,11 +140,71 @@ default Emacs distribution.
 (require 'vimpulse)
 #+END_SRC
 
-Finally, I really like the Vim-style =C-w h/j/k/l= key bindings for
-moving between windows, so I turn those on as well:
+Another key binding I really miss from Vim is the spelling key
+bindings =zg= and =z==.  I can add them back with Vimpulse's
+=vimpulse-map=; I make them hook into ispell (which I like much better
+than Vim's system, actually, since I can see context as I correct).
 
 #+BEGIN_SRC emacs-lisp
-(windmove-default-keybindings 'hyper)
+(vimpulse-map "z=" 'ispell-word)
+(vimpulse-map "zg" 'ispell-insert-word)
+#+END_SRC
+
+** Ispell =ispell-insert-word=
+
+Above, I mapped =zg= to =ispell-insert-word=.  Unfortunately,
+=ispell-insert-word= doesn't exist.  So, we write our own.
+
+#+BEGIN_SRC emacs-lisp
+(defun ispell-insert-word (word &optional following)
+#+END_SRC
+
+First, we need to *get* the current word.  It seems semantically
+correct to do so inside =(interactive)=.  We don't need to explicitly
+use =ispell-following-word=, since =ispell-get-word= does this for us.
+=ispell-get-word= returns a list of =word=, =start=, =end= (though its
+documentation certainly doesn't hint at such), so we call =car= to
+extract the word itself.
+
+#+BEGIN_SRC emacs-lisp
+  (interactive (car (ispell-get-word following)))
+#+END_SRC
+
+Now we can call =ispell-send-string=.  Its documentation is pretty
+weak (and that's if I want to be nice), but from reading the code of
+=ispell-command-loop= (search for =?i=), it seems like we want to send
+=*word\n=, where =word= is the word in question.
+
+#+BEGIN_SRC emacs-lisp
+  (ispell-send-string (concat "*" word "\n"))
+#+END_SRC
+
+Finally, since we modified the dictionary, we want to save it.  To be
+nice, we're going to first mark the dictionary as modified.  We only
+want to force a save, though, if the dictionary was clean before-hand,
+so we save the old value.
+
+#+BEGIN_SRC emacs-lisp
+  (let ((old-ispell-pdict-modified-p ispell-pdict-modified-p))
+    (setq ispell-pdict-modified-p '(t))
+#+END_SRC
+
+And finally, we want force a save if necessary.  The "if necessary"
+part is actually annoyingly complicated...
+
+#+BEGIN_SRC emacs-lisp
+    (when (or (and old-ispell-pdict-modified-p
+                   (listp old-ispell-pdict-modified-p)
+                   (car ispell-pdict-modified-p))
+              (and ispell-pdict-modified-p
+                   (not (listp (ispell-pdict-modified-p)))))
+#+END_SRC
+
+But once that's out of the way, we can just call =ispell-pdict-save=
+with =no-query=.
+
+#+BEGIN_SRC emacs-lisp
+      (ispell-pdict-save t))))
 #+END_SRC
 
 ** General
