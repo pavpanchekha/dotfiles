@@ -40,12 +40,14 @@ files, so I like to move the =custom-file=.
 * GUI Settings
 
 Some things Emacs does by default just use up screen real estate and
-programmer patience.
+programmer patience.  Note that =tool-bar-mode= requires a *nonzero*
+parameter, not a true parameter, to display the toolbar.  This is
+absolutely absurd, but what can one do?
 
 #+BEGIN_SRC emacs-lisp
 (setq inhibit-startup-screen t)
 (set-scroll-bar-mode nil)
-(tool-bar-mode nil)
+(tool-bar-mode 0)
 #+END_SRC
 
 I'm not yet pro enough to forsake =menu-bar-mode=, though one day I'll
@@ -104,6 +106,17 @@ to prompt me for only single characters (why is that default?).
 (setq require-final-newline t)
 (fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
+
+Also, I often have multiple buffers open with the same name.  Emacs
+usually deals with this by appending the buffer number to the buffer
+name.  This is hard to keep track of.  Instead, the =uniquify= library
+uses the parent directory name, which I usually know.
+
+#+BEGIN_SRC emacs-lisp
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'post-forward-angle-brackets)
+#+END_SRC
+
 ** Searching and Scrolling
 For searching, I enable highlighting as-I-search for both searches and
 search/replaces.  Also, searches are made case-insensitive.  
@@ -717,7 +730,7 @@ shit there is definitely what I need.
 (setq jabber-avatar-cache-directory "/tmp/jabber-avatars")
 #+END_SRC
 
-The default prompts are just awefully wordy.  We fix this.
+The default prompts are just awfully wordy.  We fix this.
 
 #+BEGIN_SRC emacs-lisp
 (setq jabber-chat-buffer-show-avatar nil
@@ -735,8 +748,9 @@ document them better.
 
 #+BEGIN_SRC emacs-lisp
 (setq jabber-backlog-days 3.0
-      jabber-roster-line-format "%c %-25n %u %-8s  %S"
+      jabber-roster-line-format "%c %-25n %u %-8s"
       jabber-roster-show-title nil
+      jabber-show-resources nil
       jabber-show-offline-contacts nil)
 #+END_SRC
 
