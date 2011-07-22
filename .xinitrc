@@ -4,7 +4,7 @@ export PATH="$PATH:$HOME/usr/bin"
 
 # X server stuff
 xbindkeys
-xmodmap .keys
+xmodmap .config/xmodmap
 xsetroot -solid '#000000'
 
 # Laptop Stuff
