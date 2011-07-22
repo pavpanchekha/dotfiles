@@ -648,15 +648,46 @@ inverse operation of the above.  We're going to tell Gnus to use the
 =ml= format; one file per message seems cleanest.
 
 #+BEGIN_SRC emacs-lisp
-(setq gnus-select-method '(nntp "news"))
-(setq gnus-secondary-select-methods
-  '((nnml ""
+(setq gnus-select-method
+  '(nnml ""
      (nnml-directory "~/mail/")
      (nnml-active-file "~/mail/active")
-     (nnml-get-new-mail t))))
+     (nnml-get-new-mail t)))
 #+END_SRC
 
 [fn:where] http://neverbow.blogspot.com/2006/09/gnus-works-with-fetchmail.html
+
+** File Locations
+
+Gnus' spewing of files all over my directory tree infuriates me.  A
+bunch of variables need to get set to fix that.
+
+The first and most important one eliminates the =~/News= folder.  I
+use Gnus for mail, not news, and I like my folders lower-cased.
+
+#+BEGIN_SRC emacs-lisp
+(setq gnus-directory "~/mail")
+#+END_SRC
+
+Since I don't actually use newsgroups from Usenet (and who does
+anymore), the =.newsrc= file is useless.
+
+#+BEGIN_SRC emacs-lisp
+(setq gnus-save-newsrc-file nil)
+#+END_SRC
+
+Finally, we can move that file so as not to clutter our home
+directory.
+
+#+BEGIN_SRC emacs-lisp
+(setq gnus-startup-file "~/.emacs.d/newsrc")
+#+END_SRC
+
+=nnmail= also needs its own cache file.  Move that to =.emacs.d=:
+
+#+BEGIN_SRC emacs-lisp
+(setq nnmail-message-id-cache-file "~/.emacs.d/nnmail-cache")
+#+END_SRC
 
 ** Message Sending
 
@@ -680,10 +711,17 @@ So to make it stop, I change its default folder:
 (setq mml-default-directory "~/mail/")
 #+END_SRC
 
+Finally, a signature.  Mine is pretty trivial: my name.
+
+#+BEGIN_SRC emacs-lisp
+(setq mail-signature "Pavel Panchekha")
+(setq message-signature "Pavel Panchekha")
+#+END_SRC
+
 ** Archiving
 
 Archiving emails is different; it is put by-group into the "archive"
-folder".
+folder.
 
 #+BEGIN_SRC emacs-lisp
 (setq gnus-message-archive-method
