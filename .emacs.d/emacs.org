@@ -737,14 +737,28 @@ Since I subscribe to several lists, I need Gnus to split my mail for me.
 
 #+BEGIN_SRC emacs-lisp
 (setq nnmail-split-methods
-  '(("racket"   "^\\(To\\|Cc\\):.*@racket-lang.org")
+  '(("racket"   "^\\(To\\|Cc\\):.*@\\(lists\\.\\)?racket-lang.org")
     ("lisp-hug" "^\\(To\\|Cc\\):.*lisp-hug@lispworks.com")
     ("reuse"    "^\\(To\\|Cc\\):.*reuse.*@mit.edu")
     ("esp"      "^\\(To\\|Cc\\):.*esp.*@mit.edu")
+    ("esp"      "^\\(To\\|Cc\\):.*nutso-flaming-admins@mit.edu")
     ("ruscon"   "^\\(To\\|Cc\\):.*ruscon@mit.edu")
     ("hmmt"     "^\\(To\\|Cc\\):.*hmmt.*@mit.edu")
+    ("org-mode" "^\\(To\\|Cc\\):.*emacs-orgmode@gnu.org")
     ("lsc"      "^Subject:.*[LSC")
     ("inbox"    "")))
+#+END_SRC
+
+** PGP Encryption
+
+Gnus comes with convenient methods for signing messages.  Let's turn
+them on: we make Gnus sign/encrypt messages that are replies to
+signed/encrypted messages.
+
+#+BEGIN_SRC emacs-lisp
+  (setq gnus-message-replysign t
+        gnus-message-replyencrypt t
+        gnus-message-replysignencrypted t)
 #+END_SRC
 
 * BBDB
@@ -764,6 +778,21 @@ I want BBDB to automatically notice people I actually send mail to.
 #+BEGIN_SRC emacs-lisp
 (setq bbdb/mail-auto-create-p t)
 (setq bbdb-notice-hook '(bbdb-auto-notes-hook))
+#+END_SRC
+
+BBDB could use to be a bit prettier.  I like it colorful and out of
+the way:
+
+#+BEGIN_SRC emacs-lisp
+(setq bbdb-gui t)
+(setq bbdb-pop-up-display-layout 'one-line)
+#+END_SRC
+
+Given my love for a well-organized home folder, I'd also rather move
+the BBDB.
+
+#+BEGIN_SRC emacs-lisp
+(setq bbdb-file "~/.emacs.d/bbdb")
 #+END_SRC
 
 * Jabber
