@@ -149,18 +149,18 @@ Above, I mapped =zg= to =ispell-insert-word=.  Unfortunately,
 =ispell-insert-word= doesn't exist.  So, we write our own.
 
 #+BEGIN_SRC emacs-lisp
-(defun ispell-insert-word (word &optional following)
+(defun ispell-insert-word ()
+  (interactive)
 #+END_SRC
 
-First, we need to *get* the current word.  It seems semantically
-correct to do so inside =(interactive)=.  We don't need to explicitly
+First, we need to *get* the current word.  We don't need to explicitly
 use =ispell-following-word=, since =ispell-get-word= does this for us.
 =ispell-get-word= returns a list of =word=, =start=, =end= (though its
 documentation certainly doesn't hint at such), so we call =car= to
 extract the word itself.
 
 #+BEGIN_SRC emacs-lisp
-  (interactive (car (ispell-get-word following)))
+  (let ((word (car (ispell-get-word nil))))
 #+END_SRC
 
 Now we can call =ispell-send-string=.  Its documentation is pretty
@@ -190,7 +190,7 @@ part is actually annoyingly complicated...
                    (listp old-ispell-pdict-modified-p)
                    (car ispell-pdict-modified-p))
               (and ispell-pdict-modified-p
-                   (not (listp (ispell-pdict-modified-p)))))
+                   (not (listp ispell-pdict-modified-p)))))
 #+END_SRC
 
 But once that's out of the way, we can just call =ispell-pdict-save=
@@ -211,6 +211,56 @@ as well.  The last line there make =C-k= kill the whole line.
 (global-set-key [C-m] 'newline-and-indent)
 (global-set-key [delete] 'delete-char)
 (setq kill-whole-line t)
+#+END_SRC
+
+** Printing
+*** Print to PDF
+
+Sometimes, I need to print an Emacs buffer to PDF.  The standard
+printing commands are less than ideal for this, since they rely on
+=lpr=, a program I have no interest in installing and configuring.
+Instead, I can use the Emacs =printing= package, which can export
+buffers to Postscript, and then call =ps2pdf= to produce a PDF from
+the Postscript.
+
+First, I =require= in the =printing= package and ask it to install
+itself into the Emacs menu tree.
+  
+#+BEGIN_SRC emacs-lisp
+(require 'printing)
+#+END_SRC
+
+Now we write a function to print the current buffer.
+
+#+BEGIN_SRC emacs-lisp
+(defun print-to-pdf ()
+  (interactive)
+#+END_SRC
+
+We want to use the function =pr-ps-buffer-pritn= from the =printing=
+package.  We give it a temporary file to print to, and later we'll
+=ps2pdf= that file.
+
+#+BEGIN_SRC emacs-lisp
+  (let* ((outfile (make-temp-file pr-ps-temp-file))
+         (pdffile (concat outfile ".pdf")))
+    (pr-ps-buffer-print 1 outfile)
+    (shell-command (concat "ps2pdf "
+                           (shell-quote-argument outfile)
+                           " "
+                           (shell-quote-argument pdffile)))
+    (find-file pdffile)))
+#+END_SRC
+*** Print Settings
+
+The default print settings are silly, especially once you consider
+that my use case is print-to-PDF.  So I would rather print with syntax
+highlighting and no headers.
+
+#+BEGIN_SRC emacs-lisp
+(setq pr-faces-p t
+      ps-print-header nil
+      ps-print-header-frame)
 #+END_SRC
 
 * Programming
