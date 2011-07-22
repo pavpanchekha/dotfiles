@@ -70,29 +70,6 @@ number and file size:
 (setq column-number-mode t)
 (setq size-indication-mode t)
 #+END_SRC
-
-* Emacsclient configuration
-I want =emacsclient= files to always open in a new buffer; that way
-unenlightened tools like Firefox, which do not allow arguments, can
-still have =emacsclient= set as their PDF viewer.
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'server-switch-hook
-          (lambda nil
-            (let ((server-buf (current-buffer)))
-              (bury-buffer)
-              (switch-to-buffer-other-frame server-buf))))
-#+END_SRC 
-
-I used to have code to kill frames when the server is done with them,
-but that became annoying with more advanced Emacs usage.
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(add-hook 'server-done-hook
-          (lambda ()
-            (delete-frame)
-            (kill-buffer nil)))
-#+END_SRC
 * Text Editing
 ** File Behavior
 
@@ -847,4 +824,34 @@ The second function opens the configuration up for editing.
 (defun edconfigure ()
   (interactive)
   (find-file "~/.emacs.d/emacs.org"))
+#+END_SRC
+* Archive                                                           :ARCHIVE:
+
+** Emacsclient configuration
+   :PROPERTIES:
+   :ARCHIVE_TIME: 2011-07-21 Thu 18:02
+   :END:
+
+I used to want =emacsclient= files to always open in a new buffer;
+that way unenlightened tools like Firefox, which do not allow
+arguments, can still have =emacsclient= set as their PDF viewer.
+Nowadays, I use =emacsclient= in shell scripts, and then I do not want
+more windows to pop open.  So I've archived this section of the scripts
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(add-hook 'server-switch-hook
+          (lambda nil
+            (let ((server-buf (current-buffer)))
+              (bury-buffer)
+              (switch-to-buffer-other-frame server-buf))))
+#+END_SRC 
+
+I used to have code to kill frames when the server is done with them,
+but that became annoying with more advanced Emacs usage.
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(add-hook 'server-done-hook
+          (lambda ()
+            (delete-frame)
+            (kill-buffer nil)))
 #+END_SRC
