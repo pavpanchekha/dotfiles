@@ -41,7 +41,7 @@ files, so I like to move the =custom-file=.
 
 Some things Emacs does by default just use up screen real estate and
 programmer patience.  Note that =tool-bar-mode= requires a *nonzero*
-parameter, not a true parameter, to display the toolbar.  This is
+parameter, not a truthy parameter, to display the toolbar.  This is
 absolutely absurd, but what can one do?
 
 #+BEGIN_SRC emacs-lisp
@@ -95,6 +95,7 @@ uses the parent directory name, which I usually know.
 #+END_SRC
 
 ** Searching and Scrolling
+
 For searching, I enable highlighting as-I-search for both searches and
 search/replaces.  Also, searches are made case-insensitive.  
 
@@ -111,7 +112,9 @@ to keep 5 lines between the cursor and the top/bottom of the page.
 (setq scroll-conservatively 5)
 (setq scroll-margin 5)
 #+END_SRC
+
 ** Vim Key Bindings
+
 The most obvious key-binding setup is viper mode.
 
 #+BEGIN_SRC emacs-lisp
@@ -368,7 +371,7 @@ First things first!  We should set up the file structure.
 (setq org-default-notes-file (concat org-directory "pavel.org"))
 #+END_SRC
 
-Let's throw in a very minor editing thing (Hitting =M-RET= shouldn't
+Let's throw in a very minor editing thing (hitting =M-RET= shouldn't
 split a bullet point in two).
 
 #+BEGIN_SRC emacs-lisp
@@ -398,12 +401,14 @@ reorganizing recently, so all of my old templates are gone, the above
 TODO in their place.
 
 ** Todo Keywords
+
 I also have several possible workflows for TODO-style labels, so I add
 those keywords.
 
 #+BEGIN_SRC emacs-lisp
-(setq org-todo-keywords '(
-        (sequence "TODO" "SOMEDAY" "MORE" "|" "DONE" "WAIT" "WONT")))
+(setq org-todo-keywords
+      '((sequence "TODO(t)" "SOMEDAY(s)" "MORE(m)" "|" "DONE(d)" "WAIT(w)" "WONT(n)")))
+(setq org-use-fast-todo-selection t)
 #+END_SRC
 
 ** Entities
@@ -570,6 +575,7 @@ Continuing on the Vim tradition, a good key for searching is =/=.
 #+END_SRC
 
 * Gnus
+** Finding Mail
 
 I'm slowly trying to switch over to Gnus as my mail reader, given how
 powerful people say it is.  The below is a configuration I stole from
