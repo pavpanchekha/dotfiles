@@ -5,7 +5,9 @@ set -x EDITOR vim
 set -x PAGER less
 set -x TEXINPUTS ".:$HOME/dev/resume.tex:$HOME/dev/simple.tex:"
 set -x GPGKEY 371E352C
-set -x MPD_HOST pavpanchekha.mit.edu
+
+# No reason to save my less history
+set -x LESSHIST -
 
 # Mathematica fonts need setting over SSH
 if [ -d /usr/local/mathematica/fonts/Type1 ];
@@ -28,6 +30,5 @@ umask 077
 alias math "rlwrap math"
 alias sbcl "rlwrap sbcl"
 alias scheme "rlwrap scheme"
-alias mpc "ssh media@server mpc"
 alias plan9 "qemu-kvm -enable-kvm /media/virtual/plan9/plan9.qcow -no-acpi -net nic,vlan=1 -net user,vlan=1"
 alias zephyr "tmux -L zephyr attach"
