@@ -1,4 +1,8 @@
 session*
-newsticker
 url
 emacs.el
+dict
+tramp
+newsrc.eld
+bbdb
+nnmail-cache
