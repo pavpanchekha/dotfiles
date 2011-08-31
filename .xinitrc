@@ -4,8 +4,8 @@ export PATH="$PATH:$HOME/usr/bin"
 
 # X server stuff
 xbindkeys
-xmodmap .config/xmodmap
-xsetroot -solid '#000000'
+setxkbmap -option caps:escape
+xsetroot -solid '#000000' -cursor_name left_ptr
 
 # Laptop Stuff
 synclient JumpyCursorThreshold=100
@@ -14,7 +14,5 @@ synclient JumpyCursorThreshold=100
 dropbox start
 conky -d
 xflux -z 94701
-fetchmail -d60
 
-bash $HOME/.config/dwm/bar.sh &disown
-exec ssh-agent dwm
+exec ssh-agent xmonad
