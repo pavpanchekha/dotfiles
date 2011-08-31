@@ -37,6 +37,13 @@ files, so I like to move the =custom-file=.
 (load custom-file 'noerror)
 #+END_SRC
 
+Finally, since I publish this file on the internet, I don't want
+passwords in it.  So I keep them elsewhere, and load them here:
+
+#+BEGIN_SRC emacs-lisp
+(org-babel-load-file "~/.emacs.d/passwords.org")
+#+END_SRC
+
 * GUI Settings
 
 Some things Emacs does by default just use up screen real estate and
@@ -808,7 +815,8 @@ I also give =jabber.el= my account details.
 
 #+BEGIN_SRC emacs-lisp
 ; Some variables
-(setq jabber-account-list '(("pavpanchekha@gmail.com" 
+(setq jabber-account-list `(("pavpanchekha@gmail.com" 
+                             (:password . ,my-jabber-password)
                              (:network-server . "talk.google.com") 
                              (:connection-type . ssl))))
 #+END_SRC

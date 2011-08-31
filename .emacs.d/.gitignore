@@ -6,3 +6,5 @@ tramp
 newsrc.eld
 bbdb
 nnmail-cache
+passwords.org
+passwords.el
