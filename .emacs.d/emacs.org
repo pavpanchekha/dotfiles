@@ -63,7 +63,8 @@ get there.
 Also, I like knowing where my files end; ergo:
 
 #+BEGIN_SRC emacs-lisp
-(setq indicate-empty-lines t)
+(if (not indicate-empty-lines)
+  (toggle-indicate-empty-lines))
 #+END_SRC
 
 ** Modeline Goodies
@@ -425,7 +426,7 @@ First things first!  We should set up the file structure.
 #+BEGIN_SRC emacs-lisp
 (setq org-directory "~/notes/")
 (setq org-agenda-files '("~/notes/"))
-(setq org-default-notes-file (concat org-directory "pavel.org"))
+(setq org-default-notes-file (concat org-directory "index.org"))
 #+END_SRC
 
 Let's throw in a very minor editing thing (hitting =M-RET= shouldn't
@@ -747,6 +748,7 @@ Since I subscribe to several lists, I need Gnus to split my mail for me.
   '(("racket"   "^\\(To\\|Cc\\):.*@\\(lists\\.\\)?racket-lang.org")
     ("lisp-hug" "^\\(To\\|Cc\\):.*lisp-hug@lispworks.com")
     ("reuse"    "^\\(To\\|Cc\\):.*reuse.*@mit.edu")
+    ("food"     "^\\(To\\|Cc\\):.*free-food@mit.edu")
     ("esp"      "^\\(To\\|Cc\\):.*esp.*@mit.edu")
     ("esp"      "^\\(To\\|Cc\\):.*nutso-flaming-admins@mit.edu")
     ("ruscon"   "^\\(To\\|Cc\\):.*ruscon@mit.edu")
@@ -754,6 +756,15 @@ Since I subscribe to several lists, I need Gnus to split my mail for me.
     ("org-mode" "^\\(To\\|Cc\\):.*emacs-orgmode@gnu.org")
     ("lsc"      "^Subject:.*[LSC")
     ("inbox"    "")))
+#+END_SRC
+
+True lists I can auto-expire, since they're saved elsewhere.  Same for
+lists that I don't care too much about --- they're always saved in
+GMail.
+
+#+BEGIN_SRC emacs-lisp
+(setq gnus-auto-expirable-newsgroups
+      "reuse\\|lisp-hug\\|racket\\|ruscon\\|org-mode\\|lsc")
 #+END_SRC
 
 ** PGP Encryption
@@ -875,6 +886,14 @@ hyperlinky.
 #+END_SRC
 
 * Shells
+** Shell mode
+
+My fish shell prompt isn't detected too well.  Let's fix that.
+
+#+BEGIN_SRC emacs-lisp
+(setq shell-prompt-pattern ".*$>")
+#+END_SRC
+
 ** Eshell
 
 Eshell doesn't actually require that much prodding.  The only thing I
