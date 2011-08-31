@@ -13,6 +13,7 @@
 .Skype
 .pki
 
+.racket
 .xsession-errors*
 .recently-used*
 .gtk-bookmarks
