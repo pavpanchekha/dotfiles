@@ -426,7 +426,7 @@ First things first!  We should set up the file structure.
 #+BEGIN_SRC emacs-lisp
 (setq org-directory "~/notes/")
 (setq org-agenda-files '("~/notes/"))
-(setq org-default-notes-file (concat org-directory "index.org"))
+(setq org-default-notes-file (concat org-directory "pavel.org"))
 #+END_SRC
 
 Let's throw in a very minor editing thing (hitting =M-RET= shouldn't
@@ -493,6 +493,13 @@ them myself.
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)
 (global-set-key "\C-cc" 'org-capture)
+#+END_SRC
+
+** MobileOrg
+
+#+BEGIN_SRC emacs-lisp
+(setq org-mobile-inbox-for-pull "~/notes/inbox.org")
+(setq org-mobile-directory "~/Dropbox/MobileOrg")
 #+END_SRC
 
 * Games
