@@ -17,7 +17,7 @@ import XMonad.Util.Run(spawnPipe)
 myPrompt = defaultXPConfig {
              bgColor = "black"
            , fgColor = "white"
-           , font = "xft:Terminus-15"
+           , font = "xft:Terminus-12"
            , height = 24
            , promptBorderWidth = 0
            }

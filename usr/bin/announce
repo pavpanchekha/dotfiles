@@ -25,7 +25,7 @@ def interpret_temp(temp):
     elif temp < 10:
         return "Chilly"
     elif temp < 25:
-        return "Nice Out"
+        return "Nice"
     elif temp < 33:
         return "Warm"
     elif temp < 38:
