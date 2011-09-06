@@ -123,32 +123,23 @@ to keep 5 lines between the cursor and the top/bottom of the page.
 
 ** Vim Key Bindings
 
-The most obvious key-binding setup is viper mode.
+We use the [[http://gitorious.org/evil/pages/Home][Evil package]] for Vim keybindings in Emacs.
 
 #+BEGIN_SRC emacs-lisp
-  (setq viper-inhibit-startup-message t)
-  (setq viper-expert-level 5)
-  (setq viper-mode t)
-  
-  (require 'viper)
-#+END_SRC
-
-Viper mode is extended (with things like visual mode) in Vimpulse.  I
-add my personal load path because Vimpulse is not yet a part of the
-default Emacs distribution.
-
-#+BEGIN_SRC emacs-lisp
-(require 'vimpulse)
+  (add-to-list 'load-path "~/.emacs.d/evil")
+  (require 'evil)
+  (evil-mode 1)
 #+END_SRC
 
 Another key binding I really miss from Vim is the spelling key
-bindings =zg= and =z==.  I can add them back with Vimpulse's
-=vimpulse-map=; I make them hook into ispell (which I like much better
-than Vim's system, actually, since I can see context as I correct).
+bindings =zg= and =z==.  I can add them back with Evil's
+=evil-normal-state-map=; I make them hook into =ispell= (which I like
+much better than Vim's system, actually, since I can see context as I
+correct).
 
 #+BEGIN_SRC emacs-lisp
-(vimpulse-map "z=" 'ispell-word)
-(vimpulse-map "zg" 'ispell-insert-word)
+(define-key evil-normal-state-map "z=" 'ispell-word)
+(define-key evil-normal-state-map "zg" 'ispell-insert-word)
 #+END_SRC
 
 ** Ispell =ispell-insert-word=
@@ -929,27 +920,6 @@ it.
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'term-mode-hook (lambda ()
   (set (make-local-variable 'scroll-margin) 0)))
-#+END_SRC
-
-* Pianobar
-
-I currently use Pianobar to listen to my music. To do that from Emacs,
-I use the wonderful [[http://www.emacswiki.org/emacs/pianobar.el][=pianobar.el=]].
-
-#+BEGIN_SRC emacs-lisp
-(autoload 'pianobar "pianobar" nil t)
-#+END_SRC
-
-I don't give it my password (since this =emacs.org= file goes
-online...) but I do set my username and station.
-
-#+BEGIN_SRC emacs-lisp
-(setq pianobar-username "pavpanchekha@gmail.com")
-(setq pianobar-station "2")
-(defadvice pianobar (before query-password activate)
-  "Queries me for my password to pianobar"
-  ; Warning: purposely dynamic scoping!!!
-  (setq pianobar-password (read-passwd "Pianobar password: ")))
 #+END_SRC
 
 * Meta
