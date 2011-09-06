@@ -647,27 +647,17 @@ powerful people say it is.  The below is a configuration I stole from
 the Internet[fn:where] which tells Gnus where to get my mail...
 
 #+BEGIN_SRC emacs-lisp
-(setq mail-sources '((maildir :path "~/mail/inbox")))
-(setq mail-source-delete-incoming t)
-(setq mail-default-directory "~/mail/")
+(setq gnus-select-method
+  '(nnmaildir "GMail"
+     (directory "~/mail/")
+     (directory-files nnheader-directory-files-safe)
+     (get-new-mail nil)))
 #+END_SRC
 
-... and how to send it.
+We also, of course, have to tell Emacs how to send mail...
 
 #+BEGIN_SRC emacs-lisp
 (setq sendmail-program "/usr/bin/msmtp")
-#+END_SRC
-
-We also want to explain to Gnus where to put mail.  This is the
-inverse operation of the above.  We're going to tell Gnus to use the
-=ml= format; one file per message seems cleanest.
-
-#+BEGIN_SRC emacs-lisp
-(setq gnus-select-method
-  '(nnml ""
-     (nnml-directory "~/mail/")
-     (nnml-active-file "~/mail/active")
-     (nnml-get-new-mail t)))
 #+END_SRC
 
 [fn:where] http://neverbow.blogspot.com/2006/09/gnus-works-with-fetchmail.html

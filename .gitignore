@@ -14,6 +14,7 @@
 .pki
 
 .racket
+.offlineimap
 .xsession-errors*
 .recently-used*
 .gtk-bookmarks
@@ -81,6 +82,7 @@ calendar
 .Private
 .fetchmailrc
 .msmtprc
+.offlineimaprc
 
 *.pyc
 *.hi

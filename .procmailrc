@@ -1,4 +1,0 @@
-MAILDIR=$HOME/mail/
-DEFAULT=$HOME/mail/inbox/
-LOGFILE=/tmp/procmail.log
-
