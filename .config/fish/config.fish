@@ -25,6 +25,11 @@ function fish_prompt -d "Display the prompt"
     printf '%s%s%s:$> ' (set_color $fish_color_cwd) (prompt_pwd) (set_color normal)
 end
 
+function project -d "Display screen on projector"
+    set OUTPUT `xrandr | grep "connected" | cut -d\  -f1 | grep -v LVDS1 | head -n1`
+    xrandr --output $OUTPUT --mode 1280x768
+end
+
 umask 077
 
 alias math "rlwrap math"
@@ -32,3 +37,6 @@ alias sbcl "rlwrap sbcl"
 alias scheme "rlwrap scheme"
 alias plan9 "qemu-kvm -enable-kvm /media/virtual/plan9/plan9.qcow -no-acpi -net nic,vlan=1 -net user,vlan=1"
 alias zephyr "tmux -L zephyr attach"
+alias edconfigure "vim ~/.config/fish/config.fish"
+alias reconfigure ". ~/.config/fish/config.fish"
+alias py "ipython"

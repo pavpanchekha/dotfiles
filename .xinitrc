@@ -13,6 +13,6 @@ synclient JumpyCursorThreshold=100
 # Applications
 dropbox start
 conky -d
-xflux -z 94701
+xflux -z 02142
 
 exec ssh-agent xmonad

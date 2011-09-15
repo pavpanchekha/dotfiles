@@ -493,6 +493,24 @@ them myself.
 (setq org-mobile-directory "~/Dropbox/MobileOrg")
 #+END_SRC
 
+** LaTeX Export
+
+Org-mode requires you to define things to use other classes for LaTeX files.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-export-latex-listings t)
+(add-to-list 'org-export-latex-classes
+             '("simple"
+               "\\documentclass{simple}
+                 [NO-DEFAULT-PACKAGES]
+                 [EXTRA]"
+               ("\\section{%s}" . "\\section*{%s}")
+               ("\\subsection{%s}" . "\\subsection*{%s}")
+               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+               ("\\paragraph{%s}" . "\\paragraph*{%s}")
+               ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+#+END_SRC
+   
 * Games
 
 It's very important that score files are placed correctly (can't lose
