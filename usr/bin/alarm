@@ -1,3 +1,0 @@
-#!/bin/bash
-
-echo notify-send "'$2'" -u critical -i gtk-info | at `date +%H:%M --date="+$1 min"` 2>&1 >/dev/null
