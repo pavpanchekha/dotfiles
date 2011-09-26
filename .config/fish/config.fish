@@ -26,7 +26,7 @@ function fish_prompt -d "Display the prompt"
 end
 
 function project -d "Display screen on projector"
-    set OUTPUT `xrandr | grep "connected" | cut -d\  -f1 | grep -v LVDS1 | head -n1`
+    set OUTPUT (xrandr | grep "connected" | cut -d\  -f1 | grep -v LVDS1 | head -n1)
     xrandr --output $OUTPUT --mode 1280x768
 end
 
