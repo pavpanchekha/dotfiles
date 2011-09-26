@@ -269,11 +269,11 @@ Normal boring definitions, just run a shell command.
 
 #+BEGIN_SRC emacs-lisp
 (defun run-command (file)
-  (interactive (buffer-file-name))
+  (interactive (list (buffer-file-name)))
   (shell-command (concat "run " file " &")))
 
 (defun compile-command (file)
-  (interactive (buffer-file-name))
+  (interactive (list (buffer-file-name)))
   (shell-command (concat "run -c " file " &")))
 #+END_SRC
 
@@ -350,8 +350,8 @@ Python code) and $\LaTeX$ (for class):
 #+BEGIN_SRC emacs-lisp
 (defun text-minor-modes ()
   (interactive)
-  (auto-fill-mode)
-  (flyspell-mode))
+  (auto-fill-mode 1)
+  (flyspell-mode 1))
 
 (add-hook 'text-mode-hook 'text-minor-modes)
 (add-hook 'LaTeX-mode-hook 'text-minor-modes)
@@ -465,15 +465,31 @@ Since I use things like \RR so often, I made them into entities, so that
 Org can typeset them nicely.
 
 #+BEGIN_SRC emacs-lisp
-(setq org-pretty-entities t
-      org-entities-user '(("CC" "\\CC" t "&#8450;" "C" "C" "ℂ")
-                          ("FF" "\\FF" t "&#120125;" "F" "F" "𝔽")
-                          ("HH" "\\HH" t "&#8461;" "H" "H" "ℍ")
-                          ("NN" "\\NN" t "&#8469;" "N" "N" "ℕ")
-                          ("PP" "\\PP" t "&#8473;" "P" "P" "ℙ")
-                          ("QQ" "\\QQ" t "&#8474;" "Q" "Q" "ℚ")
-                          ("RR" "\\RR" t "&#8477;" "R" "R" "ℝ")
-                          ("ZZ" "\\ZZ" t "&#8484;" "Z" "Z" "ℤ")))
+  (setq org-pretty-entities t
+        org-entities-user '(; Double-struck letters for various fields
+                            ("CC" "\\CC" t "&#8450;" "C" "C" "ℂ")
+                            ("FF" "\\FF" t "&#120125;" "F" "F" "𝔽")
+                            ("HH" "\\HH" t "&#8461;" "H" "H" "ℍ")
+                            ("NN" "\\NN" t "&#8469;" "N" "N" "ℕ")
+                            ("PP" "\\PP" t "&#8473;" "P" "P" "ℙ")
+                            ("QQ" "\\QQ" t "&#8474;" "Q" "Q" "ℚ")
+                            ("RR" "\\RR" t "&#8477;" "R" "R" "ℝ")
+                            ("ZZ" "\\ZZ" t "&#8484;" "Z" "Z" "ℤ")
+  
+                            ; Fraktur letters for ideals
+                            ("ga" "\\ga" t "&#120094;" "a" "a" "𝔞")
+                            ("gb" "\\gb" t "&#120095;" "b" "b" "𝔟")
+                            ("gc" "\\gc" t "&#120096;" "c" "c" "𝔠")
+                            ("gd" "\\gd" t "&#120097;" "d" "d" "𝔡")
+                            ("gm" "\\gm" t "&#120106;" "m" "m" "𝔪")
+                            ("gn" "\\gn" t "&#120107;" "n" "n" "𝔫")
+                            ("go" "\\go" t "&#120108;" "o" "o" "𝔬")
+                            ("gp" "\\gp" t "&#120109;" "p" "p" "𝔭")
+                            ("gq" "\\gq" t "&#120110;" "q" "q" "𝔮")
+
+                            ; Miscellaneous mathematical
+                            ("setminus" "\\setminus" t "&#8726;" "\" "\" "∖")
+                            ))
 #+END_SRC
 
 ** Keybindings
@@ -500,15 +516,15 @@ Org-mode requires you to define things to use other classes for LaTeX files.
 #+BEGIN_SRC emacs-lisp
   (setq org-export-latex-listings t)
   (setq org-export-latex-classes
-        '("simple"
-          "\\documentclass{simple}
-           [NO-DEFAULT-PACKAGES]
-           [EXTRA]"
-          ("\\section{%s}" . "\\section*{%s}")
-          ("\\subsection{%s}" . "\\subsection*{%s}")
-          ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-          ("\\paragraph{%s}" . "\\paragraph*{%s}")
-          ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+        '(("simple"
+           "\\documentclass{simple}
+            [NO-DEFAULT-PACKAGES]
+            [EXTRA]"
+           ("\\section{%s}" . "\\section*{%s}")
+           ("\\subsection{%s}" . "\\subsection*{%s}")
+           ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+           ("\\paragraph{%s}" . "\\paragraph*{%s}")
+           ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
 #+END_SRC
    
 * Games
