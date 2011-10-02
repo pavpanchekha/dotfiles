@@ -495,6 +495,13 @@ Org can typeset them nicely.
                             ))
 #+END_SRC
 
+I also would rather hide the stars and such that org-mode uses for
+inline markup:
+
+#+BEGIN_SRC emacs-lisp
+(setq org-hide-emphasis-markers t)
+#+END_SRC
+
 ** Keybindings
 Some keybindings are not bound by Org automatically, so I have to bind
 them myself.
