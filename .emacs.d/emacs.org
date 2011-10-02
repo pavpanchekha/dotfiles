@@ -210,6 +210,7 @@ as well.  The last line there make =C-k= kill the whole line.
 (global-set-key [C-m] 'newline-and-indent)
 (global-set-key [delete] 'delete-char)
 (setq kill-whole-line t)
+(setq-default tab-width 4)
 #+END_SRC
 
 ** Printing
@@ -396,11 +397,12 @@ setting up.
                 "/usr/share/emacs/site-lisp/haskell-mode")))
 #+END_SRC
 
-Now we can require in Haskell and Clojure modes.
+Now we can require in Haskell, CoffeeScript, and Clojure modes.
 
 #+BEGIN_SRC emacs-lisp
-(require 'haskell-mode)
-(require 'clojure-mode)
+(require 'haskell-mode nil t)
+(require 'clojure-mode nil t)
+(require 'coffee-mode nil t)
 #+END_SRC
 * Org Mode
 
@@ -489,6 +491,7 @@ Org can typeset them nicely.
 
                             ; Miscellaneous mathematical
                             ("setminus" "\\setminus" t "&#8726;" "\" "\" "∖")
+                            ("mapsto"   "\\mapsto" t "&#8614;" "|->" "|->" "↦")
                             ))
 #+END_SRC
 
