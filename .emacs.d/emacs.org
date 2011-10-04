@@ -67,6 +67,14 @@ Also, I like knowing where my files end; ergo:
   (toggle-indicate-empty-lines))
 #+END_SRC
 
+Also, a color theme
+
+#+BEGIN_SRC emacs-lisp
+(require 'color-theme)
+(color-theme-initialize
+(color-theme-whateveryouwant)
+#+END_SRC
+
 ** Modeline Goodies
 
 The modeline should really be pressed into useful service.  I make it
@@ -78,6 +86,7 @@ number and file size:
 (setq column-number-mode t)
 (setq size-indication-mode t)
 #+END_SRC
+
 * Text Editing
 ** File Behavior
 

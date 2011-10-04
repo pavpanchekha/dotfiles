@@ -5,7 +5,7 @@ export PATH="$PATH:$HOME/usr/bin"
 # X server stuff
 xbindkeys
 setxkbmap -option caps:escape
-xsetroot -solid '#000000' -cursor_name left_ptr
+xsetroot -solid '#ffffff' -cursor_name left_ptr
 
 # Laptop Stuff
 synclient JumpyCursorThreshold=100

@@ -13,8 +13,7 @@ text_buffer_size 4096
 alignment mm
 
 TEXT
-${font bold:size=24}${time %A, %m %B} $alignr ${time %H:%M}$font
-${color light grey}
+${color #698486}${font bold:size=24}${time %A, %m %B} $alignr ${time %H:%M}$font
 CPU:  $cpu% ${cpubar 6}
 RAM:  $memperc% ${membar 6}
 

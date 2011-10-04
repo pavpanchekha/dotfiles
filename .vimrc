@@ -85,8 +85,9 @@ autocmd FileType python set complete+=k~/.vim/syntax/python.vim
 runtime macros/matchit.vim
 
 " Colors and syntax
-set background=dark
+set background=light
 syntax on
+colorscheme delek
 
 " Space bar is leader
 let mapleader = ","
