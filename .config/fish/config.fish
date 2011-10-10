@@ -31,6 +31,10 @@ function project -d "Display screen on projector"
     xrandr --output $OUTPUT --mode $MODE
 end
 
+function music-to-simpi -d "Stream music to Simpi"
+    vlc -I dummy http://pavpanchekha.com:35789 --sout "#rtp{dst=simpi.mit.edu,mux=ts}"
+end
+
 umask 077
 
 alias math "rlwrap math"
