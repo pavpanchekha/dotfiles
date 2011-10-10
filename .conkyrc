@@ -14,9 +14,8 @@ alignment mm
 
 TEXT
 ${color #698486}${font bold:size=24}${time %A, %m %B} $alignr ${time %H:%M}$font
+
 CPU:  $cpu% ${cpubar 6}
 RAM:  $memperc% ${membar 6}
-
-${hr 2}
 
 ${execi 600 fortune -s}

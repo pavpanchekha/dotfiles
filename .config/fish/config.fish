@@ -27,7 +27,8 @@ end
 
 function project -d "Display screen on projector"
     set OUTPUT (xrandr | grep "connected" | cut -d\  -f1 | grep -v LVDS1 | head -n1)
-    xrandr --output $OUTPUT --mode 1280x768
+    set MODE (xrandr | grep $OUTPUT -a1 | tail -n1 | cut -f4 -d\ )
+    xrandr --output $OUTPUT --mode $MODE
 end
 
 umask 077

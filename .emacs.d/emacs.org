@@ -71,7 +71,7 @@ Also, a color theme
 
 #+BEGIN_SRC emacs-lisp
 (require 'color-theme)
-(color-theme-initialize
+(color-theme-initialize)
 (color-theme-whateveryouwant)
 #+END_SRC
 
@@ -605,11 +605,11 @@ Finally I set up my homepage.
 
 ** Default Browser
 
-I prefer to set Chrome as Emacs's default browser, simply because
+I prefer to set Firefox as Emacs's default browser, simply because
 there are lots of sites W3M just doesn't work that well on.
 
 #+BEGIN_SRC emacs-lisp
-(setq browse-url-browser-function 'browse-url-generic)
+(setq browse-url-browser-function 'browse-url-firefox)
 (setq browse-url-generic-program "google-chrome")
 #+END_SRC
 
