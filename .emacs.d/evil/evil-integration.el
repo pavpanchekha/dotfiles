@@ -1,6 +1,6 @@
 ;;;; Integrate Evil with other modules
 
-(require 'evil-states)
+(require 'evil-core)
 (require 'evil-motions)
 (require 'evil-repeat)
 
@@ -61,11 +61,6 @@
 (eval-after-load 'elp
   '(defadvice elp-results (after evil activate)
      (evil-motion-state)))
-
-;;; ERC
-
-(eval-after-load 'erc
-  '(define-key erc-mode-map [remap evil-ret] 'erc-send-current-line))
 
 ;;; Folding
 
@@ -146,10 +141,9 @@
 ;;; Undo tree visualizer
 
 (defadvice undo-tree-visualize (after evil activate)
-  "Enable Evil."
-  (evil-local-mode))
-
-(evil-set-initial-state 'undo-tree-visualizer-mode 'motion)
+  "Initialize Evil in the visualization buffer."
+  (when evil-local-mode
+    (evil-initialize-state)))
 
 (when (boundp 'undo-tree-visualizer-map)
   (define-key undo-tree-visualizer-map [remap evil-backward-char]
@@ -192,6 +186,23 @@
           0)
          ;; Finish repeation
          (evil-repeat-finish-record-changes))))))
+
+;; Eval last sexp
+(defadvice preceding-sexp (around evil activate)
+  "In normal-state, last sexp ends at point."
+  (if (evil-normal-state-p)
+      (save-excursion
+        (unless (or (eobp) (eolp)) (forward-char))
+        ad-do-it)
+    ad-do-it))
+
+(defadvice pp-last-sexp (around evil activate)
+  "In normal-state, last sexp ends at point."
+  (if (evil-normal-state-p)
+      (save-excursion
+        (unless (or (eobp) (eolp)) (forward-char))
+        ad-do-it)
+    ad-do-it))
 
 (provide 'evil-integration)
 

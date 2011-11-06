@@ -38,6 +38,7 @@ KEY must be readable by `read-kbd-macro'."
 and \\[evil-shift-left]."
   :type 'integer
   :group 'evil)
+(make-variable-buffer-local 'evil-shift-width)
 
 (defcustom evil-default-cursor
   (list (or (frame-parameter nil 'cursor-color) "black") t)
@@ -76,6 +77,7 @@ and nil means no mode line tag."
 This should be a regexp set without the enclosing []."
   :type 'string
   :group 'evil)
+(make-variable-buffer-local 'evil-word)
 
 (defcustom evil-want-fine-undo nil
   "Whether actions like \"cw\" are undone in several steps."
@@ -133,6 +135,71 @@ which causes the parenthesis to be highlighted."
   :type 'boolean
   :group 'evil)
 
+(defcustom evil-complete-next-func
+  (lambda (arg)
+    (let ((dabbrev-search-these-buffers-only (list (current-buffer)))
+          dabbrev-case-distinction)
+      (condition-case nil
+          (if (eq last-command this-command)
+              (dabbrev-expand nil)
+            (dabbrev-expand (- (abs (or arg 1)))))
+        (error (dabbrev-expand nil)))))
+  "Completion function used by \
+\\<evil-insert-state-map>\\[evil-complete-next]."
+  :type 'function
+  :group 'evil)
+
+(defcustom evil-echo-state t
+  "Whether to signal the current state in the echo area."
+  :type 'boolean
+  :group 'evil)
+
+(defcustom evil-complete-previous-func
+  (lambda (arg)
+    (let ((dabbrev-search-these-buffers-only (list (current-buffer)))
+          dabbrev-case-distinction)
+      (dabbrev-expand arg)))
+  "Completion function used by \
+\\<evil-insert-state-map>\\[evil-complete-previous]."
+  :type 'function
+  :group 'evil)
+
+(defcustom evil-complete-next-minibuffer-func 'minibuffer-complete
+  "Minibuffer completion function used by \
+\\<evil-insert-state-map>\\[evil-complete-next]."
+  :type 'function
+  :group 'evil)
+
+(defcustom evil-complete-previous-minibuffer-func 'minibuffer-complete
+  "Minibuffer completion function used by \
+\\<evil-insert-state-map>\\[evil-complete-previous]."
+  :type 'function
+  :group 'evil)
+
+(defcustom evil-complete-next-line-func
+  (lambda (arg)
+    (let ((hippie-expand-try-functions-list
+           '(try-expand-line
+             try-expand-line-all-buffers)))
+      (hippie-expand arg)))
+  "Minibuffer completion function used by \
+\\<evil-insert-state-map>\\[evil-complete-next-line]."
+  :type 'function
+  :group 'evil)
+
+(defcustom evil-complete-previous-line-func
+  evil-complete-next-line-func
+  "Minibuffer completion function used by \
+\\<evil-insert-state-map>\\[evil-complete-previous-line]."
+  :type 'function
+  :group 'evil)
+
+(defcustom evil-lookup-func 'woman
+  "Lookup function used by \
+\"\\<evil-motion-state-map>\\[evil-lookup]\"."
+  :type 'function
+  :group 'evil)
+
 (defcustom evil-toggle-key "C-z"
   "The key used to change to and from Emacs state.
 Must be readable by `read-kbd-macro'. For example: \"C-z\"."
@@ -157,6 +224,7 @@ in `evil-emacs-state-modes', `evil-insert-state-modes' or
     bookmark-edit-annotation-mode
     browse-kill-ring-mode
     bzr-annotate-mode
+    calc-mode
     cfw:calendar-mode
     completion-list-mode
     Custom-mode
@@ -172,6 +240,7 @@ in `evil-emacs-state-modes', `evil-insert-state-modes' or
     dvc-tips-mode
     ediff-mode
     efs-mode
+    Electric-buffer-menu-mode
     ert-results-mode
     gdb-breakpoints-mode
     gdb-disassembly-mode
@@ -187,9 +256,13 @@ in `evil-emacs-state-modes', `evil-insert-state-modes' or
     gnus-summary-mode
     ibuffer-mode
     jde-javadoc-checker-report-mode
+    magit-commit-mode
     magit-key-mode
+    magit-log-mode
     magit-mode
     magit-show-branches-mode
+    magit-stash-mode
+    magit-status-mode
     mh-folder-mode
     monky-mode
     notmuch-hello-mode
@@ -275,6 +348,7 @@ in `evil-emacs-state-modes', `evil-insert-state-modes' or
     help-mode
     Info-mode
     speedbar-mode
+    undo-tree-visualizer-mode
     view-mode)
   "Modes that should come up in Motion state."
   :type  '(repeat symbol)
@@ -304,7 +378,8 @@ a keymap variable and EVAL-AFTER is the file or package defining it
   :group 'evil)
 
 (defcustom evil-motions
-  '(backward-char
+  '(back-to-indentation
+    backward-char
     backward-list
     backward-paragraph
     backward-sentence
@@ -330,6 +405,9 @@ a keymap variable and EVAL-AFTER is the file or package defining it
     forward-sentence
     forward-sexp
     forward-word
+    goto-last-change
+    ibuffer-backward-line
+    ibuffer-forward-line
     isearch-abort
     isearch-cancel
     isearch-complete
@@ -359,15 +437,28 @@ a keymap variable and EVAL-AFTER is the file or package defining it
     isearch-yank-line
     isearch-yank-word-or-char
     keyboard-quit
+    left-char
     mouse-drag-region
     mouse-save-then-kill
     mouse-set-point
     mouse-set-region
     move-beginning-of-line
     move-end-of-line
+    next-error
     next-line
+    paredit-backward
+    paredit-backward-down
+    paredit-backward-up
+    paredit-forward
+    paredit-forward-down
+    paredit-forward-up
+    pop-global-mark
+    pop-tag-mark
+    pop-to-mark-command
+    previous-error
     previous-line
     redo
+    right-char
     scroll-down
     scroll-up
     undo
@@ -428,7 +519,8 @@ highlighted."
   :group 'evil)
 
 (defcustom evil-ex-substitute-interactive-replace t
-  "If t and substitute patterns are highlighted the replacement is shown interactively."
+  "If t and substitute patterns are highlighted,
+the replacement is shown interactively."
   :type 'boolean
   :group 'evil)
 
@@ -440,9 +532,9 @@ highlighted."
   "Face for highlighting all matches in interactive search."
   :group 'evil)
 
-(defface evil-ex-substitute '(( ((supports :underline))
-                                :underline t
-                                :foreground "red"))
+(defface evil-ex-substitute '((((supports :underline))
+                               :underline t
+                               :foreground "red"))
   "Face for interactive replacement text."
   :group 'evil)
 
@@ -576,15 +668,17 @@ of `evil-inhibit-operator' from one local scope to another.")
     (?{ . evil-backward-paragraph)
     (?} . evil-forward-paragraph)
     (?' . evil-jump-backward)
-    (?` . evil-jump-backward))
+    (?` . evil-jump-backward)
+    (?< . evil-visual-beginning)
+    (?> . evil-visual-end))
   "Association list for markers.
 Entries have the form (CHAR . DATA), where CHAR is the marker's
-name and DATA is either a marker object as returned by
-`make-marker', a movement function, or a cons cell (STRING NUMBER),
+name and DATA is either a marker object as returned by `make-marker',
+a variable, a movement function, or a cons cell (STRING NUMBER),
 where STRING is a file path and NUMBER is a buffer position.
-The global value of this variable holds markers available from every
-buffer, while the buffer-local value holds markers available only
-in the current buffer.")
+The global value of this variable holds markers available from
+every buffer, while the buffer-local value holds markers available
+only in the current buffer.")
 (make-variable-buffer-local 'evil-markers-alist)
 
 (defvar evil-jump-list nil
@@ -695,29 +789,9 @@ BEG end END are the region of the inserted text.")
   "The count argument of the current paste command.")
 
 (defvar evil-temporary-undo nil
-  "When undo is disabled in current buffer, certain commands
-depending on undo use the variable instead of
-`buffer-undo-list'.")
-
-(defvar evil-visual-alist nil
-  "Association list of Visual selections.
-Elements have the form (NAME . FUNCTION).")
-
-(defvar evil-visual-overlay nil
-  "Overlay for Visual selection.
-This stores the boundaries of the selection and its type.
-It is also used for highlighting, unless the type is `block',
-in which case see `evil-visual-block-overlays'.")
-(make-variable-buffer-local 'evil-visual-overlay)
-
-(defvar evil-visual-block-overlays nil
-  "Overlays for Visual Block selection, one for each line.
-They are reused to prevent flicker.")
-(make-variable-buffer-local 'evil-visual-block-overlays)
-
-(defvar evil-visual-region-expanded nil
-  "Whether the region matches the Visual selection.")
-(make-variable-buffer-local 'evil-visual-region-expanded)
+  "When undo is disabled in current buffer.
+Certain commands depending on undo use this variable
+instead of `buffer-undo-list'.")
 
 (defvar evil-undo-list-pointer nil
   "Everything up to this mark is united in the undo-list.")
@@ -744,6 +818,70 @@ They are reused to prevent flicker.")
 
 (defvar evil-symbol-counter 0
   "Counter used by `evil-generate-symbol'.")
+
+;;; Visual state
+
+(defvar evil-visual-beginning nil
+  "The beginning of the Visual selection, a marker.")
+(make-variable-buffer-local 'evil-visual-beginning)
+
+(defvar evil-visual-end nil
+  "The end of the Visual selection, a marker.")
+(make-variable-buffer-local 'evil-visual-end)
+
+(defvar evil-visual-mark nil
+  "The position of mark in Visual state, a marker.")
+(make-variable-buffer-local 'evil-visual-mark)
+
+(defvar evil-visual-point nil
+  "The position of point in Visual state, a marker.")
+(make-variable-buffer-local 'evil-visual-point)
+
+(defvar evil-visual-selection nil
+  "The kind of Visual selection.
+This is a selection as defined by `evil-define-visual-selection'.")
+(make-variable-buffer-local 'evil-visual-selection)
+
+(defvar evil-visual-type nil
+  "The type of the Visual selection.
+This is a type as defined by `evil-define-type'.")
+(make-variable-buffer-local 'evil-visual-type)
+
+;; we could infer the direction by comparing `evil-visual-mark'
+;; and `evil-visual-point', but destructive operations may
+;; displace the markers
+(defvar evil-visual-direction 0
+  "Whether point follows mark in Visual state.
+Negative if point precedes mark, otherwise positive.
+See also the function `evil-visual-direction'.")
+(make-variable-buffer-local 'evil-visual-direction)
+
+(defvar evil-visual-properties nil
+  "Property list of miscellaneous Visual properties.")
+(make-variable-buffer-local 'evil-visual-properties)
+
+(defvar evil-visual-region-expanded nil
+  "Whether the region matches the Visual selection.
+That is, whether the positions of point and mark have been
+expanded to coincide with the selection's boundaries.
+This makes the selection available to functions acting
+on Emacs' region.")
+(make-variable-buffer-local 'evil-visual-region-expanded)
+
+(defvar evil-visual-overlay nil
+  "Overlay for highlighting the Visual selection.
+Not used for blockwise selections, in which case
+see `evil-visual-block-overlays'.")
+(make-variable-buffer-local 'evil-visual-overlay)
+
+(defvar evil-visual-block-overlays nil
+  "Overlays for Visual Block selection, one for each line.
+They are reused to minimize flicker.")
+(make-variable-buffer-local 'evil-visual-block-overlays)
+
+(defvar evil-visual-alist nil
+  "Association list of Visual selection functions.
+Elements have the form (NAME . FUNCTION).")
 
 ;;; ex-mode
 

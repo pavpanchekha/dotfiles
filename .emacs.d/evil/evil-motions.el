@@ -211,16 +211,19 @@ See also `evil-goto-min'."
   (evil-signal-without-movement
     (setq this-command 'next-line)
     (let ((opoint (point)))
-      (unwind-protect
+      (condition-case err
           (with-no-warnings
             (next-line count))
-        (cond
-         ((> count 0)
-          (line-move-finish (or goal-column temporary-goal-column)
-                            opoint nil))
-         ((< count 0)
-          (line-move-finish (or goal-column temporary-goal-column)
-                            opoint t)))))))
+        ((beginning-of-buffer end-of-buffer)
+         (let ((col (or goal-column
+                        (if (consp temporary-goal-column)
+                            (car temporary-goal-column)
+                          temporary-goal-column))))
+           (if line-move-visual
+               (vertical-motion (cons col 0))
+             (line-move-finish col opoint (< count 0)))
+           ;; maybe we should just (ding) ?
+           (signal (car err) (cdr err))))))))
 
 (evil-define-command evil-goto-mark (char)
   "Go to marker denoted by CHAR."
@@ -350,13 +353,13 @@ In Insert state, insert a newline."
     (evil-line-move (1- (or count 1)))))
 
 (evil-define-motion evil-previous-visual-line (count)
-  "Move the cursor COUNT screen lines down."
+  "Move the cursor COUNT screen lines up."
   :type exclusive
   (let ((line-move-visual t))
     (evil-line-move (- (or count 1)))))
 
 (evil-define-motion evil-next-visual-line (count)
-  "Move the cursor COUNT screen lines up."
+  "Move the cursor COUNT screen lines down."
   :type exclusive
   (let ((line-move-visual t))
     (evil-line-move (or count 1))))
@@ -370,11 +373,12 @@ on the first non-blank character."
   (back-to-indentation))
 
 (evil-define-motion evil-window-middle ()
-  "Move the cursor to the middle line of the current window
-on the first non-blank character."
+  "Move the cursor to the middle line of the buffer text currently visible in the window on the first non-blank character."
   :jump t
   :type line
-  (move-to-window-line (/ (window-body-height) 2))
+  (move-to-window-line (/ (save-excursion
+                            (move-to-window-line -1))
+                          2))
   (back-to-indentation))
 
 (evil-define-motion evil-window-bottom (count)
@@ -441,6 +445,12 @@ If COUNT is given, move COUNT - 1 lines downward first."
   "Move the cursor COUNT lines down on the first non-blank character."
   :type line
   (evil-next-line (or count 1))
+  (evil-first-non-blank))
+
+(evil-define-motion evil-next-line-1-first-non-blank (count)
+  "Move the cursor COUNT-1 lines down on the first non-blank character."
+  :type line
+  (evil-next-line (1- (or count 1)))
   (evil-first-non-blank))
 
 (evil-define-motion evil-goto-first-line (count)
@@ -1010,6 +1020,11 @@ and jump to the corresponding one."
         (goto-char (1+ pos))
         (backward-list)))))))
 
+(evil-define-motion evil-lookup ()
+  "Look up the keyword at point.
+Calls `evil-lookup-func'."
+  (funcall evil-lookup-func))
+
 (defmacro evil-define-text-object (object args &rest body)
   "Define a text object command OBJECT.
 BODY should return a range (BEG END) to the right of point
@@ -1047,7 +1062,7 @@ if COUNT is positive, and to the left of it if negative.
        :type ,type
        (setq ,count (or ,count 1))
        (when (/= ,count 0)
-         (let* ((dir (evil-visual-direction))
+         (let* ((dir evil-visual-direction)
                 (type (or ',type evil-visual-char))
                 mark point range region selection temp)
            (cond
@@ -1056,19 +1071,17 @@ if COUNT is positive, and to the left of it if negative.
              ;; if we are at the beginning of the Visual selection,
              ;; go to the left (negative COUNT); if at the end,
              ;; go to the right (positive COUNT)
-             (setq dir (evil-visual-direction)
+             (setq dir evil-visual-direction
                    ,count (* ,count dir)
                    region (evil-range (mark t) (point))
-                   selection (evil-range (evil-visual-beginning)
-                                         (evil-visual-end)))
+                   selection (evil-visual-range))
              ;; expand Visual selection so that point
              ;; is outside already selected text
              (when ',extend
                (setq range (evil-range (point) (point) type)))
              (evil-visual-make-selection (mark t) (point) type)
              (evil-visual-expand-region)
-             (setq selection (evil-range (evil-visual-beginning)
-                                         (evil-visual-end)))
+             (setq selection (evil-visual-range))
              ;; the preceding selection should contain
              ;; at least one object; if not, add it now
              (let ((,count (- dir)))
@@ -1101,12 +1114,10 @@ if COUNT is positive, and to the left of it if negative.
               ((and ',extend (evil-subrange-p range selection))
                ;; Visual fall-back: enlarge selection by one character
                (if (< ,count 0)
-                   (evil-visual-select (1- (evil-visual-beginning))
-                                       (evil-visual-end)
-                                       type)
-                 (evil-visual-select (evil-visual-beginning)
-                                     (1+ (evil-visual-end))
-                                     type)))
+                   (evil-visual-select (1- evil-visual-beginning)
+                                       evil-visual-end type)
+                 (evil-visual-select evil-visual-beginning
+                                     (1+ evil-visual-end) type)))
               ((evil-range-p range)
                ;; Find the union of the range and the selection.
                ;; Actually, this uses the region (point and mark)
@@ -1272,13 +1283,13 @@ OPEN is a regular expression matching the opening sequence,
 and CLOSE is a regular expression matching the closing sequence.
 If EXCLUSIVE is non-nil, OPEN and CLOSE are excluded from
 the range; otherwise they are included. See also `evil-paren-range'."
-  (let ((either (format "\\(%s\\)\\|\\(%s\\)" open close))
-        (count (or count 1))
-        (level 0)
-        beg end range)
-    (save-excursion
-      (save-match-data
-        (evil-narrow-to-comment
+  (evil-with-or-without-comment
+    (let ((either (format "\\(%s\\)\\|\\(%s\\)" open close))
+          (count (or count 1))
+          (level 0)
+          beg end range)
+      (save-excursion
+        (save-match-data
           ;; find beginning of range: handle edge cases
           (unless (or (looking-at either)
                       (looking-back either nil t))
@@ -1330,6 +1341,13 @@ the range; otherwise they are included. See also `evil-paren-range'."
                           (match-end 0)))
               (setq range (evil-range beg end))))
           range)))))
+
+(defun evil-xml-range (&optional count exclusive)
+  "Return a range (BEG END) of COUNT matching XML tags.
+If EXCLUSIVE is non-nil, the tags themselves are excluded
+from the range."
+  (evil-regexp-range
+   count "<\\(?:[^/ ]\\(?:[^>]*?[^/>]\\)?\\)?>" "</[^>]+?>" exclusive))
 
 (defun evil-add-whitespace-to-range (range &optional dir pos regexp)
   "Add whitespace at one side of RANGE, depending on POS.
@@ -1524,12 +1542,18 @@ If BIGWORD is non-nil, select inner WORD."
 (evil-define-text-object evil-a-tag (count)
   "Select a tag block."
   :extend-selection nil
-  (evil-regexp-range count "<[^/>]+?>" "</[^/>]+?>"))
+  (evil-xml-range count))
 
 (evil-define-text-object evil-inner-tag (count)
   "Select inner tag block."
   :extend-selection nil
-  (evil-regexp-range count "<[^/>]+?>" "</[^/>]+?>" t))
+  (cond
+   ((and (evil-called-interactively-p)
+         (eq last-command this-command))
+    (setq this-command 'evil-a-tag)
+    (evil-a-tag count))
+   (t
+    (evil-xml-range count t))))
 
 (provide 'evil-motions)
 

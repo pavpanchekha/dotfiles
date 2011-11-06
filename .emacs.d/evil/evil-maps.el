@@ -1,6 +1,6 @@
 ;;;; Default keymaps
 
-(require 'evil-states)
+(require 'evil-core)
 (require 'evil-visual)
 (require 'evil-motions)
 (require 'evil-insert)
@@ -57,7 +57,7 @@
 (define-key evil-normal-state-map "<" 'evil-shift-left)
 (define-key evil-normal-state-map ">" 'evil-shift-right)
 (define-key evil-normal-state-map (kbd "DEL") 'evil-backward-char)
-(define-key evil-normal-state-map [escape] 'evil-normal-state)
+(define-key evil-normal-state-map [escape] 'evil-force-normal-state)
 (define-key evil-normal-state-map [remap cua-paste-pop] 'evil-paste-pop)
 (define-key evil-normal-state-map [remap yank-pop] 'evil-paste-pop)
 
@@ -106,8 +106,6 @@
 (define-key evil-window-map "|" 'evil-window-set-width)
 (define-key evil-window-map "\C-b" 'evil-window-bottom-right)
 (define-key evil-window-map "\C-c" 'delete-window)
-(define-key evil-window-map "\C-h" 'evil-window-left)
-(define-key evil-window-map "\C-H" 'evil-window-move-far-left)
 (define-key evil-window-map "\C-j" 'evil-window-down)
 (define-key evil-window-map "\C-J" 'evil-window-move-very-bottom)
 (define-key evil-window-map "\C-k" 'evil-window-up)
@@ -154,6 +152,7 @@
 (define-key evil-motion-state-map "k" 'evil-previous-line)
 (define-key evil-motion-state-map "l" 'evil-forward-char)
 (define-key evil-motion-state-map " " 'evil-forward-char)
+(define-key evil-motion-state-map "K" 'evil-lookup)
 (define-key evil-motion-state-map "L" 'evil-window-bottom)
 (define-key evil-motion-state-map "M" 'evil-window-middle)
 (define-key evil-motion-state-map "n" 'evil-search-next)
@@ -189,7 +188,7 @@
 (define-key evil-motion-state-map "|" 'evil-goto-column)
 (define-key evil-motion-state-map "^" 'evil-first-non-blank)
 (define-key evil-motion-state-map "+" 'evil-next-line-first-non-blank)
-(define-key evil-motion-state-map "_" 'evil-next-line-first-non-blank)
+(define-key evil-motion-state-map "_" 'evil-next-line-1-first-non-blank)
 (define-key evil-motion-state-map "-" 'evil-previous-line-first-non-blank)
 (define-key evil-motion-state-map "\C-w" 'evil-window-map)
 (define-key evil-motion-state-map "\C-]" 'evil-jump-to-tag)
@@ -216,6 +215,7 @@
 (define-key evil-motion-state-map "V" 'evil-visual-line)
 (define-key evil-motion-state-map "\C-v" 'evil-visual-block)
 (define-key evil-motion-state-map "gv" 'evil-visual-restore)
+(define-key evil-motion-state-map (kbd "C-^") 'evil-buffer)
 (define-key evil-motion-state-map
   (read-kbd-macro evil-toggle-key) 'evil-emacs-state)
 
@@ -289,11 +289,10 @@
 (define-key evil-insert-state-map "\C-r" 'evil-paste-from-register)
 (define-key evil-insert-state-map "\C-y" 'evil-copy-from-above)
 (define-key evil-insert-state-map "\C-e" 'evil-copy-from-below)
-(define-key evil-insert-state-map "\C-p" 'evil-complete)
-(define-key evil-insert-state-map "\C-n" 'evil-complete)
-(define-key evil-insert-state-map "\C-x\C-p" 'evil-complete-line)
-(define-key evil-insert-state-map "\C-x\C-n" 'evil-complete-line)
-(define-key evil-insert-state-map (kbd "RET") 'evil-ret)
+(define-key evil-insert-state-map "\C-n" 'evil-complete-next)
+(define-key evil-insert-state-map "\C-p" 'evil-complete-previous)
+(define-key evil-insert-state-map "\C-x\C-n" 'evil-complete-next-line)
+(define-key evil-insert-state-map "\C-x\C-p" 'evil-complete-previous-line)
 (define-key evil-insert-state-map [escape] 'evil-normal-state)
 (define-key evil-insert-state-map
   (read-kbd-macro evil-toggle-key) 'evil-emacs-state)
@@ -316,10 +315,10 @@
 
 ;;; Minibuffer
 
-(define-key minibuffer-local-map "\C-p" 'evil-complete)
-(define-key minibuffer-local-map "\C-n" 'evil-complete)
-(define-key minibuffer-local-map "\C-x\C-p" 'evil-complete)
-(define-key minibuffer-local-map "\C-x\C-n" 'evil-complete)
+(define-key minibuffer-local-map "\C-p" 'evil-complete-next)
+(define-key minibuffer-local-map "\C-n" 'evil-complete-previous)
+(define-key minibuffer-local-map "\C-x\C-p" 'evil-complete-next-line)
+(define-key minibuffer-local-map "\C-x\C-n" 'evil-complete-previous-line)
 
 ;; Ex
 (define-key evil-motion-state-map ":" 'evil-ex-read-command)
@@ -330,6 +329,8 @@
 (evil-ex-define-cmd "w" "write")
 (evil-ex-define-cmd "wall" 'evil-write-all)
 (evil-ex-define-cmd "wa" "wall")
+(evil-ex-define-cmd "saveas" 'evil-save)
+(evil-ex-define-cmd "sav" "saveas")
 (evil-ex-define-cmd "buffer" 'evil-buffer)
 (evil-ex-define-cmd "b" "buffer")
 (evil-ex-define-cmd "bnext" 'evil-next-buffer)

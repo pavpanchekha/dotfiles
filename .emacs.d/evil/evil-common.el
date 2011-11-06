@@ -16,7 +16,8 @@ otherwise add at the end of the list."
         (setq tail (cdr tail)))
       (if tail
           (setcar tail (cons key val))
-        (add-to-list list-var (cons key val) t))
+        (set list-var (append (symbol-value list-var)
+                              (list (cons key val)))))
       (if elements
           (apply 'evil-add-to-alist list-var elements)
         (symbol-value list-var)))))
@@ -54,70 +55,52 @@ Stop when reaching POINTER."
           (setq list (cdr list)))))))
 
 (defun evil-concat-lists (&rest sequences)
-  "Concatenate lists, removing duplicates.
-The first occurrence is retained.
-To concatenate association lists, see `evil-concat-alists'."
-  (let ((first (pop sequences))
-        (tail (copy-sequence (pop sequences)))
-        result)
-    ;; remove internal duplicates
-    (dolist (elt first)
-      (add-to-list 'result elt t 'eq))
-    ;; remove tail duplicates
-    (catch 'empty
-      (dolist (elt result)
-        (if tail
-            (setq tail (delq elt tail))
-          (throw 'empty t))))
-    (setq result (append result tail))
-    (if sequences
-        (apply 'evil-concat-lists result sequences)
-      result)))
+  "Concatenate lists, removing duplicates."
+  (let (result)
+    (dolist (sequence sequences)
+      (dolist (elt sequence)
+        (add-to-list 'result elt nil 'eq)))
+    (nreverse result)))
 
 (defun evil-concat-alists (&rest sequences)
-  "Concatenate association lists, removing duplicates.
-The first association is retained.
-To concatenate regular lists, see `evil-concat-lists'."
-  (let ((first (pop sequences))
-        (tail (copy-sequence (pop sequences)))
-        result)
-    ;; remove internal duplicates
-    (dolist (elt first)
-      (unless (assq (car-safe elt) result)
-        (add-to-list 'result elt t 'eq)))
-    ;; remove tail duplicates
-    (catch 'empty
-      (dolist (elt result)
-        (if tail
-            (setq tail (assq-delete-all (car-safe elt) tail))
-          (throw 'empty t))))
-    (setq result (append result tail))
-    (if sequences
-        (apply 'evil-concat-lists result sequences)
-      result)))
+  "Concatenate association lists, removing duplicates."
+  (let (result)
+    (dolist (sequence sequences)
+      (dolist (elt sequence)
+        (setq result (assq-delete-all (car-safe elt) result))
+        (add-to-list 'result elt)))
+    (nreverse result)))
+
+(defun evil-concat-plists (&rest sequences)
+  "Concatenate property lists, removing duplicates."
+  (let (result)
+    (dolist (sequence sequences result)
+      (while sequence
+        (setq result
+              (plist-put result (pop sequence) (pop sequence)))))))
 
 (defun evil-get-property (alist key &optional prop)
   "Return property PROP for KEY in ALIST.
 ALIST is an association list with entries of the form
 \(KEY . PLIST), where PLIST is a property list.
 If PROP is nil, return all properties for KEY.
-If KEY is nil, return an association list of keys
+If KEY is t, return an association list of keys
 and their PROP values."
   (unless (or (keywordp prop) (null prop))
     (setq prop (intern (format ":%s" prop))))
   (cond
-   ((and key prop)
-    (plist-get (cdr (assq key alist)) prop))
-   (key ; PROP is nil
+   ((null prop)
     (cdr (assq key alist)))
-   (prop ; KEY is nil
+   ((eq key t)
     (let (result val)
       (dolist (entry alist result)
         (setq key (car entry)
               val (cdr entry))
         (when (plist-member val prop)
           (setq val (plist-get val prop))
-          (add-to-list 'result (cons key val))))))))
+          (push (cons key val) result)))))
+   (t
+    (plist-get (cdr (assq key alist)) prop))))
 
 (defun evil-put-property (alist-var key prop val &rest properties)
   "Set PROP to VAL for KEY in ALIST-VAR.
@@ -330,7 +313,7 @@ is non-nil) and returns point."
   "Set the prompt-string of MAP to PROMPT."
   (delq (keymap-prompt map) map)
   (when prompt
-    (setcdr map (append (list prompt) (cdr map)))))
+    (setcdr map (cons prompt (cdr map)))))
 
 ;;; Markers
 
@@ -418,11 +401,33 @@ or a marker object pointing nowhere."
   "Return contents of REGISTER.
 Signal an error if empty, unless NOERROR is non-nil."
   (when (characterp register)
-    (or (if (eq register ?\")
-            (current-kill 0)
-          (get-register register))
+    (or (cond
+         ((eq register ?\")
+          (current-kill 0))
+         ((eq register ?*)
+          (let ((x-select-enable-primary t))
+            (current-kill 0)))
+         ((eq register ?+)
+          (let ((x-select-enable-clipboard t))
+            (current-kill 0)))
+         (t
+          (get-register register)))
         (unless noerror
           (error "Register `%c' is empty" register)))))
+
+(defun evil-set-register (register text)
+  "Set the contents of register REGISTER to TEXT."
+  (cond
+   ((eq register ?\")
+    (kill-new text))
+   ((eq register ?*)
+    (let ((x-select-enable-primary t))
+      (kill-new text)))
+   ((eq register ?+)
+    (let ((x-select-enable-clipboard t))
+      (kill-new text)))
+   (t
+    (set-register register text))))
 
 ;; custom version of `gensym'
 (defun evil-generate-symbol (&optional intern)
@@ -477,7 +482,7 @@ recursively."
                            (substring keys beg end)
                            (when (< end len)
                              (substring keys end))))))
-           (t ;; append a further event
+           (t ; append a further event
             (setq end (1+ end))))))
       (error "Key sequence contains no complete binding"))))
 
@@ -742,7 +747,8 @@ Execute BODY, then restore those things."
 (defun evil-normalize-position (pos)
   "Return POS if it does not exceed the buffer boundaries.
 If POS is less than `point-min', return `point-min'.
-Is POS is more than `point-max', return `point-max'."
+Is POS is more than `point-max', return `point-max'.
+If POS is a marker, return its position."
   (cond
    ((not (number-or-marker-p pos))
     pos)
@@ -750,6 +756,8 @@ Is POS is more than `point-max', return `point-max'."
     (point-min))
    ((> pos (point-max))
     (point-max))
+   ((markerp pos)
+    (marker-position pos))
    (t
     pos)))
 
@@ -906,6 +914,16 @@ POS defaults to the current position of point."
     (if (eq (car-safe exp) 'quote)
         (cadr exp)
       exp)))
+
+(defmacro evil-with-or-without-comment (&rest body)
+  "Try BODY narrowed to the current comment; then try BODY unnarrowed.
+If BODY returns non-nil inside the current comment, return that.
+Otherwise, execute BODY again, but without the restriction."
+  (declare (indent defun)
+           (debug t))
+  `(or (when (or (evil-in-comment-p) (evil-in-string-p))
+         (evil-narrow-to-comment ,@body))
+       (progn ,@body)))
 
 ;;; Highlighting
 

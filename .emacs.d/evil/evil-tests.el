@@ -240,9 +240,9 @@ VISUAL is the Visual selection: it defaults to `evil-visual-char'."
           (when evil-test-point
             (goto-char evil-test-point)
             (evil-visual-refresh)
-            (unless (and (= (evil-visual-beginning)
+            (unless (and (= evil-visual-beginning
                             evil-test-visual-start)
-                         (= (evil-visual-end)
+                         (= evil-visual-end
                             evil-test-visual-end))
               (evil-visual-select
                evil-test-visual-start evil-test-visual-end visual -1)
@@ -349,19 +349,19 @@ is executed at the end."
 
 (defmacro evil-test-selection
   (string &optional end-string before-predicate after-predicate)
-  "Verify that the Visual selection corresponds to STRING."
+  "Verify that the Visual selection contains STRING."
   (declare (indent defun))
   `(progn
      (save-excursion
-       (goto-char (or (evil-visual-beginning) (region-beginning)))
+       (goto-char (or evil-visual-beginning (region-beginning)))
        (evil-test-text nil (or ,string ,end-string) ,before-predicate))
      (save-excursion
-       (goto-char (or (evil-visual-end) (region-end)))
+       (goto-char (or evil-visual-end (region-end)))
        (evil-test-text (or ,end-string ,string) nil nil ,after-predicate))))
 
 (defmacro evil-test-region
   (string &optional end-string before-predicate after-predicate)
-  "Verify that the region corresponds to STRING."
+  "Verify that the region contains STRING."
   (declare (indent defun))
   `(progn
      (save-excursion
@@ -373,7 +373,7 @@ is executed at the end."
 
 (defmacro evil-test-overlay
   (overlay string &optional end-string before-predicate after-predicate)
-  "Verify that OVERLAY corresponds to STRING."
+  "Verify that OVERLAY contains STRING."
   (declare (indent defun))
   `(progn
      (save-excursion
@@ -624,8 +624,7 @@ when exiting Operator-Pending state")
                           (point)))
            (third-line (progn
                          (forward-line)
-                         (point)))
-           (overlay (make-overlay 1 1)))
+                         (point))))
       (ert-info ("Return the beginning and end unchanged \
 if they are the same")
         (should (equal (evil-normalize 1 1 'exclusive)
@@ -647,28 +646,7 @@ and the beginning")
         (should (string= (evil-describe 1 2 'exclusive)
                          "1 character"))
         (should (string= (evil-describe 5 2 'exclusive)
-                         "3 characters")))
-      (ert-info ("Expand and measure overlay")
-        (evil-set-type overlay 'exclusive)
-        (should (string= (evil-describe-overlay overlay)
-                         "0 characters"))
-        (move-overlay overlay 1 3)
-        (evil-expand-overlay overlay)
-        (should (string= (evil-describe-overlay overlay)
-                         "2 characters"))
-        (evil-contract-overlay overlay)
-        (should (string= (evil-describe-overlay overlay)
-                         "2 characters"))
-        (ert-info ("Normalize overlay")
-          (move-overlay overlay (1+ first-line) second-line)
-          (evil-normalize-overlay overlay)
-          (should (= (overlay-start overlay) (1+ first-line)))
-          (should (= (overlay-end overlay) (1- second-line)))
-          (should (eq (evil-type overlay) 'inclusive))
-          (should (overlay-get overlay :expanded)))
-        (ert-info ("Contract overlay")
-          (evil-contract-overlay overlay)
-          (should-not (overlay-get overlay :expanded)))))))
+                         "3 characters"))))))
 
 (ert-deftest evil-test-inclusive-type ()
   "Expand and contract the `inclusive' type"
@@ -677,36 +655,23 @@ and the beginning")
     ";; This buffer is for notes you don't want to save.
 ;; If you want to create a file, visit that file with C-x C-f,
 ;; then enter the text in that file's own buffer."
-    (let ((overlay (make-overlay 1 1)))
-      (ert-info ("Include the ending character")
-        (should (equal (evil-expand 1 1 'inclusive)
-                       '(1 2 inclusive :expanded t))))
-      (ert-info ("Don't mind if positions are in wrong order")
-        (should (equal (evil-expand 5 2 'inclusive)
-                       '(2 6 inclusive :expanded t))))
-      (ert-info ("Exclude the ending character when contracting")
-        (should (equal (evil-contract 1 2 'inclusive)
-                       '(1 1 inclusive :expanded nil))))
-      (ert-info ("Don't mind positions' order when contracting")
-        (should (equal (evil-contract 6 2 'inclusive)
-                       '(2 5 inclusive :expanded nil))))
-      (ert-info ("Measure as one more than the difference")
-        (should (string= (evil-describe 1 1 'inclusive)
-                         "1 character"))
-        (should (string= (evil-describe 5 2 'inclusive)
-                         "4 characters")))
-      (ert-info ("Expand overlay")
-        (evil-set-type overlay 'inclusive)
-        (evil-expand-overlay overlay)
-        (should (= (overlay-start overlay) 1))
-        (should (= (overlay-end overlay) 2))
-        (should (overlay-get overlay :expanded)))
-      (ert-info ("Contract overlay")
-        (move-overlay overlay 1 4)
-        (evil-contract-overlay overlay)
-        (should (= (overlay-start overlay) 1))
-        (should (= (overlay-end overlay) 3))
-        (should-not (overlay-get overlay :expanded))))))
+    (ert-info ("Include the ending character")
+      (should (equal (evil-expand 1 1 'inclusive)
+                     '(1 2 inclusive :expanded t))))
+    (ert-info ("Don't mind if positions are in wrong order")
+      (should (equal (evil-expand 5 2 'inclusive)
+                     '(2 6 inclusive :expanded t))))
+    (ert-info ("Exclude the ending character when contracting")
+      (should (equal (evil-contract 1 2 'inclusive)
+                     '(1 1 inclusive :expanded nil))))
+    (ert-info ("Don't mind positions' order when contracting")
+      (should (equal (evil-contract 6 2 'inclusive)
+                     '(2 5 inclusive :expanded nil))))
+    (ert-info ("Measure as one more than the difference")
+      (should (string= (evil-describe 1 1 'inclusive)
+                       "1 character"))
+      (should (string= (evil-describe 5 2 'inclusive)
+                       "4 characters")))))
 
 (ert-deftest evil-test-line-type ()
   "Expand the `line' type"
@@ -721,8 +686,7 @@ and the beginning")
                           (point)))
            (third-line (progn
                          (forward-line)
-                         (point)))
-           (overlay (make-overlay 1 1)))
+                         (point))))
       (ert-info ("Expand to the whole first line")
         (should (equal (evil-expand first-line first-line 'line)
                        (list first-line second-line 'line :expanded t)))
@@ -732,18 +696,7 @@ and the beginning")
         (should (equal (evil-expand first-line second-line 'line)
                        (list first-line third-line 'line :expanded t)))
         (should (string= (evil-describe first-line second-line 'line)
-                         "2 lines")))
-      (ert-info ("Expand overlay")
-        (evil-set-type overlay 'line)
-        (evil-expand-overlay overlay)
-        (should (= (overlay-start overlay) first-line))
-        (should (= (overlay-end overlay) second-line))
-        (should (overlay-get overlay :expanded)))
-      (ert-info ("Restore overlay")
-        (evil-contract-overlay overlay)
-        (should (= (overlay-start overlay) 1))
-        (should (= (overlay-end overlay) 1))
-        (should-not (overlay-get overlay :expanded))))))
+                         "2 lines"))))))
 
 (ert-deftest evil-test-block-type ()
   "Expand and contract the `block' type"
@@ -1470,6 +1423,43 @@ the `evil-repeat' command")
       ("." (kbd "C-.") (kbd "C-."))
       ";; ABCXYAB[C]ZThis buffer is for notes.")))
 
+(ert-deftest evil-test-ESC-repeat-normal-state ()
+  "Test if ESC is not been recorded in normal state."
+  :tags '(evil repeat)
+  (ert-info ("Test normal ESC")
+    (evil-test-buffer
+      ";;[ ]This buffer is for notes."
+      (setq evil-repeat-ring (make-ring 10))
+      (should (= (ring-length evil-repeat-ring) 0))
+      ("aABC" [escape])
+      ";; AB[C]This buffer is for notes."
+      (should (= (ring-length evil-repeat-ring) 1))
+      (".")
+      ";; ABCAB[C]This buffer is for notes."
+      ([escape])
+      (should (= (ring-length evil-repeat-ring) 1))
+      (".")
+      ";; ABCABCAB[C]This buffer is for notes.")))
+
+(ert-deftest evil-test-abort-operator-repeat ()
+  "Test if ESC in operator-state cancels recording of repeation."
+  :tags '(evil repeat)
+  (let ((inhibit-quit t))
+    (ert-info ("Test ESC")
+      (evil-test-buffer
+        ";;[ ]This buffer is for notes."
+        (setq evil-repeat-ring (make-ring 10))
+        (should (= (ring-length evil-repeat-ring) 0))
+        ("aABC" [escape])
+        ";; AB[C]This buffer is for notes."
+        (should (= (ring-length evil-repeat-ring) 1))
+        (".")
+        ";; ABCAB[C]This buffer is for notes."
+        ("d" [escape])
+        (should (= (ring-length evil-repeat-ring) 1))
+        (".")
+        ";; ABCABCAB[C]This buffer is for notes."))))
+
 ;;; Operators
 
 (ert-deftest evil-test-keypress-parser ()
@@ -1726,7 +1716,7 @@ the `evil-repeat' command")
       ";; [ ]is for notes you don't want to save"
       (should (string= (current-kill 0) "This buffer"))
       ("P")
-      ";; [T]his buffer is for notes you don't want to save"))
+      ";; This buffe[r] is for notes you don't want to save"))
   (ert-info ("Delete lines")
     (evil-test-buffer
       ";; [T]his buffer is for notes you don't want to save.
@@ -1744,7 +1734,7 @@ the `evil-repeat' command")
 ;; [I]f you want to create a file, visit that file with C-x C-f,
 ;; then enter the text in that file's own buffer."
       ("2dd")
-      ";; This buffer is for notes you don't want to save[.]"))
+      "[;]; This buffer is for notes you don't want to save."))
   (ert-info ("Delete rectangle")
     (evil-test-buffer
       "[;]; This buffer is for notes you don't want to save.
@@ -1761,15 +1751,15 @@ then enter the text in that file's own buffer.")))
   :tags '(evil operator)
   (ert-info ("Delete to end of line")
     (evil-test-buffer
-     ";; This buffer is for notes[ ]you don't want to save."
-     ("D")
-     ";; This buffer is for note[s]"))
+      ";; This buffer is for notes[ ]you don't want to save."
+      ("D")
+      ";; This buffer is for note[s]"))
   (ert-info ("Act linewise on character selection")
     (evil-test-buffer
-     ";; This <buffe[r]> is for notes,
+      ";; This <buffe[r]> is for notes,
 and for Lisp evaluation."
-     ("D")
-     "[a]nd for Lisp evaluation."))
+      ("D")
+      "[a]nd for Lisp evaluation."))
   (ert-info ("Act on each line of block selection")
     (evil-test-buffer
       :visual block
@@ -1894,7 +1884,7 @@ Below some empty line")))
 \[;]; and for Lisp evaluation."
       ("P")
       ";; This buffer is for notes you don't want to save,
-\[T]his buffer;; and for Lisp evaluation."))
+This buffe[r];; and for Lisp evaluation."))
   (ert-info ("Paste characters with count")
     (evil-test-buffer
       ";; [T]his buffer is for notes you don't want to save,
@@ -1904,7 +1894,7 @@ Below some empty line")))
 \[;]; and for Lisp evaluation."
       ("3P")
       ";; This buffer is for notes you don't want to save,
-\[T]his bufferThis bufferThis buffer;; and for Lisp evaluation."))
+This bufferThis bufferThis buffe[r];; and for Lisp evaluation."))
   (ert-info ("Paste characters at end-of-buffer")
     (evil-test-buffer
       ";; [T]his buffer is for notes you don't want to save,
@@ -1914,7 +1904,7 @@ Below some empty line")))
 ;; and for Lisp evaluation[.]"
       ("2P")
       ";; This buffer is for notes you don't want to save,
-;; and for Lisp evaluation[T]his bufferThis buffer."))
+;; and for Lisp evaluationThis bufferThis buffe[r]."))
   (ert-info ("Paste characters at end-of-buffer on empty line")
     (evil-test-buffer
       ";; [T]his buffer is for notes you don't want to save,
@@ -1926,7 +1916,7 @@ Below some empty line")))
       ("2P")
       ";; This buffer is for notes you don't want to save,
 ;; and for Lisp evaluation.
-\[T]his bufferThis buffer"))
+This bufferThis buffe[r]"))
   (ert-info ("Paste lines")
     (evil-test-buffer
       ";; [T]his buffer is for notes you don't want to save,
@@ -2201,7 +2191,7 @@ This bufferThis buffe[r]"))
       (define-key evil-operator-state-local-map "s" 'evil-test-square-motion)
       ("y2e2yyy3sjP\C-p\C-p")
       ";; This buffer is for notes you don't want to save.
-\[;]; This;; If you want to create a file, visit that file with C-x C-f,
+;; Thi[s];; If you want to create a file, visit that file with C-x C-f,
 ;; then enter the text in that file's own buffer."))
   (ert-info ("Pop with count")
     (evil-test-buffer
@@ -2211,7 +2201,7 @@ This bufferThis buffe[r]"))
       (define-key evil-operator-state-local-map "s" 'evil-test-square-motion)
       ("y2e2yyy3sjP2\C-p")
       ";; This buffer is for notes you don't want to save.
-\[;]; This;; If you want to create a file, visit that file with C-x C-f,
+;; Thi[s];; If you want to create a file, visit that file with C-x C-f,
 ;; then enter the text in that file's own buffer."))
   (ert-info ("Single pop-next")
     (evil-test-buffer
@@ -2363,10 +2353,10 @@ This bufferThis buffe[r]"))
     (let ((evil-cross-lines t)
           (evil-move-cursor-back t))
       (evil-test-buffer
-       ";; This buffer is for notes[,]
+        ";; This buffer is for notes[,]
 ;; and for Lisp evaluation."
-       ("l")
-       ";; This buffer is for notes,
+        ("l")
+        ";; This buffer is for notes,
 \[;]; and for Lisp evaluation.")))
   (ert-info ("With count")
     (evil-test-buffer
@@ -2764,9 +2754,9 @@ Below some empty line")
       ";; This buffer i[s] for notes."))
   (ert-info ("Delete")
     (evil-test-buffer
-     ";; This[-]buffer-is-for-notes."
-     ("de")
-     ";; This[-]is-for-notes."))
+      ";; This[-]buffer-is-for-notes."
+      ("de")
+      ";; This[-]is-for-notes."))
   (ert-info ("Empty line")
     (evil-test-buffer
       "Above some line
@@ -3576,16 +3566,40 @@ Below some empty line."))
      (t
       (should (mark))
       (should (region-active-p)))))
-  (ert-info ("Refresh `evil-visual-overlay'")
-    (should (overlayp evil-visual-overlay))
-    (should (= (overlay-start evil-visual-overlay)
-               (car (evil-expand (point) (mark) type))))
-    (should (= (overlay-end evil-visual-overlay)
-               (cadr (evil-expand (point) (mark) type))))
-    (should (eq (evil-type evil-visual-overlay) type))
-    (should (eq (overlay-get evil-visual-overlay :direction)
-                (if (< (point) (mark)) -1 1)))
-    (should (eq (overlay-get evil-visual-overlay :expanded) t))))
+  (ert-info ("Refresh Visual markers")
+    (should (= (evil-range-beginning (evil-expand (point) (mark) type))
+               evil-visual-beginning))
+    (should (= (evil-range-end (evil-expand (point) (mark) type))
+               evil-visual-end))
+    (should (eq evil-visual-type type))
+    (should (eq evil-visual-direction
+                (if (< (point) (mark)) -1 1)))))
+
+(ert-deftest evil-test-visual-refresh ()
+  "Test `evil-visual-refresh'"
+  :tags '(evil visual)
+  (evil-test-buffer
+    ";; [T]his buffer is for notes."
+    (evil-visual-refresh)
+    (should (= evil-visual-beginning 4))
+    (should (= evil-visual-end 5)))
+  (evil-test-buffer
+    ";; [T]his buffer is for notes."
+    (let ((evil-visual-region-expanded t))
+      (evil-visual-refresh)
+      (should (= evil-visual-beginning 4))
+      (should (= evil-visual-end 4)))))
+
+(ert-deftest evil-test-visual-exchange ()
+  "Test `exchange-point-and-mark' in Visual character selection"
+  :tags '(evil visual)
+  (evil-test-buffer
+    ";; <[T]his> buffer is for notes you don't want to save,
+;; and for Lisp evaluation."
+    ("o")
+    (should (region-active-p))
+    ";; <Thi[s]> buffer is for notes you don't want to save,
+;; and for Lisp evaluation."))
 
 (ert-deftest evil-test-visual-char ()
   "Test Visual character selection"
@@ -3707,11 +3721,11 @@ if no previous selection")
       (should-not (evil-get-property alist 'wibble :bar))
       (should-not (evil-get-property alist 'wobble :foo))
       (should-not (evil-get-property alist 'wibble :baz))
-      (should (equal (evil-get-property alist nil :foo)
+      (should (equal (evil-get-property alist t :foo)
                      '((wibble . t) (wobble . nil))))
-      (should (equal (evil-get-property alist nil :bar)
+      (should (equal (evil-get-property alist t :bar)
                      '((wibble . nil) (wobble . nil))))
-      (should (equal (evil-get-property alist nil :baz)
+      (should (equal (evil-get-property alist t :baz)
                      '((wobble . t)))))))
 
 (ert-deftest evil-test-filter-list ()
@@ -3756,7 +3770,7 @@ if no previous selection")
   (ert-info ("Remove duplicate associations")
     (should (equal (evil-concat-alists
                     '((a . b)) '((a . c)))
-                   '((a . b))))
+                   '((a . c))))
     (should-not (equal (evil-concat-lists
                         '((a . b)) '((a . c)))
                        '((a . b))))))
@@ -3842,6 +3856,40 @@ if no previous selection")
       (should-error (evil-extract-count "°"))
       (should-error (evil-extract-count "12°")))))
 
+(ert-deftest evil-test-eval-last-sexp ()
+  "Test adviced `evil-last-sexp'."
+  :tags '(evil)
+  (ert-info ("Normal state")
+    (evil-test-buffer
+      "(+ 1 (+ 2 3[)])"
+      ("1" (kbd "C-x C-e"))
+      "(+ 1 (+ 2 35[)])"))
+  (ert-info ("Insert state")
+    (evil-test-buffer
+      "(+ 1 (+ 2 3[)])"
+      ("i" (kbd "C-u") (kbd "C-x C-e") [escape])
+      "(+ 1 (+ 2 3[3]))"))
+  (ert-info ("Emacs state")
+    (evil-test-buffer
+      "(+ 1 (+ 2 3[)])"
+      ((kbd "C-z") (kbd "C-u") (kbd "C-x C-e"))
+      "(+ 1 (+ 2 33[)])")))
+
+(ert-deftest evil-test-esc-count ()
+  "Test if prefix-argument is transfered for key sequences with meta-key."
+  :tags '(evil esc)
+  (unless noninteractive
+    (ert-info ("Test M-<right>")
+      (evil-test-buffer
+        "[A]BC DEF GHI JKL MNO"
+        ("3" (kbd "ESC <right>"))
+        "ABC DEF GHI[ ]JKL MNO"))
+    (ert-info ("Test shell-command")
+      (evil-test-buffer
+        "[A]BC DEF GHI JKL MNO"
+        ("1" (kbd "ESC !") "echo TEST" [return])
+        "[T]EST\nABC DEF GHI JKL MNO"))))
+
 ;;; ex
 
 (ert-deftest evil-test-ex-parse-command ()
@@ -3917,6 +3965,71 @@ if no previous selection")
                  (cons 9 '(((mark ?a) . -2) ?\, (last-line . -10)))))
   (should (equal (evil-ex-parse-range ".+42cmd arg" 0)
                  (cons 4 '((current-line . 42) nil nil)))))
+
+(ert-deftest evil-test-ex-substitute ()
+  "Test `evil-ex-substitute'."
+  :tags '(evil)
+  (ert-info ("Substitute on current line")
+    (evil-test-buffer
+      "ABCABCABC\nABCA[B]CABC\nABCABCABC"
+      (":s/BC/XYZ/" (kbd "RET"))
+      "ABCABCABC\nAXYZA[B]CABC\nABCABCABC"))
+  (ert-info ("Substitute on whole current line")
+    (evil-test-buffer
+      "ABCABCABC\nABC[A]BCABC\nABCABCABC"
+      (":s/BC/XYZ/g" (kbd "RET"))
+      "ABCABCABC\nAXYZ[A]XYZAXYZ\nABCABCABC"))
+  (ert-info ("Substitute on last line")
+    (evil-test-buffer
+      "ABCABCABC\nABCABCABC\nABCABC[A]BC"
+      (":s/BC/XYZ/" (kbd "RET"))
+      "ABCABCABC\nABCABCABC\nAXYZABC[A]BC"))
+  (ert-info ("Substitute on whole last line")
+    (evil-test-buffer
+      "ABCABCABC\nABCABCABC\nABCABC[A]BC"
+      (":s/BC/XYZ/g" (kbd "RET"))
+      "ABCABCABC\nABCABCABC\nAXYZAXYZ[A]XYZ"))
+  (ert-info ("Substitute on range")
+    (evil-test-buffer
+      "ABCABCABC\nQRT\nABC[A]BCABC\nABCABCABC"
+      (":1,3s/BC/XYZ/" (kbd "RET"))
+      "AXYZABCABC\nQRT\nAXYZ[A]BCABC\nABCABCABC"))
+  (ert-info ("Substitute whole lines on range")
+    (evil-test-buffer
+      "ABCABCABC\nQRT\nABC[A]BCABC\nABCABCABC"
+      (":1,3s/BC/XYZ/g" (kbd "RET"))
+      "AXYZAXYZAXYZ\nQRT\nAXYZ[A]XYZAXYZ\nABCABCABC"))
+  (ert-info ("Substitute on whole current line confirm")
+    (evil-test-buffer
+      "ABCABCABC\nABC[A]BCABC\nABCABCABC"
+      (":s/BC/XYZ/gc" (kbd "RET") "yny")
+      "ABCABCABC\nAXYZ[A]BCAXYZ\nABCABCABC"))
+  (ert-info ("Substitute on range confirm")
+    (evil-test-buffer
+      "ABCABCABC\nQRT\nABC[A]BCABC\nABCABCABC"
+      (":1,3s/BC/XYZ/c" (kbd "RET") "yn")
+      "AXYZABCABC\nQRT\nABC[A]BCABC\nABCABCABC"))
+  (ert-info ("Substitute whole lines on range with other delim")
+    (evil-test-buffer
+      "A/CA/CA/C\nQRT\nA/C[A]/CA/C\nA/CA/CA/C"
+      (":1,3s,/C,XYZ,g" (kbd "RET"))
+      "AXYZAXYZAXYZ\nQRT\nAXYZ[A]XYZAXYZ\nA/CA/CA/C"))
+  (ert-info ("Substitute on whole buffer, smart case")
+    (evil-test-buffer
+      "[A]bcAbcAbc\naBcaBcaBc\nABCABCABC\nabcabcabc"
+      (":%s/bc/xy/g" (kbd "RET"))
+      "[A]xyAxyAxy\naXyaXyaXy\nAXYAXYAXY\naxyaxyaxy")))
+
+(ert-deftest evil-test-goto-line ()
+  "Test if :number moves point to a certain line."
+  (ert-info ("Move to line")
+    (evil-test-buffer
+      :visual line
+      "1\n 2\n [ ]3\n   4\n    5\n"
+      (":4" [return])
+      "1\n 2\n  3\n   [4]\n    5\n"
+      (":2" [return])
+      "1\n [2]\n  3\n   4\n    5\n")))
 
 (when (or evil-tests-profiler evil-tests-run)
   (evil-tests-initialize))

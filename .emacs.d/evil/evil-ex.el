@@ -375,8 +375,11 @@ arguments for programmable completion."
            ((null compl) (evil-ex-message "Unknown command"))
            ((cdr compl) (evil-ex-message "Incomplete command")))))
       ;; update arg-handler
-      (let* ((arg-type (and bnd (evil-get-command-property bnd :ex-arg)))
-             (arg-handler (and arg-type (cdr-safe (assoc arg-type evil-ex-arg-types-alist)))))
+      (let* ((arg-type (evil-get-command-property bnd :ex-arg))
+             (arg-handler (and arg-type
+                               (cdr-safe
+                                (assoc arg-type
+                                       evil-ex-arg-types-alist)))))
         (unless (eq arg-handler evil-ex-current-arg-handler)
           (when evil-ex-current-arg-handler
             (funcall evil-ex-current-arg-handler 'stop))
@@ -401,7 +404,15 @@ arguments for programmable completion."
 (defun evil-ex-call-current-command ()
   "Execute the given command COMMAND."
   (if (not evil-ex-current-cmd)
-      (error "Invalid ex-command.")
+      (if (and evil-ex-current-range
+               (car evil-ex-current-range)
+               (numberp (caar evil-ex-current-range)))
+          ;; TODO: we use funcall to avoid the compiler complaining about
+          ;;       undefined `evil-goto-line'. We can't require evil-motions.el
+          ;;       because this would lead to recursive requires.
+          (let ((fn 'evil-goto-line))
+            (funcall fn (caar evil-ex-current-range)))
+        (error "Invalid ex-command."))
     (let ((binding (evil-ex-completed-binding evil-ex-current-cmd)))
       (if binding
           (with-current-buffer evil-ex-current-buffer
@@ -485,6 +496,41 @@ count) in which case this function returns nil."
             ((eq base 'prev-of-prev-search) (error "Prev-of-prev-search not yet implemented."))
             ((eq base 'next-of-prev-subst) (error "Next-of-prev-subst not yet implemented."))
             (t (error "Invalid address: %s" address))))))))
+
+;;; TODO: extensions likes :p :~ <cfile> ...
+(defun evil-ex-replace-special-filenames (file-name)
+  "Replaces % by the current file-name, # by the alternate file-name in FILE-NAME."
+  (let ((current-fname (buffer-file-name))
+        (alternate-fname (and (other-buffer) (buffer-file-name (other-buffer)))))
+    (when current-fname
+      (setq file-name
+            (replace-regexp-in-string "\\(^\\|[^\\\\]\\)\\(%\\)"
+                                      current-fname
+                                      file-name
+                                      t
+                                      t
+                                      2)))
+    (when alternate-fname
+      (setq file-name
+            (replace-regexp-in-string "\\(^\\|[^\\\\]\\)\\(#\\)"
+                                      alternate-fname
+                                      file-name
+                                      t
+                                      t
+                                      2)))
+    (setq file-name
+          (replace-regexp-in-string "\\\\\\([#%]\\)"
+                                    "\\1"
+                                    file-name
+                                    t)))
+  file-name)
+
+(defun evil-ex-file-arg ()
+  "Returns the current ex-argument as file name.
+This function interprets special file-names like # and %."
+  (unless (or (null evil-ex-current-arg)
+              (zerop (length evil-ex-current-arg)))
+    (evil-ex-replace-special-filenames evil-ex-current-arg)))
 
 (defun evil-ex-setup ()
   "Initializes ex minibuffer."

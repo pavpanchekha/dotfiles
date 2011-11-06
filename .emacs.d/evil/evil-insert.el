@@ -1,7 +1,7 @@
 ;;;; Insert state
 
 (require 'evil-undo)
-(require 'evil-states)
+(require 'evil-core)
 (require 'evil-repeat)
 (require 'evil-visual)
 (require 'evil-digraphs)
@@ -71,13 +71,13 @@ lines. This is the default behaviour for Visual-state insertion."
    (list (prefix-numeric-value current-prefix-arg)
          (when (evil-visual-state-p)
            (evil-visual-rotate 'upper-left)
-           (when (memq (evil-visual-type) '(block line))
-             (count-lines (evil-visual-beginning)
-                          (evil-visual-end))))
+           (when (memq evil-visual-type '(block line))
+             (count-lines evil-visual-beginning
+                          evil-visual-end)))
          (evil-visual-state-p)))
   (if (and (evil-called-interactively-p)
            (evil-visual-state-p)
-           (and (eq (evil-visual-type) 'line)))
+           (and (eq evil-visual-type 'line)))
       (evil-insert-line count vcount)
     (setq evil-insert-count count
           evil-insert-lines nil
@@ -99,19 +99,19 @@ the lines."
   (interactive
    (list (prefix-numeric-value current-prefix-arg)
          (when (evil-visual-state-p)
-           (evil-visual-rotate (if (eq (evil-visual-type) 'block)
+           (evil-visual-rotate (if (eq evil-visual-type 'block)
                                    'upper-right
                                  'upper-left))
-           (when (memq (evil-visual-type) '(block line))
+           (when (memq evil-visual-type '(block line))
              (save-excursion
                ;; go to upper-left corner temporarily so
                ;; `count-lines' yields accurate results
                (evil-visual-rotate 'upper-left)
-               (count-lines (evil-visual-beginning)
-                            (evil-visual-end)))))))
+               (count-lines evil-visual-beginning
+                            evil-visual-end))))))
   (if (and (evil-called-interactively-p)
            (evil-visual-state-p)
-           (and (eq (evil-visual-type) 'line)))
+           (and (eq evil-visual-type 'line)))
       (evil-append-line count vcount)
     (unless (or (eolp) (evil-visual-state-p))
       (forward-char))
@@ -301,23 +301,43 @@ COL defaults to the current column."
 
 ;;; Completion
 
-(evil-define-command evil-complete ()
-  "Complete to the nearest preceding word.
-Search forward if a match isn't found."
-  :repeat change
-  (interactive)
-  (if (minibufferp)
-      (minibuffer-complete)
-    (dabbrev-expand nil)))
-
-(evil-define-command evil-complete-line (&optional arg)
-  "Complete a whole line."
+(evil-define-command evil-complete-next (&optional arg)
+  "Complete to the nearest following word.
+Search backward if a match isn't found.
+Calls `evil-complete-next-func'."
   :repeat change
   (interactive "P")
-  (let ((hippie-expand-try-functions-list
-         '(try-expand-line
-           try-expand-line-all-buffers)))
-    (hippie-expand arg)))
+  (if (minibufferp)
+      (funcall evil-complete-next-minibuffer-func)
+    (funcall evil-complete-next-func arg)))
+
+(evil-define-command evil-complete-previous (&optional arg)
+  "Complete to the nearest preceding word.
+Search forward if a match isn't found.
+Calls `evil-complete-previous-func'."
+  :repeat change
+  (interactive "P")
+  (if (minibufferp)
+      (funcall evil-complete-previous-minibuffer-func)
+    (funcall evil-complete-previous-func arg)))
+
+(evil-define-command evil-complete-next-line (&optional arg)
+  "Complete a whole line.
+Calls `evil-complete-next-line-func'."
+  :repeat change
+  (interactive "P")
+  (if (minibufferp)
+      (funcall evil-complete-next-minibuffer-func)
+    (funcall evil-complete-next-line-func arg)))
+
+(evil-define-command evil-complete-previous-line (&optional arg)
+  "Complete a whole line.
+Calls `evil-complete-previous-line-func'."
+  :repeat change
+  (interactive "P")
+  (if (minibufferp)
+      (funcall evil-complete-previous-minibuffer-func)
+    (funcall evil-complete-previous-line-func arg)))
 
 (defun evil-paste-from-register (register)
   "Paste from REGISTER."
@@ -332,8 +352,10 @@ Search forward if a match isn't found."
            (overlay-put overlay 'after-string string)
            (list (or evil-this-register (read-char))))
        (delete-overlay overlay))))
-  (and (fboundp 'evil-paste-after)
-       (evil-paste-after nil register)))
+  (when (fboundp 'evil-paste-before)
+    (when (evil-paste-before nil register t)
+      ;; go to end of pasted text
+      (forward-char))))
 
 (provide 'evil-insert)
 

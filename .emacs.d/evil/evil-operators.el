@@ -1,9 +1,10 @@
 ;;;; Operator-Pending state
 
 (require 'evil-undo)
-(require 'evil-states)
+(require 'evil-core)
 (require 'evil-visual)
 (require 'evil-insert)
+(require 'evil-repeat)
 (require 'evil-ex)
 
 (require 'rect)
@@ -144,9 +145,7 @@ a predefined type may be specified with TYPE."
       (cond
        ;; Visual selection
        ((evil-visual-state-p)
-        (setq range (evil-range (evil-visual-beginning)
-                                (evil-visual-end)
-                                (evil-visual-type))))
+        (setq range (evil-visual-range)))
        ;; Ex mode
        ((and (evil-ex-state-p)
              evil-ex-current-range)
@@ -174,9 +173,13 @@ a predefined type may be specified with TYPE."
                   count (nth 1 command)
                   type (or type (nth 2 command))))
           (cond
-           ((null motion)
+           ;; ESC cancels the current operator
+           ;; TODO: is there a better way to detect this canceling?
+           ((memq motion '(nil evil-esc))
+            (evil-repeat-abort)
             (setq quit-flag t))
            ((evil-get-command-property motion :suppress-operator)
+            (evil-repeat-abort)
             (setq quit-flag t))
            ((eq motion 'undefined)
             (setq motion nil))
@@ -242,9 +245,7 @@ The return value is a list (BEG END TYPE)."
              ((evil-range-p range))
              ;; the motion made a Visual selection
              ((evil-visual-state-p)
-              (setq range (evil-range (evil-visual-beginning)
-                                      (evil-visual-end)
-                                      (evil-visual-type))))
+              (setq range (evil-visual-range)))
              ;; the motion made an active region
              ((region-active-p)
               (setq range (evil-range (region-beginning)
@@ -394,7 +395,7 @@ Both COUNT and CMD may be nil."
     (when yank-handler
       (setq text (propertize text 'yank-handler (list yank-handler))))
     (when register
-      (set-register register text))
+      (evil-set-register register text))
     (kill-new text)))
 
 (defun evil-yank-lines (beg end &optional register yank-handler)
@@ -409,7 +410,7 @@ Both COUNT and CMD may be nil."
       (setq text (concat text "\n")))
     (setq text (propertize text 'yank-handler yank-handler))
     (when register
-      (set-register register text))
+      (evil-set-register register text))
     (kill-new text)))
 
 (defun evil-yank-rectangle (beg end &optional register yank-handler)
@@ -430,7 +431,7 @@ Both COUNT and CMD may be nil."
            (text (propertize (mapconcat #'identity lines "\n")
                              'yank-handler yank-handler)))
       (when register
-        (set-register register text))
+        (evil-set-register register text))
       (kill-new text))))
 
 (defun evil-yank-line-handler (text)
@@ -536,8 +537,10 @@ Both COUNT and CMD may be nil."
       (unless (eobp) (forward-line)))
     (goto-char opoint)))
 
-(evil-define-command evil-paste-before (count &optional register)
-  "Pastes the latest yanked text before the cursor position."
+(evil-define-command evil-paste-before
+  (count &optional register yank-handler)
+  "Pastes the latest yanked text before the cursor position.
+The return value is the yanked text."
   (interactive "P<x>")
   (if (evil-visual-state-p)
       (evil-visual-paste count register)
@@ -545,19 +548,20 @@ Both COUNT and CMD may be nil."
       (let* ((text (if register
                        (evil-get-register register)
                      (current-kill 0)))
-             (yank-handler (when (stringp text)
-                             (car-safe (get-text-property
-                                        0 'yank-handler text))))
+             (yank-handler (or yank-handler
+                               (when (stringp text)
+                                 (car-safe (get-text-property
+                                            0 'yank-handler text)))))
              (opoint (point)))
         (when text
-          (if (memq yank-handler '(evil-yank-line-handler
-                                   evil-yank-block-handler))
+          (if (functionp yank-handler)
               (let ((evil-paste-count count)
                     ;; for non-interactive use
                     (this-command 'evil-paste-before))
                 (push-mark opoint t)
                 (insert-for-yank text))
             ;; no yank-handler, default
+            (set-text-properties 0 (length text) nil text)
             (push-mark opoint t)
             (dotimes (i (or count 1))
               (insert-for-yank text))
@@ -567,13 +571,17 @@ Both COUNT and CMD may be nil."
                         opoint
                         opoint          ; beg
                         (point)))       ; end
-            (evil-exchange-point-and-mark)))
+            (when (> (length text) 0)
+              (backward-char))))
         ;; no paste-pop after pasting from a register
         (when register
-          (setq evil-last-paste nil))))))
+          (setq evil-last-paste nil))
+        (and (> (length text) 0) text)))))
 
-(evil-define-command evil-paste-after (count &optional register)
-  "Pastes the latest yanked text behind point."
+(evil-define-command evil-paste-after
+  (count &optional register yank-handler)
+  "Pastes the latest yanked text behind point.
+The return value is the yanked text."
   (interactive "P<x>")
   (if (evil-visual-state-p)
       (evil-visual-paste count register)
@@ -581,17 +589,18 @@ Both COUNT and CMD may be nil."
       (let* ((text (if register
                        (evil-get-register register)
                      (current-kill 0)))
-             (yank-handler (when (stringp text)
-                             (car-safe (get-text-property
-                                        0 'yank-handler text))))
+             (yank-handler (or yank-handler
+                               (when (stringp text)
+                                 (car-safe (get-text-property
+                                            0 'yank-handler text)))))
              (opoint (point)))
         (when text
-          (if (memq yank-handler '(evil-yank-line-handler
-                                   evil-yank-block-handler))
+          (if (functionp yank-handler)
               (let ((evil-paste-count count)
                     (this-command 'evil-paste-after)) ; for non-interactive use
                 (insert-for-yank text))
             ;; no yank-handler, default
+            (set-text-properties 0 (length text) nil text)
             (unless (eolp) (forward-char))
             (push-mark (point) t)
             ;; TODO: Perhaps it is better to collect a list of all
@@ -610,7 +619,8 @@ Both COUNT and CMD may be nil."
               (when (evil-normal-state-p)
                 (evil-adjust)))))
         (when register
-          (setq evil-last-paste nil))))))
+          (setq evil-last-paste nil))
+        (and (> (length text) 0) text)))))
 
 (evil-define-command evil-visual-paste (count &optional register)
   "Paste over Visual selection."
@@ -629,13 +639,12 @@ Both COUNT and CMD may be nil."
           (setq kill-ring (delete text kill-ring)))
         (setq kill-ring-yank-pointer kill-ring)
         (evil-visual-rotate 'upper-left)
-        (evil-delete (evil-visual-beginning)
-                     (evil-visual-end)
-                     (evil-visual-type))
+        (evil-delete evil-visual-beginning evil-visual-end
+                     evil-visual-type)
         (unless register
           (kill-new text))
         (when (and (eq yank-handler 'evil-yank-line-handler)
-                   (not (eq (evil-visual-type) 'line)))
+                   (not (eq evil-visual-type 'line)))
           (newline))
         (evil-normal-state))
       (if (eobp)
@@ -689,7 +698,9 @@ Save in REGISTER or in the kill-ring with YANK-HANDLER."
          (/= (point-min) beg))
     (delete-region (1- beg) end))
    (t
-    (delete-region beg end))))
+    (delete-region beg end)))
+  (when (eq type 'line)
+    (back-to-indentation)))
 
 (evil-define-operator evil-delete-line (beg end type register yank-handler)
   "Delete to end of line."
@@ -795,11 +806,11 @@ of the block."
     (when last-kbd-macro
       (when (member last-kbd-macro '("" []))
         (setq last-kbd-macro nil))
-      (set-register evil-this-macro last-kbd-macro))
+      (evil-set-register evil-this-macro last-kbd-macro))
     (setq evil-this-macro nil))
    (t
     (setq evil-this-macro register)
-    (set-register evil-this-macro nil)
+    (evil-set-register evil-this-macro nil)
     (start-kbd-macro nil))))
 
 (evil-define-command evil-execute-macro (count macro)
@@ -926,13 +937,13 @@ but doesn't insert or remove any spaces."
 
 ;; Ex operators
 (evil-define-operator evil-write (beg end type file-name &optional force)
-  "Saves the current buffer or the region from BEG to END to FILE-NAME.
+  "Saves the current buffer or the region from BEG to END to FILE-NAME without changing the current buffer's name.
 If the argument FORCE is non-nil, the file will be overwritten if
 already existing."
   :motion mark-whole-buffer
   :type line
   :repeat nil
-  (interactive "<f><!>")
+  (interactive "<R><f><!>")
   (when (null file-name)
     (setq file-name (buffer-file-name))
     (unless file-name
@@ -953,6 +964,17 @@ already existing."
   :repeat nil
   (interactive "<!>")
   (save-some-buffers force))
+
+(evil-define-command evil-save (file-name &optional force)
+  "Saves the current buffer to FILE-NAME and changes the file-name of the current buffer to this name.
+If no FILE-NAME is given, the current buffer's file-name is used."
+  :repeat nil
+  (interactive "<f><!>")
+  (when (null file-name)
+    (setq file-name (buffer-file-name))
+    (unless file-name
+      (error "Please specify a file-name for this buffer!")))
+  (write-file file-name (not force)))
 
 (evil-define-command evil-edit (file)
   "Visits a certain file."
@@ -1102,6 +1124,12 @@ Change to `%s'? "
               (when s
                 (let ((var (intern (format "evil-%s-state-modes" s))))
                   (customize-save-variable var (symbol-value var)))))))))))
+
+(evil-define-command evil-force-normal-state ()
+  "Switch to normal state without recording current command."
+  :repeat abort
+  (interactive)
+  (evil-normal-state))
 
 (provide 'evil-operators)
 
