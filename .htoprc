@@ -1,7 +1,7 @@
 # Beware! This file is rewritten every time htop exits.
 # The parser is also very primitive, and not human-friendly.
 # (I know, it's in the todo list).
-fields=48 0 40 46 47 1 
+fields=48 0 40 46 22 47 1 
 sort_key=47
 sort_direction=1
 hide_threads=0

@@ -525,7 +525,7 @@ them myself.
 
 #+BEGIN_SRC emacs-lisp
 (setq org-mobile-inbox-for-pull "~/notes/inbox.org")
-(setq org-mobile-directory "~/Dropbox/MobileOrg")
+(setq org-mobile-directory "~/Dropbox/Notes/mobile-org")
 #+END_SRC
 
 ** LaTeX Export

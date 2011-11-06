@@ -1,3 +1,5 @@
+-- -*- mode: haskell -*-
+
 import XMonad
 import XMonad.Util.NamedScratchpad
 import XMonad.Layout.NoBorders
@@ -37,11 +39,11 @@ myCompletion s = myApps >>= flip mkComplFunFromList s
 execPrompt = inputPromptWithCompl myPrompt "$" myCompletion ?+ \c-> spawn ("exec " ++ c)
 
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
-    [ ((modm .|. shiftMask, xK_x), spawn $ XMonad.terminal conf)
+    [ ((modm .|. shiftMask, xK_x     ), spawn $ XMonad.terminal conf)
 
-    , ((modm, xK_q     ), kill)
-
-    , ((modm,               xK_r ), sendMessage NextLayout)
+    , ((modm,               xK_q     ), kill)
+    , ((modm,               xK_r     ), sendMessage NextLayout)
+    , ((modm,               xK_b     ), sendMessage ToggleStruts)
     
     -- Resize viewed windows to the correct size
     , ((modm,               xK_n     ), refresh)
@@ -65,7 +67,6 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     
     -- Push window back into tiling
     , ((modm,               xK_d     ), withFocused $ windows . W.sink)
-
 
     , ((modm              , xK_x     ), namedScratchpadAction myScratchPads "terminal")
     , ((modm .|. shiftMask, xK_q     ), io (exitWith ExitSuccess))
@@ -100,9 +101,10 @@ myMouseBindings (XConfig {XMonad.modMask = modm}) = M.fromList $
     ]
 
 myManageHook = [ className =? "stalonetray"--> doIgnore
+               , className =? "plugin-container" --> doIgnore
                , namedScratchpadManageHook myScratchPads]
 
-myLayout = smartBorders $ avoidStruts $ tiled ||| Mirror tiled ||| Full
+myLayout = smartBorders $ avoidStruts $ (tiled ||| Mirror tiled ||| Full)
     where tiled = Tall 1 (3/100) (1/2)
 
 myLog pipe = dynamicLogWithPP $ xmobarPP {

@@ -1,16 +1,15 @@
 Config { font = "xft:Terminus-12:"
        , bgColor = "black"
        , fgColor = "white"
-       , position = Top
+       , position = Bottom
        , lowerOnStart = True
        , commands = [ Run StdinReader
                     , Run Memory ["-t","Mem: <usedratio>%"] 10
                     , Run Date "%H:%M" "date" 10
                     , Run BatteryP ["BAT0"] ["-t", "Batt: <left>%"] 60
-                    , Run Com "dropbox" ["status"] "" 5
                     ]
        , sepChar = "%"
        , alignSep = "}{"
-       , template = " %StdinReader%}{| %dropbox% | %battery% | %memory% | %date% "
+       , template = " %StdinReader%}{| %battery% | %memory% | %date% "
        }
 
