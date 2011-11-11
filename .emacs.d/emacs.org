@@ -11,7 +11,8 @@ my code.  My =.emacs.d/init.el= file contains only:
 
 More on this method can be found [[http://orgmode.org/worg/org-contrib/babel/intro.html#sec-8_2][in the Babel tutorial]].
 
-* Personal Info
+* Miscellany
+** Startup
 
 Emacs might as well know my name and email address.  I trust it.
 
@@ -20,8 +21,6 @@ Emacs might as well know my name and email address.  I trust it.
 (setq user-mail-address "me@pavpanchekha.com")
 #+END_SRC
 
-* File Information
-
 To make sure that Emacs can load some extra libraries that I've set
 up, I need to add my local =load-path= to the list.
 
@@ -29,7 +28,7 @@ up, I need to add my local =load-path= to the list.
 (add-to-list 'load-path "~/.emacs.d/load-path")
 #+END_SRC
 
-Also, I like to keep my custom-set variables from poluting my other
+Also, I like to keep my custom-set variables from polluting my other
 files, so I like to move the =custom-file=.
 
 #+BEGIN_SRC emacs-lisp
@@ -37,14 +36,14 @@ files, so I like to move the =custom-file=.
 (load custom-file 'noerror)
 #+END_SRC
 
-Finally, since I publish this file on the internet, I don't want
+Finally, since I publish this file on the Internet, I don't want
 passwords in it.  So I keep them elsewhere, and load them here:
 
 #+BEGIN_SRC emacs-lisp
 (org-babel-load-file "~/.emacs.d/passwords.org")
 #+END_SRC
 
-* GUI Settings
+** GUI Settings
 
 Some things Emacs does by default just use up screen real estate and
 programmer patience.  Note that =tool-bar-mode= requires a *nonzero*
@@ -52,7 +51,9 @@ parameter, not a truthy parameter, to display the toolbar.  This is
 absolutely absurd, but what can one do?
 
 #+BEGIN_SRC emacs-lisp
-(setq inhibit-startup-screen t)
+(setq inhibit-startup-screen t
+      inhibit-startup-message t
+      inhibit-startup-echo-area-message t)
 (set-scroll-bar-mode nil)
 (tool-bar-mode 0)
 #+END_SRC
@@ -60,22 +61,21 @@ absolutely absurd, but what can one do?
 I'm not yet pro enough to forsake =menu-bar-mode=, though one day I'll
 get there.
 
-Also, I like knowing where my files end; ergo:
+Also, I like knowing where my files end; ergo I ask Emacs to show
+empty lines.
 
 #+BEGIN_SRC emacs-lisp
 (if (not indicate-empty-lines)
   (toggle-indicate-empty-lines))
 #+END_SRC
 
-Also, a color theme
+Also, a color theme.  Yes, it's really called "whateveryouwant".
 
 #+BEGIN_SRC emacs-lisp
 (require 'color-theme)
 (color-theme-initialize)
 (color-theme-whateveryouwant)
 #+END_SRC
-
-** Modeline Goodies
 
 The modeline should really be pressed into useful service.  I make it
 display the time, and for the position display, have it give the column
@@ -87,8 +87,22 @@ number and file size:
 (setq size-indication-mode t)
 #+END_SRC
 
-* Text Editing
-** File Behavior
+The =yes or no= prompts get annoying quickly.  Instead, we ask Emacs to
+use single-character responses
+
+#+BEGIN_SRC emacs-lisp
+(fset 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+
+Since I rarely use the mouse, tooltips are more an annoyance than
+anything else.  This switches them to appear in the echo area.
+
+#+BEGIN_SRC emacs-lisp
+(tooltip-mode -1)
+(setq tooltip-use-echo-area t)
+#+END_SRC
+
+** Basic File Behaviors
 
 Emacs has some stupid defaults, such as making those =file~= files and
 using tabs for indentation.  I also make Emacs add final newlines and
@@ -98,7 +112,6 @@ to prompt me for only single characters (why is that default?).
 (setq make-backup-files nil)
 (setq-default indent-tabs-mode nil)
 (setq require-final-newline t)
-(fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 
 Also, I often have multiple buffers open with the same name.  Emacs
@@ -110,26 +123,18 @@ uses the parent directory name, which I usually know.
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
 #+END_SRC
+   
+** Games
 
-** Searching and Scrolling
-
-For searching, I enable highlighting as-I-search for both searches and
-search/replaces.  Also, searches are made case-insensitive.  
-
-#+BEGIN_SRC emacs-lisp
-(setq search-highlight t)
-(setq query-replace-highlight t)
-(setq case-fold-search t)
-#+END_SRC emacs-lisp
-
-For scrolling, I ask Emacs to scroll at most five lines at a time and
-to keep 5 lines between the cursor and the top/bottom of the page.
+It's very important that score files are placed correctly (can't lose
+my tetris high scores!):
 
 #+BEGIN_SRC emacs-lisp
-(setq scroll-conservatively 5)
-(setq scroll-margin 5)
+(setq tetris-score-file "~/.emacs.d/scores/tetris")
+(setq snake-score-file  "~/.emacs.d/scores/snake")
 #+END_SRC
 
+* Key Bindings
 ** Vim Key Bindings
 
 We use the [[http://gitorious.org/evil/pages/Home][Evil package]] for Vim keybindings in Emacs.
@@ -140,21 +145,15 @@ We use the [[http://gitorious.org/evil/pages/Home][Evil package]] for Vim keybin
   (evil-mode 1)
 #+END_SRC
 
-Another key binding I really miss from Vim is the spelling key
-bindings =zg= and =z==.  I can add them back with Evil's
-=evil-normal-state-map=; I make them hook into =ispell= (which I like
-much better than Vim's system, actually, since I can see context as I
-correct).
-
-#+BEGIN_SRC emacs-lisp
-(define-key evil-normal-state-map "z=" 'ispell-word)
-(define-key evil-normal-state-map "zg" 'ispell-insert-word)
-#+END_SRC
-
 ** Ispell =ispell-insert-word=
 
-Above, I mapped =zg= to =ispell-insert-word=.  Unfortunately,
-=ispell-insert-word= doesn't exist.  So, we write our own.
+Another key binding I really miss from Vim is the spelling key
+bindings =zg= and =z==; these make spell-checking much nicer to use.
+Emacs has a great spell-check built-in: Ispell.  All we need to do is
+add a few key-bindings.  But first we need a function to bind to, and
+for =zg=, one does not exist.  So off we go to implement
+=ispell-insert-word= (insert being what Ispell calls adding a word to
+your dictionary).
 
 #+BEGIN_SRC emacs-lisp
 (defun ispell-insert-word ()
@@ -208,7 +207,14 @@ with =no-query=.
       (ispell-pdict-save t))))
 #+END_SRC
 
-** General
+Finally, we add key-bindings using Evil's =evil-normal-state-map.
+
+#+BEGIN_SRC emacs-lisp
+(define-key evil-normal-state-map "z=" 'ispell-word)
+(define-key evil-normal-state-map "zg" 'ispell-insert-word)
+#+END_SRC
+
+** Miscellaneous
 
 I prefer to work with indented text at all times, so =RET= should be
 bound to =newline-and-indent=, and some terminals have problems with
@@ -219,11 +225,51 @@ as well.  The last line there make =C-k= kill the whole line.
 (global-set-key [C-m] 'newline-and-indent)
 (global-set-key [delete] 'delete-char)
 (setq kill-whole-line t)
-(setq-default tab-width 4)
+#+END_SRC
+** Searching and Scrolling
+
+For searching, I enable highlighting as-I-search for both searches and
+search/replaces.  Also, searches are made case-insensitive.  
+
+#+BEGIN_SRC emacs-lisp
+(setq search-highlight t)
+(setq query-replace-highlight t)
+(setq case-fold-search t)
+#+END_SRC emacs-lisp
+
+For scrolling, I ask Emacs to scroll at most five lines at a time and
+to keep 5 lines between the cursor and the top/bottom of the page.
+
+#+BEGIN_SRC emacs-lisp
+(setq scroll-conservatively 5)
+(setq scroll-margin 5)
 #+END_SRC
 
-** Printing
-*** Print to PDF
+* Utility Commands
+** =run= Command
+
+I have a =run= command that I rather like; it compiles and runs some
+program or file in a temporary program.  I use it for, for example,
+compiling LaTeX, or testing C code.
+
+#+BEGIN_SRC emacs-lisp
+(defun run-command (file)
+  (interactive (list (buffer-file-name)))
+  (shell-command (concat "run " file " &")))
+
+(defun compile-command (file)
+  (interactive (list (buffer-file-name)))
+  (shell-command (concat "run -c " file " &")))
+#+END_SRC
+
+Then we attach them to =[f5]= and =[C-f5]=.
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "<f5>") 'run-command)
+(global-set-key (kbd "C-<f5>") 'compile-command)
+#+END_SRC
+
+** Printing to PDF
 
 Sometimes, I need to print an Emacs buffer to PDF.  The standard
 printing commands are less than ideal for this, since they rely on
@@ -260,7 +306,6 @@ package.  We give it a temporary file to print to, and later we'll
                            (shell-quote-argument pdffile)))
     (find-file pdffile)))
 #+END_SRC
-*** Print Settings
 
 The default print settings are silly, especially once you consider
 that my use case is print-to-PDF.  So I would rather print with syntax
@@ -272,29 +317,28 @@ highlighting and no headers.
       ps-print-header-frame)
 #+END_SRC
 
-* Programming
-** =run= Command
+** Configuration editing configuration
 
-Normal boring definitions, just run a shell command.
+I actually edit my Emacs configuration a lot.  I call it "cultivating"
+my Emacs configuration.  So here are some utility functions for that.
 
-#+BEGIN_SRC emacs-lisp
-(defun run-command (file)
-  (interactive (list (buffer-file-name)))
-  (shell-command (concat "run " file " &")))
-
-(defun compile-command (file)
-  (interactive (list (buffer-file-name)))
-  (shell-command (concat "run -c " file " &")))
-#+END_SRC
-
-Then we attach them to =[f5]= and =[C-f5]=.
+The first function just reloads the Emacs configuration.
 
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "<f5>") 'run-command)
-(global-set-key (kbd "C-<f5>") 'compile-command)
+(defun reconfigure ()
+  (interactive)
+  (load-file "~/.emacs.d/init.el"))
 #+END_SRC
 
-** Slime
+The second function opens the configuration up for editing.
+
+#+BEGIN_SRC emacs-lisp
+(defun edconfigure ()
+  (interactive)
+  (find-file "~/.emacs.d/emacs.org"))
+#+END_SRC
+
+* Slime
 
 First, we tell Emacs where to find SLIME and load it.
 
@@ -333,8 +377,6 @@ at high resolution.
 (setq doc-view-resolution 192)
 #+END_SRC
 
-** Key bindings
-
 The PDF viewer is in sore need of Vim-style h/j/k/l movement keys
 
 #+BEGIN_SRC emacs-lisp
@@ -344,6 +386,7 @@ The PDF viewer is in sore need of Vim-style h/j/k/l movement keys
 (define-key doc-view-mode-map (kbd "h") 'image-backward-hscroll)
 (define-key doc-view-mode-map (kbd "l") 'image-forward-hscroll)
 #+END_SRC
+
 * Mode-specific Behaviors
 ** Text-like Modes
 
@@ -419,8 +462,6 @@ We first include Org mode, and tell it which modules to use.
 
 #+BEGIN_SRC emacs-lisp
 (require 'org-install)
-
-(setq org-modules '(org-docview org-jsinfo org-irc org-gnus org-w3m))
 #+END_SRC
 
 First things first!  We should set up the file structure.
@@ -453,21 +494,16 @@ on a weekend or weekday.
 (setq org-agenda-start-on-weekday nil)
 #+END_SRC
 
-** TODO Templates
-
-Org-capture is what I use for editing templated events (it's so much
-nicer than the old =remember= system...)  Unfortunately, I've been
-reorganizing recently, so all of my old templates are gone, the above
-TODO in their place.
-
 ** Todo Keywords
 
-I also have several possible workflows for TODO-style labels, so I add
-those keywords.
+The keywords here represent a good chunk of possible work-flows.  TODO
+to DONE is the standard one, but sometimes I go to WONT or spent time
+cycling between TODO and WAIT.  SOMEDAY exists for the projects that
+I'd like to do, but that are currently in limbo.
 
 #+BEGIN_SRC emacs-lisp
 (setq org-todo-keywords
-      '((sequence "TODO(t)" "SOMEDAY(s)" "MORE(m)" "|" "DONE(d)" "WAIT(w)" "WONT(n)")))
+      '((sequence "TODO(t)" "SOMEDAY(s)" "|" "DONE(d)" "WAIT(w)" "WONT(n)")))
 (setq org-use-fast-todo-selection t)
 #+END_SRC
 
@@ -511,8 +547,8 @@ inline markup:
 (setq org-hide-emphasis-markers t)
 #+END_SRC
 
-** Keybindings
-Some keybindings are not bound by Org automatically, so I have to bind
+** Key bindings
+Some key bindings are not bound by Org automatically, so I have to bind
 them myself.
 
 #+BEGIN_SRC emacs-lisp
@@ -523,9 +559,13 @@ them myself.
 
 ** MobileOrg
 
+I don't really use MobileOrg on my phone, since the Android MobileOrg
+interface is somewhat unloved, but on principle I have it installed,
+and so I need some setup here.
+
 #+BEGIN_SRC emacs-lisp
 (setq org-mobile-inbox-for-pull "~/notes/inbox.org")
-(setq org-mobile-directory "~/Dropbox/MobileOrg")
+(setq org-mobile-directory "~/notes/mobile-org/")
 #+END_SRC
 
 ** LaTeX Export
@@ -545,18 +585,9 @@ Org-mode requires you to define things to use other classes for LaTeX files.
            ("\\paragraph{%s}" . "\\paragraph*{%s}")
            ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
 #+END_SRC
-   
-* Games
-
-It's very important that score files are placed correctly (can't lose
-my tetris high scores!):
-
-#+BEGIN_SRC emacs-lisp
-(setq tetris-score-file "~/.emacs.d/scores/tetris")
-(setq snake-score-file  "~/.emacs.d/scores/snake")
-#+END_SRC
 
 * Magit
+  
 Magit needs a =(require)= and an autoload.
 
 #+BEGIN_SRC emacs-lisp
@@ -603,7 +634,7 @@ Finally I set up my homepage.
 (setq w3m-home-page "about:blank")
 #+END_SRC
 
-** Default Browser
+** Default Browsers
 
 I prefer to set Firefox as Emacs's default browser, simply because
 there are lots of sites W3M just doesn't work that well on.
@@ -683,177 +714,6 @@ Continuing on the Vim tradition, a good key for searching is =/=.
 (define-key w3m-mode-map "/" 'isearch-forward)
 #+END_SRC
 
-* Gnus
-** Finding Mail
-
-I'm slowly trying to switch over to Gnus as my mail reader, given how
-powerful people say it is.  The below is a configuration I stole from
-the Internet[fn:where] which tells Gnus where to get my mail...
-
-#+BEGIN_SRC emacs-lisp
-(setq gnus-select-method
-  '(nnmaildir "GMail"
-     (directory "~/mail/")
-     (directory-files nnheader-directory-files-safe)
-     (get-new-mail nil)))
-#+END_SRC
-
-We also, of course, have to tell Emacs how to send mail...
-
-#+BEGIN_SRC emacs-lisp
-(setq sendmail-program "/usr/bin/msmtp")
-#+END_SRC
-
-[fn:where] http://neverbow.blogspot.com/2006/09/gnus-works-with-fetchmail.html
-
-** File Locations
-
-Gnus' spewing of files all over my directory tree infuriates me.  A
-bunch of variables need to get set to fix that.
-
-The first and most important one eliminates the =~/News= folder.  I
-use Gnus for mail, not news, and I like my folders lower-cased.
-
-#+BEGIN_SRC emacs-lisp
-(setq gnus-directory "~/mail")
-#+END_SRC
-
-Since I don't actually use newsgroups from Usenet (and who does
-anymore), the =.newsrc= file is useless.
-
-#+BEGIN_SRC emacs-lisp
-(setq gnus-save-newsrc-file nil)
-#+END_SRC
-
-Finally, we can move that file so as not to clutter our home
-directory.
-
-#+BEGIN_SRC emacs-lisp
-(setq gnus-startup-file "~/.emacs.d/newsrc")
-#+END_SRC
-
-=nnmail= also needs its own cache file.  Move that to =.emacs.d=:
-
-#+BEGIN_SRC emacs-lisp
-(setq nnmail-message-id-cache-file "~/.emacs.d/nnmail-cache")
-#+END_SRC
-
-** Message Sending
-
-Firstly, I don't want to see the =In-Reply-To= header, so I add it to
-the list.
-
-#+BEGIN_SRC emacs-lisp
-(add-hook 'message-mode-hook
-          (lambda ()
-            (add-to-list 'message-hidden-headers "^In-Reply-To:")
-            (visual-line-mode)))
-
-#+END_SRC
-
-There's also the issue of =message= creating drafts in the =~/Mail=
-folder; this is annoying since I don't generally have such a folder.
-So to make it stop, I change its default folder:
-
-#+BEGIN_SRC emacs-lisp
-(setq message-directory "~/mail/")
-(setq mml-default-directory "~/mail/")
-#+END_SRC
-
-Finally, a signature.  Mine is pretty trivial: my name.
-
-#+BEGIN_SRC emacs-lisp
-(setq mail-signature "Pavel Panchekha")
-(setq message-signature "Pavel Panchekha")
-#+END_SRC
-
-** Archiving
-
-Archiving emails is different; it is put by-group into the "archive"
-folder.
-
-#+BEGIN_SRC emacs-lisp
-(setq gnus-message-archive-method
-      '(nnfolder "archive"
-		 (nnfolder-directory    "~/mail/archive")
-		 (nnfolder-active-file  "~/mail/archive/active")
-		 (nnfolder-get-new-mail nil)))
-#+END_SRC
-
-** Splitting
-
-Since I subscribe to several lists, I need Gnus to split my mail for me.
-
-#+BEGIN_SRC emacs-lisp
-(setq nnmail-split-methods
-  '(("racket"   "^\\(To\\|Cc\\):.*@\\(lists\\.\\)?racket-lang.org")
-    ("lisp-hug" "^\\(To\\|Cc\\):.*lisp-hug@lispworks.com")
-    ("reuse"    "^\\(To\\|Cc\\):.*reuse.*@mit.edu")
-    ("food"     "^\\(To\\|Cc\\):.*free-food@mit.edu")
-    ("esp"      "^\\(To\\|Cc\\):.*esp.*@mit.edu")
-    ("esp"      "^\\(To\\|Cc\\):.*nutso-flaming-admins@mit.edu")
-    ("ruscon"   "^\\(To\\|Cc\\):.*ruscon@mit.edu")
-    ("hmmt"     "^\\(To\\|Cc\\):.*hmmt.*@mit.edu")
-    ("org-mode" "^\\(To\\|Cc\\):.*emacs-orgmode@gnu.org")
-    ("lsc"      "^Subject:.*[LSC")
-    ("inbox"    "")))
-#+END_SRC
-
-True lists I can auto-expire, since they're saved elsewhere.  Same for
-lists that I don't care too much about --- they're always saved in
-GMail.
-
-#+BEGIN_SRC emacs-lisp
-(setq gnus-auto-expirable-newsgroups
-      "reuse\\|lisp-hug\\|racket\\|ruscon\\|org-mode\\|lsc")
-#+END_SRC
-
-** PGP Encryption
-
-Gnus comes with convenient methods for signing messages.  Let's turn
-them on: we make Gnus sign/encrypt messages that are replies to
-signed/encrypted messages.
-
-#+BEGIN_SRC emacs-lisp
-  (setq gnus-message-replysign t
-        gnus-message-replyencrypt t
-        gnus-message-replysignencrypted t)
-#+END_SRC
-
-* BBDB
-
-I use the Big Brother Database for storing contact, so I've gotta
-require it in.  Given my heavy Gnus use, I obviously tell BBDB to load
-up Gnus support.
-
-#+BEGIN_SRC emacs-lisp
-(require 'bbdb)
-(bbdb-initialize 'gnus 'message)
-(add-hook 'gnus-startup-hook 'bbdb-insinuate-gnus)
-#+END_SRC
-
-I want BBDB to automatically notice people I actually send mail to.
-
-#+BEGIN_SRC emacs-lisp
-(setq bbdb/mail-auto-create-p t)
-(setq bbdb-notice-hook '(bbdb-auto-notes-hook))
-#+END_SRC
-
-BBDB could use to be a bit prettier.  I like it colorful and out of
-the way:
-
-#+BEGIN_SRC emacs-lisp
-(setq bbdb-gui t)
-(setq bbdb-pop-up-display-layout 'one-line)
-#+END_SRC
-
-Given my love for a well-organized home folder, I'd also rather move
-the BBDB.
-
-#+BEGIN_SRC emacs-lisp
-(setq bbdb-file "~/.emacs.d/bbdb")
-#+END_SRC
-
 * Jabber
 
 =jabber.el= is a great, great invention: it lets me view my Google
@@ -918,7 +778,7 @@ Some faces I want to set to make chatting more pleasant.
 #+END_SRC
 
 Lastly, I sometimes IM my friends URLs, and it's nice to make them all
-hyperlinky.
+hyperlink-y.
 
 #+BEGIN_SRC emacs-lisp
 ; Auto-urlize urls
@@ -973,55 +833,4 @@ it.
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'term-mode-hook (lambda ()
   (set (make-local-variable 'scroll-margin) 0)))
-#+END_SRC
-
-* Meta
-
-I actually edit my Emacs configuration a lot.  I call it "cultivating"
-my Emacs configuration.  So here are some utility functions for that.
-
-The first function just reloads the Emacs configuration.
-
-#+BEGIN_SRC emacs-lisp
-(defun reconfigure ()
-  (interactive)
-  (load-file "~/.emacs.d/init.el"))
-#+END_SRC
-
-The second function opens the configuration up for editing.
-
-#+BEGIN_SRC emacs-lisp
-(defun edconfigure ()
-  (interactive)
-  (find-file "~/.emacs.d/emacs.org"))
-#+END_SRC
-* Archive                                                           :ARCHIVE:
-
-** Emacsclient configuration
-   :PROPERTIES:
-   :ARCHIVE_TIME: 2011-07-21 Thu 18:02
-   :END:
-
-I used to want =emacsclient= files to always open in a new buffer;
-that way unenlightened tools like Firefox, which do not allow
-arguments, can still have =emacsclient= set as their PDF viewer.
-Nowadays, I use =emacsclient= in shell scripts, and then I do not want
-more windows to pop open.  So I've archived this section of the scripts
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(add-hook 'server-switch-hook
-          (lambda nil
-            (let ((server-buf (current-buffer)))
-              (bury-buffer)
-              (switch-to-buffer-other-frame server-buf))))
-#+END_SRC 
-
-I used to have code to kill frames when the server is done with them,
-but that became annoying with more advanced Emacs usage.
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(add-hook 'server-done-hook
-          (lambda ()
-            (delete-frame)
-            (kill-buffer nil)))
 #+END_SRC
