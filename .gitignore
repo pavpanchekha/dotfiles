@@ -84,6 +84,7 @@ calendar
 .fetchmailrc
 .msmtprc
 .offlineimaprc
+.zephyr.subs
 
 *.pyc
 *.hi
