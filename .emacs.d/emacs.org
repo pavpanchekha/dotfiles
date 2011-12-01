@@ -338,27 +338,48 @@ The second function opens the configuration up for editing.
   (find-file "~/.emacs.d/emacs.org"))
 #+END_SRC
 
-* Slime
+** Key-map commands
 
-First, we tell Emacs where to find SLIME and load it.
-
+Since I like Vim key-bindings everywhere, I'll be doing a lot of
+adding to key-maps.  This gets tedious, especially when lots of keys
+on the same key-map.  This macro makes adding a bunch of keys to the
+same key-map very easy.
+   
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'load-path "/usr/share/emacs/site-lisp/slime")
-(require 'slime)
+  (defmacro define-keys (map &rest keys)
+    "Adds several key bindings to a specific map.  Takes a map (as
+    a bare symbol) and a several clauses of form (key func); key is
+    a string to be passed to (kbd), and func is a function name."
+    (declare (indent defun))
+    
+    `(progn
+       ,@(loop for key+func in keys
+               collect `(define-key ,map
+                          (kbd ,(car key+func))
+                          ',(cadr key+func)))))
 #+END_SRC
 
-Slime needs to be tols where to find my specific Swank loader (I
+* Slime
+
+First, we tell Emacs where to find SLIME and when to load it.
+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'load-path "/usr/share/emacs/site-lisp/slime")
+  (autoload 'slime "slime")
+#+END_SRC
+
+Slime needs to be told where to find my specific Swank loader (I
 change what directory to dump FASLs in).  And, I set the Lisp to SBCL.
 
 #+BEGIN_SRC emacs-lisp
-(setq slime-backend "~/.emacs.d/slime/loader.lsp")
-(setq inferior-lisp-program "/usr/bin/sbcl")
+  (setq slime-backend "~/.emacs.d/slime/loader.lsp")
+  (setq inferior-lisp-program "/usr/bin/sbcl")
 #+END_SRC
 
 Now Slime can be set up.
 
 #+BEGIN_SRC emacs-lisp
-(slime-setup)
+  (eval-after-load "slime" '(slime-setup))
 #+END_SRC
 
 * Doc-View
@@ -381,10 +402,11 @@ The PDF viewer is in sore need of Vim-style h/j/k/l movement keys
 
 #+BEGIN_SRC emacs-lisp
 (require 'doc-view)
-(define-key doc-view-mode-map (kbd "j") 'doc-view-next-line-or-next-page)
-(define-key doc-view-mode-map (kbd "k") 'doc-view-previous-line-or-previous-page)
-(define-key doc-view-mode-map (kbd "h") 'image-backward-hscroll)
-(define-key doc-view-mode-map (kbd "l") 'image-forward-hscroll)
+(define-keys doc-view-mode-map
+    ("j" doc-view-next-line-or-next-page)
+    ("k" doc-view-previous-line-or-previous-page)
+    ("h" image-backward-hscroll)
+    ("l" image-forward-hscroll))
 #+END_SRC
 
 * Mode-specific Behaviors
@@ -591,7 +613,6 @@ Org-mode requires you to define things to use other classes for LaTeX files.
 Magit needs a =(require)= and an autoload.
 
 #+BEGIN_SRC emacs-lisp
-(require 'magit)
 (autoload 'magit-status "magit" nil)
 #+END_SRC
 
@@ -601,37 +622,37 @@ W3M is a nice web browser to use for tasks such as reading Hacker
 News.  If it got a bit more love, it would be perfect...
 
 #+BEGIN_SRC emacs-lisp
-(require 'w3m)
+  (require 'w3m)
 #+END_SRC
 
 First off, W3M should use UTF8 everywhere it can.
 
 #+BEGIN_SRC emacs-lisp
-(setq w3m-coding-system 'utf-8
-      w3m-default-coding-system 'utf-8
-      w3m-file-coding-system 'utf-8
-      w3m-file-name-coding-system 'utf-8
-      w3m-terminal-coding-system 'utf-8)
+  (setq w3m-coding-system 'utf-8
+        w3m-default-coding-system 'utf-8
+        w3m-file-coding-system 'utf-8
+        w3m-file-name-coding-system 'utf-8
+        w3m-terminal-coding-system 'utf-8)
 #+END_SRC
 
 I change a few file locations.
 
 #+BEGIN_SRC emacs-lisp
-(setq w3m-default-save-directory "/tmp/")
-(setq w3m-icon-directory "/tmp/")
+  (setq w3m-default-save-directory "/tmp/")
+  (setq w3m-icon-directory "/tmp/")
 #+END_SRC
 
 W3M has some features that are, for whatever reason, off by default
 (they're /experimental/; eh, work fine).
 
 #+BEGIN_SRC emacs-lisp
-(setq w3m-use-cookies t w3m-use-favicon t)
+  (setq w3m-use-cookies t w3m-use-favicon t)
 #+END_SRC
 
 Finally I set up my homepage.
 
 #+BEGIN_SRC emacs-lisp
-(setq w3m-home-page "about:blank")
+  (setq w3m-home-page "about:blank")
 #+END_SRC
 
 ** Default Browsers
@@ -657,61 +678,40 @@ So I make a quick keybinding for browsing a URL.
 (global-set-key "\C-xM" 'w3m-browse-url-at-point)
 #+END_SRC
 
-** Keybindings
+** Utility Commands
 
-=f= for "follow" is a very nice and intuitive keybinding for following
-links.
-
-#+BEGIN_SRC emacs-lisp
-(define-key w3m-mode-map (kbd "f") 'w3m-view-this-url)
-(define-key w3m-mode-map (kbd "F") 'w3m-view-this-url-new-session)
-#+END_SRC
-
-I prefer there to be a key to enter a new URL, blank-slate; and =o=
-for "open" sounds like a good keybinding.
+I prefer there to be a key to enter a new URL, blank-slate.
 
 #+BEGIN_SRC emacs-lisp
-(defun clean-slate-goto-url (url)
-  (interactive (list (w3m-input-url nil "" nil nil 'feeling-lucky)))
-  (w3m-goto-url url))
-
-(define-key w3m-mode-map (kbd "o")   'clean-slate-goto-url)
-(define-key w3m-mode-map (kbd "O")   'w3m-goto-url)
-(define-key w3m-mode-map (kbd "C-o") 'w3m-view-previous-page)
+  (defun w3m-clean-slate-goto-url (url)
+    (interactive (list (w3m-input-url nil "" nil nil 'feeling-lucky)))
+    (w3m-goto-url url))
 #+END_SRC
 
 The symmetric operations should clearly exist for tabs.
 
 #+BEGIN_SRC emacs-lisp
-(defun clean-slate-goto-url-new-session (url)
-  (interactive (list (w3m-input-url nil "" nil nil 'feeling-lucky)))
-  (w3m-goto-url-new-session url))
-
-(define-key w3m-mode-map (kbd "t") 'clean-slate-goto-url-new-session)
-(define-key w3m-mode-map (kbd "T") 'w3m-goto-url-new-session)
+  (defun s3m-clean-slate-goto-url-new-session (url)
+    (interactive (list (w3m-input-url nil "" nil nil 'feeling-lucky)))
+    (w3m-goto-url-new-session url))
 #+END_SRC
 
-=d= for "delete" is pretty common.
+** Key-bindings
+
+I like single-character key bindings instead of the crazy Emacs stuff.
+Most of the following are following Vimperator/Vimium conventions.
 
 #+BEGIN_SRC emacs-lisp
-(define-key w3m-mode-map (kbd "d") 'w3m-delete-buffer)
-#+END_SRC
-
-Finally, I try to implement Vim-style tab switching.  This is a bit
-more work...
-
-#+BEGIN_SRC emacs-lisp
-(define-prefix-command 'vim-tab-switching)
-(define-key w3m-mode-map (kbd "g") 'vim-tab-switching)
-
-(define-key vim-tab-switching "t" 'w3m-next-buffer)
-(define-key vim-tab-switching "T" 'w3m-previous-buffer)
-#+END_SRC
-
-Continuing on the Vim tradition, a good key for searching is =/=.
-
-#+BEGIN_SRC emacs-lisp
-(define-key w3m-mode-map "/" 'isearch-forward)
+  (define-keys w3m-mode-map
+    ("f" w3m-view-this-url)
+    ("F" w3m-view-this-url-new-session)
+    ("o" w3m-clean-slate-goto-url)
+    ("O" w3m-goto-url)
+    ("H" w3m-view-previous-page)
+    ("t" w3m-clean-slate-goto-url-new-session)
+    ("T" w3m-goto-url-new-session)
+    ("d" w3m-delete-buffer)
+    ("/" isearch-forward))
 #+END_SRC
 
 * Jabber
@@ -783,7 +783,6 @@ hyperlink-y.
 #+BEGIN_SRC emacs-lisp
 ; Auto-urlize urls
 (add-hook 'jabber-chat-mode-hook 'goto-address)
-(jabber-connect-all)
 #+END_SRC
 
 * Shells
