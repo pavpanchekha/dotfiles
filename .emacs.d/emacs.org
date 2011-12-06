@@ -391,11 +391,11 @@ continuous scrolling.
 (setq doc-view-continuous t)
 #+END_SRC
 
-Also, I often end up zooming a lot on PDFs, so I like rendering them
-at high resolution.
+92 is a decent resolution, since it makes a page of text about as wide
+as half my screen (and I generally use Emacs with two vertical panes.
 
 #+BEGIN_SRC emacs-lisp
-(setq doc-view-resolution 192)
+(setq doc-view-resolution 92)
 #+END_SRC
 
 The PDF viewer is in sore need of Vim-style h/j/k/l movement keys

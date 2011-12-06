@@ -1,6 +1,6 @@
 
 
-import c, cc, cs, hs, java, py, sh, tex, txt
+import c, cc, cs, hs, java, py, sh, tex, txt, org
 
 registry = {
       "c":    c
@@ -15,4 +15,5 @@ registry = {
     , "tex":  tex
     , "txt":  txt
     , "rst":  txt
+    , "org":  org
     }
