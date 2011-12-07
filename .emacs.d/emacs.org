@@ -94,6 +94,14 @@ use single-character responses
 (fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 
+Whenever I do something that Emacs finds odd, it beeps.  Why?  Who
+knows.  In any case, I turn it off, because when I'm lounging about
+with music on the overhead speakers, I don't want a beep interfering.
+
+#+BEGIN_SRC emacs-lisp
+  (setq visible-bell t)
+#+END_SRC
+
 Since I rarely use the mouse, tooltips are more an annoyance than
 anything else.  This switches them to appear in the echo area.
 
@@ -478,6 +486,17 @@ Now we can require in Haskell, CoffeeScript, and Clojure modes.
 (require 'clojure-mode nil t)
 (require 'coffee-mode nil t)
 #+END_SRC
+
+*** Coffee-Script
+
+Coffee-script takes too much work to compile.  It's only accessible
+from the menu?  And it's an Emacs mode?
+
+#+BEGIN_SRC emacs-lisp
+  (define-keys coffee-mode-map
+    ("C-c C-c" coffee-compile-file))
+#+END_SRC
+
 * Org Mode
 
 We first include Org mode, and tell it which modules to use.
