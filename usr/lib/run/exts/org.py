@@ -20,7 +20,7 @@ run = [
       lambda f, tempdir, args: ["cp", f, tempdir]
     , lambda f, tempdir, args: EMACS_COMMAND(tempname(tempdir, f)) + args
     , lambda f, tempdir, args: ["rubber", "-d", "--into", tempdir, texname(tempdir, f)] + args
-    , lambda f, tempdir, args: ["emacsclient", outname(tempdir, f)]
+    , lambda f, tempdir, args: ["pdfopen", "-viewer", "evince", outname(tempdir, f)]
     ]
 
 
