@@ -11,6 +11,30 @@ my code.  My =.emacs.d/init.el= file contains only:
 
 More on this method can be found [[http://orgmode.org/worg/org-contrib/babel/intro.html#sec-8_2][in the Babel tutorial]].
 
+* Packages
+
+  My Emacs configuration relies on several packages being installed,
+  in particular various modes.  I'd rather keep the files installed by
+  the system package manager, not in my =.emacs.d=, so I have here
+  package names for the Arch Linux AUR.  If anyone happens to email me
+  names to add from other distros for the purposes of completion, I'll
+  add them in.
+
+  + emacs-nxhtml :: HTML-editing mode.
+  + slime-cvs :: superior lisp interaction mode for Emacs.
+  + emacs-org-mode :: Organization and markup system.
+  + emacs-color-theme :: package for coloring Emacs.  (I am itching to
+       get rid of this with Emacs 24.)
+  + emacs-evil-git :: Emacs: good operating system, awful text editor.
+  + emacs-clojure-mode :: first decent attempt at a modern lisp long.
+  + emacs-coffeescript-mode :: nice syntax for Javascript.
+  + emacs-haskell-mode :: useful for haiku and research papers.
+  + emacs-w3m :: browse the web in Emacs.
+  + emacs-multiterm :: Emacs =term= is impossible.  This is not.
+  + emacs-jabber :: Google chat in my Emacs.
+  + auctex :: a LaTeX editing mode.
+  + magit :: =git= in Emacs
+
 * Miscellany
 ** Startup
 
