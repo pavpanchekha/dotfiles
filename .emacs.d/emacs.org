@@ -110,6 +110,13 @@ anything else.  This switches them to appear in the echo area.
 (setq tooltip-use-echo-area t)
 #+END_SRC
 
+I'm old enough for no training wheels.  Narrowing a buffer hides
+certain text, which is nice for focusing and buffer-cloning magic.
+
+#+BEGIN_SRC emacs-lisp
+(put 'narrow-to-region 'disabled nil)
+#+END_SRC
+
 ** Basic File Behaviors
 
 Emacs has some stupid defaults, such as making those =file~= files and
@@ -485,9 +492,10 @@ Now we can require in Haskell, CoffeeScript, and Clojure modes.
 (require 'haskell-mode nil t)
 (require 'clojure-mode nil t)
 (require 'coffee-mode nil t)
+(load "/usr/share/emacs/site-lisp/nxhtml/autostart.el")
 #+END_SRC
 
-*** Coffee-Script
+** Coffee-Script
 
 Coffee-script takes too much work to compile.  It's only accessible
 from the menu?  And it's an Emacs mode?
@@ -495,6 +503,14 @@ from the menu?  And it's an Emacs mode?
 #+BEGIN_SRC emacs-lisp
   (define-keys coffee-mode-map
     ("C-c C-c" coffee-compile-file))
+#+END_SRC
+
+** Common but Mode-specific
+
+=tab-width= is a variable far too many things rely upon...
+
+#+BEGIN_SRC emacs-lisp
+(set-default tab-width 4)
 #+END_SRC
 
 * Org Mode
