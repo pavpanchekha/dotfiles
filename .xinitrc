@@ -1,11 +1,12 @@
 #!/bin/bash
 
 export PATH="$PATH:$HOME/usr/bin"
+xset +fp /usr/share/fonts/local
 
 # X server stuff
 xbindkeys
 setxkbmap -option caps:escape
-xsetroot -solid '#ffffff' -cursor_name left_ptr
+xsetroot -solid '#dddddd' -cursor_name left_ptr
 
 # Laptop Stuff
 synclient JumpyCursorThreshold=100

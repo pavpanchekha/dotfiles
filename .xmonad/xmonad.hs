@@ -28,7 +28,7 @@ myScratchPads = [NS "terminal" spawnTerm findTerm manageTerm] where
   spawnTerm  = "exec sakura --name scratchpad"
   findTerm   = resource =? "scratchpad"
   manageTerm = customFloating $ W.RationalRect l t w h where
-    h = 0.4   -- Terminal height
+    h = 0.5   -- Terminal height
     w = 1     -- Width
     t = 1 - h -- Distance from top
     l = 1 - w -- Distance from left
@@ -107,13 +107,30 @@ myManageHook = [ className =? "stalonetray"--> doIgnore
 myLayout = smartBorders $ avoidStruts $ (tiled ||| Mirror tiled ||| Full)
     where tiled = Tall 1 (3/100) (1/2)
 
-myLog pipe = dynamicLogWithPP $ xmobarPP {
-      ppOutput = hPutStrLn pipe
-    , ppTitle = xmobarColor "green" "" . shorten 50
+myLog pipe = dynamicLogWithPP $ dzenPP {
+      ppOutput  = hPutStrLn pipe
+    , ppCurrent = dzenColor "black" "#dddddd" . pad
+    , ppVisible = dzenColor "black" "#aaaaaa"  . pad
+    , ppHidden  = dzenColor "white" "black" . pad . (\tag ->
+                            case tag of
+                                 "NSP"         -> ""
+                                 _             -> tag
+                            )
+    , ppLayout  = dzenColor "white" "black" . pad . (\layout ->
+                            case layout of
+                                 "Tall"        -> "|-"
+                                 "Mirror Tall" -> "--"
+                                 "Full"        -> "[]"
+                                 _             -> layout
+                            )
+    , ppTitle   = dzenColor "white" "black" . dzenEscape
     }
+    
+fontTerminus = "-*-terminus-medium-*-*-*-*-140-*-*-*-*-*-*"
 
 main = do
-    xmproc <- spawnPipe "xmobar /home/pavpanchekha/.xmonad/xmobar.hs"
+    statusbar <- spawnPipe ("dzen2 -fg white -bg black -fn " ++ fontTerminus ++ " -ta l")
+    
     xmonad $ defaultConfig {
       -- simple stuff
         terminal           = "sakura",
@@ -130,5 +147,5 @@ main = do
 
         manageHook = composeAll myManageHook,
         layoutHook = myLayout,
-        logHook = myLog xmproc
+        logHook = myLog statusbar
     }
