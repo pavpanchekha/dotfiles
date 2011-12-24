@@ -93,12 +93,13 @@ empty lines.
   (toggle-indicate-empty-lines))
 #+END_SRC
 
-Also, a color theme.  Yes, it's really called "whateveryouwant".
+Also, a color theme.  I've been feeling a preference for
+white-on-black color schemes, recently.
 
 #+BEGIN_SRC emacs-lisp
 (require 'color-theme)
 (color-theme-initialize)
-(color-theme-whateveryouwant)
+(color-theme-clarity)
 #+END_SRC
 
 The modeline should really be pressed into useful service.  I make it
@@ -758,7 +759,7 @@ I prefer there to be a key to enter a new URL, blank-slate.
 The symmetric operations should clearly exist for tabs.
 
 #+BEGIN_SRC emacs-lisp
-  (defun s3m-clean-slate-goto-url-new-session (url)
+  (defun w3m-clean-slate-goto-url-new-session (url)
     (interactive (list (w3m-input-url nil "" nil nil 'feeling-lucky)))
     (w3m-goto-url-new-session url))
 #+END_SRC
@@ -775,9 +776,13 @@ Most of the following are following Vimperator/Vimium conventions.
     ("o" w3m-clean-slate-goto-url)
     ("O" w3m-goto-url)
     ("H" w3m-view-previous-page)
+    ("L" w3m-view-next-page)
     ("t" w3m-clean-slate-goto-url-new-session)
     ("T" w3m-goto-url-new-session)
     ("d" w3m-delete-buffer)
+    ("r" w3m-reload-this-page)
+    (">" w3m-next-buffer)
+    ("<" w3m-previous-buffer)
     ("/" isearch-forward))
 #+END_SRC
 
