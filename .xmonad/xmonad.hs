@@ -118,9 +118,9 @@ myLog pipe = dynamicLogWithPP $ dzenPP {
                             )
     , ppLayout  = dzenColor "white" "black" . pad . (\layout ->
                             case layout of
-                                 "Tall"        -> "|-"
-                                 "Mirror Tall" -> "--"
-                                 "Full"        -> "[]"
+                                 "Tall"        -> "Vt"
+                                 "Mirror Tall" -> "Hz"
+                                 "Full"        -> "Fl"
                                  _             -> layout
                             )
     , ppTitle   = dzenColor "white" "black" . dzenEscape
@@ -129,7 +129,7 @@ myLog pipe = dynamicLogWithPP $ dzenPP {
 fontTerminus = "-*-terminus-medium-*-*-*-*-140-*-*-*-*-*-*"
 
 main = do
-    statusbar <- spawnPipe ("dzen2 -fg white -bg black -fn " ++ fontTerminus ++ " -ta l")
+    statusbar <- spawnPipe ("dzen2 -w 766 -fg white -bg black -fn " ++ fontTerminus ++ " -ta l")
     
     xmonad $ defaultConfig {
       -- simple stuff

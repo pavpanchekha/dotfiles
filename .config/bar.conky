@@ -1,0 +1,5 @@
+background no
+out_to_console yes
+out_to_x no
+TEXT
+Batt: $battery_percent% | ${texeci 60 dropbox status} | ${time %02H:%02M} 
