@@ -3,7 +3,8 @@
 # Bash customizations
 CDPATH=".:~" # `cd _` can equal `cd ~/_`
 HISTIGNORE="&:bg:fg:exit: *" # Ignore duplicate commands, bg, fg, exit
-export PS1 CDPATH HISTIGNORE
+HISTFILE=".cache/history.bash"
+export PS1 CDPATH HISTIGNORE HISTFILE
 
 if [ "x$EUID" = "x0" ]; then
     export TMOUT="60"
