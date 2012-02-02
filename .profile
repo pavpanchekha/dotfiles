@@ -62,7 +62,7 @@ alias math="rlwrap math"
 alias sbcl="rlwrap sbcl"
 alias scheme="rlwrap scheme"
 alias zephyr="tmux -L zephyr attach"
-alias edconfigure="vim ~/.profile"
+alias edconfigure="$EDITOR ~/.profile"
 alias reconfigure=". ~/.profile"
 alias py="ipython"
 
