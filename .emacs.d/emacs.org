@@ -517,7 +517,7 @@ Now we can require in Haskell, CoffeeScript, and Clojure modes.
 (require 'haskell-mode nil t)
 (require 'clojure-mode nil t)
 (require 'coffee-mode nil t)
-(load "/usr/share/emacs/site-lisp/nxhtml/autostart.el")
+;(load "/usr/share/emacs/site-lisp/nxhtml/autostart.el")
 #+END_SRC
 
 ** Coffee-Script
@@ -535,7 +535,7 @@ from the menu?  And it's an Emacs mode?
 =tab-width= is a variable far too many things rely upon...
 
 #+BEGIN_SRC emacs-lisp
-(set-default tab-width 4)
+(set-default 'tab-width 4)
 #+END_SRC
 
 * Org Mode
@@ -690,7 +690,7 @@ W3M is a nice web browser to use for tasks such as reading Hacker
 News.  If it got a bit more love, it would be perfect...
 
 #+BEGIN_SRC emacs-lisp
-  (require 'w3m)
+  (require 'w3m-load)
 #+END_SRC
 
 First off, W3M should use UTF8 everywhere it can.
@@ -770,20 +770,21 @@ I like single-character key bindings instead of the crazy Emacs stuff.
 Most of the following are following Vimperator/Vimium conventions.
 
 #+BEGIN_SRC emacs-lisp
-  (define-keys w3m-mode-map
-    ("f" w3m-view-this-url)
-    ("F" w3m-view-this-url-new-session)
-    ("o" w3m-clean-slate-goto-url)
-    ("O" w3m-goto-url)
-    ("H" w3m-view-previous-page)
-    ("L" w3m-view-next-page)
-    ("t" w3m-clean-slate-goto-url-new-session)
-    ("T" w3m-goto-url-new-session)
-    ("d" w3m-delete-buffer)
-    ("r" w3m-reload-this-page)
-    (">" w3m-next-buffer)
-    ("<" w3m-previous-buffer)
-    ("/" isearch-forward))
+  (eval-after-load "w3m"
+    '(define-keys w3m-mode-map
+       ("f" w3m-view-this-url)
+       ("F" w3m-view-this-url-new-session)
+       ("o" w3m-clean-slate-goto-url)
+       ("O" w3m-goto-url)
+       ("H" w3m-view-previous-page)
+       ("L" w3m-view-next-page)
+       ("t" w3m-clean-slate-goto-url-new-session)
+       ("T" w3m-goto-url-new-session)
+       ("d" w3m-delete-buffer)
+       ("r" w3m-reload-this-page)
+       (">" w3m-next-buffer)
+       ("<" w3m-previous-buffer)
+       ("/" isearch-forward)))
 #+END_SRC
 
 * Jabber
@@ -800,7 +801,7 @@ I also give =jabber.el= my account details.
 #+BEGIN_SRC emacs-lisp
 ; Some variables
 (setq jabber-account-list `(("pavpanchekha@gmail.com" 
-                             (:password . ,my-jabber-password)
+                             (:password . ,my-gmail-jabber-password)
                              (:network-server . "talk.google.com") 
                              (:connection-type . ssl))))
 #+END_SRC
