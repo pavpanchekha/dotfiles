@@ -16,7 +16,5 @@ dropbox start
 conky -d
 xflux -z 02142
 
-conky -c .config/bar.conky | dzen2 -w 600 -x 766 -fg white -bg black -fn -*-terminus-medium-*-*-*-*-140-*-*-*-*-*-* -ta r
-
-
+conky -c .config/bar.conky | dzen2 -w 514 -x 766 -fg white -bg black -fn "-*-terminus-medium-*-*-*-*-140-*-*-*-*-*-*" -ta r &
 exec ssh-agent xmonad
