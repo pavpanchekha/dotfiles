@@ -12,6 +12,7 @@
 .ecryptfs
 .Skype
 .pki
+.gEDA
 
 .racket
 .node_libraries
