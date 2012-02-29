@@ -180,7 +180,6 @@ my tetris high scores!):
 We use the [[http://gitorious.org/evil/pages/Home][Evil package]] for Vim keybindings in Emacs.
 
 #+BEGIN_SRC emacs-lisp
-  (add-to-list 'load-path "~/.emacs.d/evil")
   (require 'evil)
   (evil-mode 1)
 #+END_SRC
