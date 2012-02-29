@@ -7,7 +7,7 @@ HISTFILE=".cache/history.bash"
 export PS1 CDPATH HISTIGNORE HISTFILE
 
 if [ "x$EUID" = "x0" ]; then
-    export TMOUT="60"
+    export TMOUT=60
     PS1="\[\033[1;31m\]\w\[\033[0m\]:\$> "
 else
     PS1="\[\033[0;36m\]\w\[\033[0m\]:\$> "
@@ -18,7 +18,7 @@ shopt -s cmdhist # Add multiline commands as one-liners in my history
 shopt -s extglob # Crazy globbing tricks: [?*+@!]\(xxxx\)
 
 # Completion
-. /etc/bash_completion
+. /etc/bash_completion &
 
 # Some actual environment variables
      PATH="$HOME/usr/bin:$PATH"

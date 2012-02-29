@@ -94,12 +94,12 @@ empty lines.
 #+END_SRC
 
 Also, a color theme.  I've been feeling a preference for
-white-on-black color schemes, recently.
+black-on-white color schemes, recently.
 
 #+BEGIN_SRC emacs-lisp
 (require 'color-theme)
 (color-theme-initialize)
-(color-theme-clarity)
+(color-theme-whateveryouwant)
 #+END_SRC
 
 The modeline should really be pressed into useful service.  I make it
@@ -404,7 +404,7 @@ First, we tell Emacs where to find SLIME and when to load it.
 
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'load-path "/usr/share/emacs/site-lisp/slime")
-  (autoload 'slime "slime")
+  (autoload 'slime "slime" nil t)
 #+END_SRC
 
 Slime needs to be told where to find my specific Swank loader (I
@@ -680,7 +680,7 @@ Org-mode requires you to define things to use other classes for LaTeX files.
 Magit needs a =(require)= and an autoload.
 
 #+BEGIN_SRC emacs-lisp
-(autoload 'magit-status "magit" nil)
+(autoload 'magit-status "magit" nil t)
 #+END_SRC
 
 * W3M Browser
@@ -872,7 +872,35 @@ Eshell doesn't actually require that much prodding.  The only thing I
 do is change its directory.
 
 #+BEGIN_SRC emacs-lisp
-(setq eshell-directory-name "~/.emacs.d/eshell/")
+  (setq eshell-directory-name "~/.emacs.d/eshell/")
+#+END_SRC
+
+Eshell has an awesome "smart mode" where it emulates Plan 9 by
+allowing you to edit command lines instead of re-executing them.  Here
+I tell Eshell to not review commands that successfully exit, since
+those are normally easy to re-execute anyways.
+
+#+BEGIN_SRC emacs-lisp
+  (require 'eshell)
+  (require 'em-smart)
+  (setq eshell-where-to-jump 'begin)
+  (setq eshell-review-quick-commands nil)
+  (setq eshell-smart-space-goes-to-end t)
+#+END_SRC
+
+Eshell lets you redirect to a buffer with the syntax
+
+: cmd >> #<buffer *scratch*>
+
+or to Elisp variables with
+
+: cmd > #'adsf
+
+Since I don't expect to use the second feature at all, I'd prefer its
+syntax be used for buffer redirections instead.
+
+#+BEGIN_SRC emacs-lisp
+  (setq eshell-buffer-shorthand t)
 #+END_SRC
 
 ** Multi-term
