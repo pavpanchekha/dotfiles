@@ -2,7 +2,7 @@ import os
 
 EMACS_COMMAND = lambda f: [ "emacs",
       "--batch", "-Q",
-      "--load", "~/.emacs.d/init.el",
+      "--load", "~/.emacs.d/export.el",
       "--eval", "(require 'org-install)",
       "--visit", f,
       "--funcall", "org-export-as-latex-batch"]

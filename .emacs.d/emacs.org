@@ -292,16 +292,18 @@ program or file in a temporary program.  I use it for, for example,
 compiling LaTeX, or testing C code.
 
 #+BEGIN_SRC emacs-lisp
-(defun run-command (file)
-  (interactive (list (buffer-file-name)))
-  (shell-command (concat "run " file " &")))
+  (defun run-command (file)
+    (interactive (list (buffer-file-name)))
+    (save-window-excursion
+     (shell-command (concat "run " file " &"))))
 
-(defun compile-command (file)
-  (interactive (list (buffer-file-name)))
-  (shell-command (concat "run -c " file " &")))
+  (defun compile-command (file)
+    (interactive (list (buffer-file-name)))
+    (save-window-excursion
+     (shell-command (concat "run -c " file " &"))))
 #+END_SRC
 
-Then we attach them to =[f5]= and =[C-f5]=.
+hThen we attach them to =[f5]= and =[C-f5]=.
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "<f5>") 'run-command)
@@ -651,28 +653,12 @@ and so I need some setup here.
 
 ** LaTeX Export
 
-Org-mode requires you to define things to use other classes for LaTeX files.
+Org-mode requires you to define things to use other classes for LaTeX
+files.  I put this in a separate file so I can avoid loading it when
+I'm just exporting.
 
 #+BEGIN_SRC emacs-lisp
-  (setq org-export-latex-listings t)
-  (setq org-export-latex-classes
-        '(("simple"
-          "\\documentclass{simple}
-           [NO-DEFAULT-PACKAGES]
-           [EXTRA]"
-          ("\\section{%s}" . "\\section*{%s}")
-          ("\\subsection{%s}" . "\\subsection*{%s}")
-          ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-          ("\\paragraph{%s}" . "\\paragraph*{%s}")
-          ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
-        ("article"
-          "\\documentclass{article}
-           [EXTRA]"
-          ("\\section{%s}" . "\\section*{%s}")
-          ("\\subsection{%s}" . "\\subsection*{%s}")
-          ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-          ("\\paragraph{%s}" . "\\paragraph*{%s}")
-          ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
+(load "export")
 #+END_SRC
 
 * Magit
