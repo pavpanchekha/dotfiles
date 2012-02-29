@@ -20,7 +20,7 @@ shopt -s extglob # Crazy globbing tricks: [?*+@!]\(xxxx\)
 . /etc/bash_completion
 
 # Some actual environment variables
-     PATH="$PATH:$HOME/usr/bin"
+     PATH="$HOME/usr/bin:$PATH"
 TEXINPUTS=".:$HOME/dev/resume.tex:$HOME/dev/simple.tex:"
    GPGKEY="371E352C"
  LESSHIST="-"
