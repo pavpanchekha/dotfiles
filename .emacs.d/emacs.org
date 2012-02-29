@@ -788,6 +788,10 @@ I also give =jabber.el= my account details.
 (setq jabber-account-list `(("pavpanchekha@gmail.com" 
                              (:password . ,my-gmail-jabber-password)
                              (:network-server . "talk.google.com") 
+                             (:connection-type . ssl))
+                            ("me@pavpanchekha.com"
+                             (:password . ,my-gapps-jabber-password)
+                             (:network-server . "talk.google.com")
                              (:connection-type . ssl))))
 #+END_SRC
 
