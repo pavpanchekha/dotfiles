@@ -13,6 +13,7 @@
 .Skype
 .pki
 .gEDA
+.notmuch-config
 
 .racket
 .node_libraries
