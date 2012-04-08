@@ -658,7 +658,7 @@ files.  I put this in a separate file so I can avoid loading it when
 I'm just exporting.
 
 #+BEGIN_SRC emacs-lisp
-(load "export")
+(load "~/.emacs.d/export.el")
 #+END_SRC
 
 * Magit

@@ -18,7 +18,7 @@ shopt -s cmdhist # Add multiline commands as one-liners in my history
 shopt -s extglob # Crazy globbing tricks: [?*+@!]\(xxxx\)
 
 # Completion
-. /etc/bash_completion &
+. /usr/share/bash-completion/bash_completion &
 
 # Some actual environment variables
      PATH="$HOME/usr/bin:$PATH"
