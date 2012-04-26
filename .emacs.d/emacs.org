@@ -99,7 +99,7 @@ black-on-white color schemes, recently.
 #+BEGIN_SRC emacs-lisp
 (require 'color-theme)
 (color-theme-initialize)
-(color-theme-whateveryouwant)
+(color-theme-emacs-nw)
 #+END_SRC
 
 The modeline should really be pressed into useful service.  I make it
@@ -184,18 +184,17 @@ We use the [[http://gitorious.org/evil/pages/Home][Evil package]] for Vim keybin
   (evil-mode 1)
 #+END_SRC
 
-** Ispell =ispell-insert-word=
+** Ispell =ispell-save-word=
 
 Another key binding I really miss from Vim is the spelling key
 bindings =zg= and =z==; these make spell-checking much nicer to use.
 Emacs has a great spell-check built-in: Ispell.  All we need to do is
 add a few key-bindings.  But first we need a function to bind to, and
 for =zg=, one does not exist.  So off we go to implement
-=ispell-insert-word= (insert being what Ispell calls adding a word to
-your dictionary).
+=ispell-save-word.=
 
 #+BEGIN_SRC emacs-lisp
-(defun ispell-insert-word ()
+(defun ispell-save-word ()
   (interactive)
 #+END_SRC
 
@@ -250,7 +249,7 @@ Finally, we add key-bindings using Evil's =evil-normal-state-map.
 
 #+BEGIN_SRC emacs-lisp
 (define-key evil-normal-state-map "z=" 'ispell-word)
-(define-key evil-normal-state-map "zg" 'ispell-insert-word)
+(define-key evil-normal-state-map "zg" 'ispell-save-word)
 #+END_SRC
 
 ** Miscellaneous
@@ -265,6 +264,7 @@ as well.  The last line there make =C-k= kill the whole line.
 (global-set-key [delete] 'delete-char)
 (setq kill-whole-line t)
 #+END_SRC
+
 ** Searching and Scrolling
 
 For searching, I enable highlighting as-I-search for both searches and
@@ -565,16 +565,40 @@ split a bullet point in two).
 ** Agenda View
 
 I use the agenda view a lot, so I customize it a bit.  The agenda
-should show seven days (including, yes, the ones without events); it
+should show two days (including, yes, the ones without events); it
 shouldn't show me things I've done; and I won't worry about starting
 on a weekend or weekday.
 
 #+BEGIN_SRC emacs-lisp
-(setq org-agenda-ndays 7)
-(setq org-agenda-show-all-dates t)
-(setq org-agenda-skip-deadline-if-done t)
-(setq org-agenda-skip-scheduled-if-done t)
-(setq org-agenda-start-on-weekday nil)
+  (setq org-agenda-ndays 1)
+  (setq org-agenda-span 2)
+  (setq org-deadline-warning-days 3)
+  
+  (setq org-agenda-skip-deadline-if-done t)
+  (setq org-agenda-skip-scheduled-if-done t)
+  (setq org-agenda-start-on-weekday nil)
+#+END_SRC
+
+Since all of my TODO entries are in one file, I don't need the agenda
+view to tell me what file a TODO entry comes from.
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-agenda-files '("~/notes/pavel.org"))
+  (setq org-agenda-prefix-format 
+        '((agenda . " %i %?-12t% s")
+          (timeline . "  % s")
+          (todo . " %i %-12:c")
+          (tags . " %i %-12:c")
+          (search . " %i %-12:c")))
+#+END_SRC
+
+Finally, given my use of the TODO list, I would like fewer deadline
+reminders and more scheduled reminders
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-agenda-move-date-from-past-immediately-to-today t)
+  (setq org-agenda-skip-deadline-prewarning-if-scheduled t)
+  (setq org-agenda-skip-scheduled-if-deadline-is-shown nil)
 #+END_SRC
 
 ** Todo Keywords
@@ -749,6 +773,20 @@ The symmetric operations should clearly exist for tabs.
     (w3m-goto-url-new-session url))
 #+END_SRC
 
+Unfortunately, the open-in-new-tab command switches to the new tab
+right away; this is silly.
+
+#+BEGIN_SRC emacs-lisp
+  (defun w3m-view-this-url-new-session-background ()
+    "Display the page of the link under point in a new session, in
+  the background. If the region is active, use the
+  `w3m-open-all-links-in-new-session' command instead."
+    (interactive)
+    
+    (save-window-excursion
+      (call-interactively 'w3m-view-this-url-new-session)))
+#+END_SRC
+
 ** Key-bindings
 
 I like single-character key bindings instead of the crazy Emacs stuff.
@@ -758,7 +796,7 @@ Most of the following are following Vimperator/Vimium conventions.
   (eval-after-load "w3m"
     '(define-keys w3m-mode-map
        ("f" w3m-view-this-url)
-       ("F" w3m-view-this-url-new-session)
+       ("F" w3m-view-this-url-new-session-background)
        ("o" w3m-clean-slate-goto-url)
        ("O" w3m-goto-url)
        ("H" w3m-view-previous-page)
@@ -770,6 +808,35 @@ Most of the following are following Vimperator/Vimium conventions.
        (">" w3m-next-buffer)
        ("<" w3m-previous-buffer)
        ("/" isearch-forward)))
+#+END_SRC
+
+When a tab is closed, W3M should shift to the right tab, not the left tab.
+
+#+BEGIN_SRC emacs-lisp
+  (defun clamp (a n)
+    (cond
+     ((< a 0) 0)
+     ((> a n) n)
+     (t a)))
+  
+  (defun w3m-clamp-next-buffer (arg)
+    "Turn ARG pages of emacs-w3m buffers ahead."
+    (interactive "p")
+    (unless arg (setq arg 1))
+    (when (and (/= arg 0) (eq major-mode 'w3m-mode))
+      (w3m-history-store-position)
+      (let* ((buffers (w3m-list-buffers))
+         (len (length buffers)))
+        (switch-to-buffer
+         (nth (clamp (+ arg (- len (length (memq (current-buffer) buffers))))
+           len)
+          buffers)))
+      (w3m-history-restore-position)
+      (run-hooks 'w3m-select-buffer-hook)
+      (w3m-select-buffer-update)))
+  
+  (add-hook 'w3m-delete-buffer-hook (lambda () (w3m-clamp-next-buffer 1)))
+  
 #+END_SRC
 
 * Jabber
