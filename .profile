@@ -59,6 +59,10 @@ function drop () {
     echo "http://drop.pavpanchekha.com/$name"
 }
 
+function search () {
+    tracker-search "$@" | tail -n +2 | head -n -1 | cut -c10-
+}
+
 alias math="rlwrap math"
 alias sbcl="rlwrap sbcl"
 alias scheme="rlwrap scheme"
