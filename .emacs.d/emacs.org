@@ -562,6 +562,14 @@ split a bullet point in two).
 (setq org-M-RET-may-split-line '((default)))
 #+END_SRC
 
+Finally, Org-mode has this odd love of indenting the entries in
+description lists so that there is a consistent left edge.  I don't
+like it, and luckily I can turn it off.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-description-max-indent 0)
+#+END_SRC
+
 ** Agenda View
 
 I use the agenda view a lot, so I customize it a bit.  The agenda
@@ -915,14 +923,6 @@ hyperlink-y.
 #+END_SRC
 
 * Shells
-** Shell mode
-
-My fish shell prompt isn't detected too well.  Let's fix that.
-
-#+BEGIN_SRC emacs-lisp
-(setq shell-prompt-pattern ".*$>")
-#+END_SRC
-
 ** Eshell
 
 Eshell doesn't actually require that much prodding.  The only thing I
@@ -966,7 +966,7 @@ Multiterm requires a bit more setup.
 
 #+BEGIN_SRC emacs-lisp
 (require 'multi-term)
-(setq multi-term-program "/usr/bin/fish")
+(setq multi-term-program "/bin/bash")
 #+END_SRC
 
 For simplicity, I also add the =mterm= command to just call
