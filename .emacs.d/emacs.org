@@ -847,6 +847,79 @@ When a tab is closed, W3M should shift to the right tab, not the left tab.
   
 #+END_SRC
 
+* NotMuch Mail
+
+I've started using NotMuch for my email needs.  It is much faster than
+GNUS, and also has the distinct positive of working well with
+IMAP-synced Maildir.
+
+#+BEGIN_SRC emacs-lisp
+(autoload 'notmuch "notmuch" "notmuch mail" t)
+#+END_SRC
+
+My mail gets sent through the GMail IMAP server using =msmtp=.  The
+configuration for that isn't in the =dotfiles= repository since it
+contains passwords.
+
+#+BEGIN_SRC emacs-lisp
+(setq sendmail-program "/usr/bin/msmtp")
+#+END_SRC
+
+Finally, I have a bunch of tags I might want to apply to mail.  As
+much as possible, the key bindings here mirror the GMail key bindings.
+
+#+BEGIN_SRC emacs-lisp
+  (defmacro define-notmuch-key (key how tag)
+    `(define-key notmuch-search-mode-map (kbd ,key)
+       (lambda () (interactive)
+         ,(cond
+           ((eq how :toggle)
+            `(notmuch-search-tag-thread
+              (concat (if (member ,tag (notmuch-search-get-tags))
+                          "-" "+")
+                      ,tag)))
+           ((eq how :set)
+            `(notmuch-search-tag-thread (concat "+" ,tag)))
+           ((eq how :unset)
+            `(notmuch-search-tag-thread (concat "-" ,tag)))))))
+  
+  (eval-after-load 'notmuch-search
+    '(progn
+       (define-key notmuch-search-mode-map "c" 'notmuch-mua-new-mail)
+       (define-key notmuch-search-mode-map "j" 'notmuch-search-next-thread)
+       (define-key notmuch-search-mode-map "k" 'notmuch-search-previous-thread)
+  
+       (define-key notmuch-search-mode-map (kbd "X")
+         '(lambda () (interactive)
+            (let ((changes (notmuch-read-tag-changes "" "")))
+              (apply 'notmuch-tag "tag:marked" changes))
+            (notmuch-search-refresh-view)))
+
+       (define-key notmuch-search-mode-map (kbd "M-x")
+         '(lambda () (interactive)
+            (apply 'notmuch-tag "tag:marked" '("-marked"))
+            (notmuch-search-refresh-view)))
+  
+       (define-notmuch-key "S-1" :toggle "spam")
+       (define-notmuch-key "S-3" :toggle "deleted")
+       (define-notmuch-key "e"   :toggle "inbox")
+       (define-notmuch-key "S-i" :toggle "unread")
+       (define-notmuch-key "i"   :toggle "keep")
+       (define-notmuch-key "x"   :toggle "marked")))
+#+END_SRC
+
+I also would like my messages to be PGP-signed by default.
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'message-setup-hook 'mml-secure-sign-pgpmime)
+#+END_SRC
+
+The default search order is wonky.
+
+#+BEGIN_SRC emacs-lisp
+(setq notmuch-search-oldest-first nil)
+#+END_SRC
+
 * Jabber
 
 =jabber.el= is a great, great invention: it lets me view my Google
