@@ -552,7 +552,7 @@ First things first!  We should set up the file structure.
 #+BEGIN_SRC emacs-lisp
 (setq org-directory "~/notes/")
 (setq org-agenda-files '("~/notes/"))
-(setq org-default-notes-file (concat org-directory "pavel.org"))
+(setq org-default-notes-file (concat org-directory "pavel.txt"))
 #+END_SRC
 
 Let's throw in a very minor editing thing (hitting =M-RET= shouldn't
@@ -583,7 +583,7 @@ Since all of my TODO entries are in one file, I don't need the agenda
 view to tell me what file a TODO entry comes from.
 
 #+BEGIN_SRC emacs-lisp
-  (setq org-agenda-files '("~/notes/pavel.org"))
+  (setq org-agenda-files '("~/notes/pavel.txt"))
   (setq org-agenda-prefix-format 
         '((agenda . " %i %?-12t% s")
           (timeline . "  % s")
@@ -671,7 +671,7 @@ interface is somewhat unloved, but on principle I have it installed,
 and so I need some setup here.
 
 #+BEGIN_SRC emacs-lisp
-(setq org-mobile-inbox-for-pull "~/notes/inbox.org")
+(setq org-mobile-inbox-for-pull "~/notes/inbox.txt")
 (setq org-mobile-directory "~/Dropbox/Notes/mobile-org")
 #+END_SRC
 
