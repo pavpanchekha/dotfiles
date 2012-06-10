@@ -15,4 +15,4 @@ if __name__ == "__main__":
         print("For example: tr-charset latin1 cp1251")
     else:
         for line in sys.stdin:
-            print(line.encode(sys.argv[1]).decode(sys.argv[2]))
+            print(line.encode(sys.argv[1]).decode(sys.argv[2]), end="")
