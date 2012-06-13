@@ -284,6 +284,21 @@ to keep 5 lines between the cursor and the top/bottom of the page.
 (setq scroll-margin 5)
 #+END_SRC
 
+** Showing my To Do list
+
+   My To Do list opens with the actual list on the left and the agenda
+   and the per-project todos on the right
+
+#+BEGIN_SRC emacs-lisp
+  (defun show-todo ()
+    (interactive)
+    (find-file "~/notes/pavel.txt")
+    (org-agenda-list)
+    (split-window-vertically)
+    (other-window 1)
+    (find-file "~/notes/projects.txt"))
+#+END_SRC
+
 * Utility Commands
 ** =run= Command
 
@@ -551,7 +566,6 @@ First things first!  We should set up the file structure.
 
 #+BEGIN_SRC emacs-lisp
 (setq org-directory "~/notes/")
-(setq org-agenda-files '("~/notes/"))
 (setq org-default-notes-file (concat org-directory "pavel.txt"))
 #+END_SRC
 
@@ -591,7 +605,8 @@ Since all of my TODO entries are in one file, I don't need the agenda
 view to tell me what file a TODO entry comes from.
 
 #+BEGIN_SRC emacs-lisp
-  (setq org-agenda-files '("~/notes/pavel.txt"))
+  (setq org-agenda-file-regexp "\\`[^.].*\\.\\(txt\\|org\\)\\'")
+  (setq org-agenda-files '("~/notes/"))
   (setq org-agenda-prefix-format 
         '((agenda . " %i %?-12t% s")
           (timeline . "  % s")
@@ -681,6 +696,32 @@ and so I need some setup here.
 #+BEGIN_SRC emacs-lisp
 (setq org-mobile-inbox-for-pull "~/notes/inbox.txt")
 (setq org-mobile-directory "~/Dropbox/Notes/mobile-org")
+#+END_SRC
+
+I also need to periodically sync MobileOrg.  Here's how I accomplish
+that, with code from [[http://stackoverflow.com/questions/8432108/how-to-automatically-do-org-mobile-push-org-mobile-pull-in-emacs][StackOverflow]].
+
+#+BEGIN_SRC emacs-lisp
+  (defvar my-org-mobile-sync-timer nil)
+  (defvar my-org-mobile-sync-secs (* 60 20))
+
+  (defun my-org-mobile-sync-pull-and-push ()
+    (org-mobile-pull)
+    (org-mobile-push))
+
+  (defun my-org-mobile-sync-start ()
+    "Start automated `org-mobile-push'"
+    (interactive)
+    (setq my-org-mobile-sync-timer
+          (run-with-idle-timer my-org-mobile-sync-secs t
+                               'my-org-mobile-sync-pull-and-push)))
+
+  (defun my-org-mobile-sync-stop ()
+    "Stop automated `org-mobile-push'"
+    (interactive)
+    (cancel-timer my-org-mobile-sync-timer))
+
+  (my-org-mobile-sync-start)                                                         
 #+END_SRC
 
 ** LaTeX Export
