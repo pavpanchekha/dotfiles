@@ -915,17 +915,17 @@ much as possible, the key bindings here mirror the GMail key bindings.
        (lambda () (interactive)
          ,(cond
            ((eq how :toggle)
-            `(notmuch-search-tag-thread
+            `(notmuch-search-tag
               (concat (if (member ,tag (notmuch-search-get-tags))
                           "-" "+")
                       ,tag)))
            ((eq how :set)
-            `(notmuch-search-tag-thread (concat "+" ,tag)))
+            `(notmuch-search-tag (concat "+" ,tag)))
            ((eq how :unset)
-            `(notmuch-search-tag-thread (concat "-" ,tag)))))))
+            `(notmuch-search-tag (concat "-" ,tag)))))))
   
   (eval-after-load 'notmuch-search
-    '(progn
+    (progn
        (define-key notmuch-search-mode-map "c" 'notmuch-mua-new-mail)
        (define-key notmuch-search-mode-map "j" 'notmuch-search-next-thread)
        (define-key notmuch-search-mode-map "k" 'notmuch-search-previous-thread)
@@ -941,12 +941,12 @@ much as possible, the key bindings here mirror the GMail key bindings.
             (apply 'notmuch-tag "tag:marked" '("-marked"))
             (notmuch-search-refresh-view)))
   
-       (define-notmuch-key "S-1" :toggle "spam")
-       (define-notmuch-key "S-3" :toggle "deleted")
-       (define-notmuch-key "e"   :toggle "inbox")
-       (define-notmuch-key "S-i" :toggle "unread")
-       (define-notmuch-key "i"   :toggle "keep")
-       (define-notmuch-key "x"   :toggle "marked")))
+       (define-notmuch-key "!" :toggle "spam")
+       (define-notmuch-key "#" :toggle "deleted")
+       (define-notmuch-key "e" :toggle "inbox")
+       (define-notmuch-key "I" :toggle "unread")
+       (define-notmuch-key "i" :toggle "keep")
+       (define-notmuch-key "x" :toggle "marked")))
 #+END_SRC
 
 I also would like my messages to be PGP-signed by default.
@@ -955,10 +955,13 @@ I also would like my messages to be PGP-signed by default.
 (add-hook 'message-setup-hook 'mml-secure-sign-pgpmime)
 #+END_SRC
 
-The default search order is wonky.
+The default search order is wonky.  And, GMail creates ugly HTML
+email.  Since Emacs isn't rich-text capable anyway, why not hide the
+HTML parts by default?
 
 #+BEGIN_SRC emacs-lisp
 (setq notmuch-search-oldest-first nil)
+(setq notmuch-show-all-multipart/alternative-parts nil)
 #+END_SRC
 
 * Jabber
