@@ -70,19 +70,20 @@
 *~
 
 media
-icons
 dev
 Dropbox
 bac
+arc
 doc
 notes
 priv
 pub
 school
 mail
-todo
-calendar
+data
+icons
 lib
+
 !usr/lib
 .Private
 .fetchmailrc
