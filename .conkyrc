@@ -19,7 +19,3 @@ CPU:  $cpu% ${cpubar 6}
 RAM:  $memperc% ${membar 6}
 
 ${execi 600 fortune -s}
-
-${hr}
-
-${execi 10 quick-todo}
