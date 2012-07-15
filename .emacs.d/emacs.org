@@ -14,26 +14,30 @@ More on this method can be found [[http://orgmode.org/worg/org-contrib/babel/int
 * Packages
 
   My Emacs configuration relies on several packages being installed,
-  in particular various modes.  I'd rather keep the files installed by
-  the system package manager, not in my =.emacs.d=, so I have here
-  package names for the Arch Linux AUR.  If anyone happens to email me
-  names to add from other distros for the purposes of completion, I'll
-  add them in.
+  in particular various modes.  Now that Emacs has a package manager
+  built in, I've changed the names to those names.
 
-  + emacs-nxhtml :: HTML-editing mode.
-  + slime-cvs :: superior lisp interaction mode for Emacs.
-  + emacs-org-mode :: Organization and markup system.
-  + emacs-color-theme :: package for coloring Emacs.  (I am itching to
-       get rid of this with Emacs 24.)
-  + emacs-evil-git :: Emacs: good operating system, awful text editor.
-  + emacs-clojure-mode :: first decent attempt at a modern lisp long.
-  + emacs-coffeescript-mode :: nice syntax for Javascript.
+  + org         :: Organization and markup system.
+  + coffee-mode :: nice syntax for Javascript.
+  + multi-term  :: Emacs =term= is impossible.  This is not.
+  + jabber      :: Google chat in my Emacs.
+  + magit       :: =git= in Emacs
+
+  I also use several packages from the Arch AUR, which aren't yet
+  available on the package repos.
+
+  + emacs-w3m-cvs      :: browse the web in Emacs.
   + emacs-haskell-mode :: useful for haiku and research papers.
-  + emacs-w3m :: browse the web in Emacs.
-  + emacs-multiterm :: Emacs =term= is impossible.  This is not.
-  + emacs-jabber :: Google chat in my Emacs.
-  + auctex :: a LaTeX editing mode.
-  + magit :: =git= in Emacs
+  + emacs-evil-git     :: Emacs: good operating system, awful text editor.
+             
+  These packages are, in general, loaded from the =package.el= package
+  manager.  In particular, we use the Marmalade repository on top of
+  the GNU-maintained one, which gives us access to quite a few tools.
+
+#+BEGIN_SRC emacs-lisp
+  (require 'package)
+  (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
+#+END_SRC
 
 * Miscellany
 ** Startup
@@ -43,13 +47,6 @@ Emacs might as well know my name and email address.  I trust it.
 #+BEGIN_SRC emacs-lisp
 (setq user-full-name "Pavel Panchekha")
 (setq user-mail-address "me@pavpanchekha.com")
-#+END_SRC
-
-To make sure that Emacs can load some extra libraries that I've set
-up, I need to add my local =load-path= to the list.
-
-#+BEGIN_SRC emacs-lisp
-(add-to-list 'load-path "~/.emacs.d/load-path")
 #+END_SRC
 
 Also, I like to keep my custom-set variables from polluting my other
@@ -91,15 +88,6 @@ empty lines.
 #+BEGIN_SRC emacs-lisp
 (if (not indicate-empty-lines)
   (toggle-indicate-empty-lines))
-#+END_SRC
-
-Also, a color theme.  I've been feeling a preference for
-black-on-white color schemes, recently.
-
-#+BEGIN_SRC emacs-lisp
-(require 'color-theme)
-(color-theme-initialize)
-(color-theme-emacs-nw)
 #+END_SRC
 
 The modeline should really be pressed into useful service.  I make it
@@ -415,29 +403,6 @@ same key-map very easy.
                           ',(cadr key+func)))))
 #+END_SRC
 
-* Slime
-
-First, we tell Emacs where to find SLIME and when to load it.
-
-#+BEGIN_SRC emacs-lisp
-  (add-to-list 'load-path "/usr/share/emacs/site-lisp/slime")
-  (autoload 'slime "slime" nil t)
-#+END_SRC
-
-Slime needs to be told where to find my specific Swank loader (I
-change what directory to dump FASLs in).  And, I set the Lisp to SBCL.
-
-#+BEGIN_SRC emacs-lisp
-  (setq slime-backend "~/.emacs.d/slime/loader.lsp")
-  (setq inferior-lisp-program "/usr/bin/sbcl")
-#+END_SRC
-
-Now Slime can be set up.
-
-#+BEGIN_SRC emacs-lisp
-  (eval-after-load "slime" '(slime-setup))
-#+END_SRC
-
 * Doc-View
 
 I generally use doc-vew for long PDFs, so I find it best to have
@@ -484,9 +449,8 @@ Python code) and $\LaTeX$ (for class):
   (auto-fill-mode 1)
   (flyspell-mode 1))
 
-(add-hook 'text-mode-hook 'text-minor-modes)
 (add-hook 'LaTeX-mode-hook 'text-minor-modes)
-(add-hook 'org-mode-hook 'text-minor-modes)
+(add-hook 'org-mode-hook   'text-minor-modes)
 #+END_SRC
 
 Of course, if we're activating ISpell, we should set it up.  Firstly
@@ -497,22 +461,6 @@ English, and where my dictionary is.
 (setq ispell-program-name "/usr/bin/ispell")
 (setq ispell-dictionary "american")
 (setq ispell-personal-dictionary "~/.emacs.d/dict")
-#+END_SRC
-
-** LaTeX
-
-LaTeX requires a bit more setup, simply because *of course* I want
-AucTeX.
-
-#+BEGIN_SRC emacs-lisp
-(load "auctex.el" nil t t)
-(load "preview-latex.el" nil t t)
-#+END_SRC
-
-The default previews are a bit small for my tastes.
-
-#+BEGIN_SRC emacs-lisp
-(setq preview-scale-function 1.1)
 #+END_SRC
 
 ** Language Modes
@@ -1107,3 +1055,28 @@ it.
 (add-to-list 'term-mode-hook (lambda ()
   (set (make-local-variable 'scroll-margin) 0)))
 #+END_SRC
+
+* Personal Analytics
+** Inter-Key Timings
+
+One interesting characteristic of a person's typing is their inter-key
+timings -- the time between typing two letters in succession.  For
+example, it usually takes more time to type "cr" than ";l", since one
+involves moving the left index finger a large distance and the other
+uses the really natural rolling chord on the right hand.  By recording
+all key character pairs, we can actually track timings for this.  And
+since I do a lot of my work in Emacs, it is easiest to do this as an
+Emacs extension.  I've written such a thing: [[http://git.pavpanchekha.com/?p=keylogger.el.git;a=summary][keylogger.el]].  It has an
+Emacs Lisp extension and an analyzer written in Javascript.  Anyway,
+I'd like to turn it on when Emacs starts:
+
+#+BEGIN_SRC emacs-lisp
+(load "~/dev/keylogger.el/keylogger.el")
+(load-every-key-press)
+(remember-every-key-press)
+(autosave-every-key-press)
+#+END_SRC
+
+Note that each startup, I load the file, load my previously-saved
+data, tell it to record new key presses, and to autosave them every
+fifteen minutes.
