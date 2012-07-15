@@ -9,8 +9,6 @@ set modeline
 
 " Tabbing and folding defaults
 set autoindent shiftwidth=4 tabstop=4 softtabstop=4 expandtab foldmethod=indent
-au BufWinLeave ?* mkview
-au BufWinEnter ?* silent loadview
 
 " Some filetype-specific preferences
 filetype plugin indent on
@@ -18,7 +16,6 @@ autocmd FileType c        set cindent
 autocmd FileType cpp      set cindent
 autocmd FileType lisp     set nocindent
 autocmd FileType java     set cindent
-autocmd FileType xml      source ~/.vim/ftplugin/xml.vim
 autocmd FileType python   set nocindent
 autocmd FileType python   set smartindent cinwords=if,elif,else,for,while,try,except,finally,def,class,with
 autocmd FileType tex,rst  set tw=72 spell
@@ -47,7 +44,7 @@ set wildmenu wildmode=list:longest
 " Miscellaneous
 set foldlevel=0 clipboard+=unnamed visualbell title tags=tags;/
 
-" Shut up Vim
+" Shut up, Vim
 set shortmess=atI
 
 " Always 3 lines around cursor
@@ -79,9 +76,6 @@ imap <c-space> <c-x><c-o>
 nmap <F5> :! zsh -c "~/usr/bin/run %"<CR><CR>
 nmap <F6> :! zsh -c "~/usr/bin/run -c %"<CR><CR>
 
-" Extra python autocomplete dictionary
-autocmd FileType python set complete+=k~/.vim/syntax/python.vim
-
 runtime macros/matchit.vim
 
 " Colors and syntax
@@ -89,30 +83,8 @@ set background=light
 syntax on
 colorscheme delek
 
-" Space bar is leader
+" Comma is leader
 let mapleader = ","
 
 " Toolbars and other GUI stuff
 set guioptions=acgimR
-
-" Taglist variables
-" Display function name in status bar:
-let g:ctags_statusline=1
-" Automatically start script
-let generate_tags=1
-" Displays taglist results in a vertical window:
-let Tlist_Use_Horiz_Window=0
-" Shorter commands to toggle Taglist display
-nnoremap TT :TlistToggle<CR>
-map <F4> :TlistToggle<CR>
-" Various Taglist diplay config:
-let Tlist_Use_Right_Window = 1
-let Tlist_Compact_Format = 1
-let Tlist_Exit_OnlyWindow = 1
-let Tlist_GainFocus_On_ToggleOpen = 1
-let Tlist_File_Fold_Auto_Close = 1
-
-" VimWiki
-let g:vimwiki_list = [{"path": "~/notes/"}]
-
-map <leader>s :ConqueTerm zsh<CR>
