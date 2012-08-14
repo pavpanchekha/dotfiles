@@ -7,7 +7,7 @@ my code.  My =.emacs.d/init.el= file contains only:
 
 : (require 'org-install)
 : (require 'ob-tangle)
-: (mapc #'org-babel-load-file (directory-files "~/.emacs.d/" t "\\.org$"))
+: (org-babel-load-file "~/.emacs.d/emacs.org")
 
 More on this method can be found [[http://orgmode.org/worg/org-contrib/babel/intro.html#sec-8_2][in the Babel tutorial]].
 

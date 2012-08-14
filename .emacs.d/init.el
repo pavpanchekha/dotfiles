@@ -2,4 +2,4 @@
 
 (require 'org-install)
 (require 'ob-tangle)
-(mapc #'org-babel-load-file (directory-files "~/.emacs.d/" t "\\.org$"))
+(org-babel-load-file "~/.emacs.d/emacs.org")
