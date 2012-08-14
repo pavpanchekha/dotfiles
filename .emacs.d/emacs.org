@@ -18,7 +18,6 @@ More on this method can be found [[http://orgmode.org/worg/org-contrib/babel/int
   built in, I've changed the names to those names.
 
   + org         :: Organization and markup system.
-  + coffee-mode :: nice syntax for Javascript.
   + multi-term  :: Emacs =term= is impossible.  This is not.
   + jabber      :: Google chat in my Emacs.
   + magit       :: =git= in Emacs
@@ -37,6 +36,7 @@ More on this method can be found [[http://orgmode.org/worg/org-contrib/babel/int
 #+BEGIN_SRC emacs-lisp
   (require 'package)
   (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
+  (package-initialize)
 #+END_SRC
 
 * Miscellany
@@ -160,6 +160,15 @@ my tetris high scores!):
 #+BEGIN_SRC emacs-lisp
 (setq tetris-score-file "~/.emacs.d/scores/tetris")
 (setq snake-score-file  "~/.emacs.d/scores/snake")
+#+END_SRC
+
+** Utility Libraries
+
+I like =(loop)= and extended argument lists, so I need the =cl=
+library.
+
+#+BEGIN_SRC emacs-lisp
+(require 'cl)
 #+END_SRC
 
 * Key Bindings
@@ -475,23 +484,11 @@ setting up.
                 "/usr/share/emacs/site-lisp/haskell-mode")))
 #+END_SRC
 
-Now we can require in Haskell, CoffeeScript, and Clojure modes.
+Now we can require in the Haskell and Clojure modes.
 
 #+BEGIN_SRC emacs-lisp
 (require 'haskell-mode nil t)
 (require 'clojure-mode nil t)
-(require 'coffee-mode nil t)
-;(load "/usr/share/emacs/site-lisp/nxhtml/autostart.el")
-#+END_SRC
-
-** Coffee-Script
-
-Coffee-script takes too much work to compile.  It's only accessible
-from the menu?  And it's an Emacs mode?
-
-#+BEGIN_SRC emacs-lisp
-  (define-keys coffee-mode-map
-    ("C-c C-c" coffee-compile-file))
 #+END_SRC
 
 ** Common but Mode-specific
