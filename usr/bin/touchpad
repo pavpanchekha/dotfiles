@@ -1,0 +1,14 @@
+#!/bin/sh
+
+if [ -z "$1" ]; then
+    echo "USAGE: touchpad on|off"
+    exit 127
+fi
+
+TOUCHOFF=0
+
+if [ "x$1" == "xoff" ]; then
+    TOUCHOFF=1
+fi
+
+synclient TouchpadOff=$TOUCHOFF
