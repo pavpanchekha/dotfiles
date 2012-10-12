@@ -458,7 +458,7 @@ Python code) and $\LaTeX$ (for class):
   (auto-fill-mode 1)
   (flyspell-mode 1))
 
-(add-hook 'LaTeX-mode-hook 'text-minor-modes)
+(add-hook 'latex-mode-hook 'text-minor-modes)
 (add-hook 'org-mode-hook   'text-minor-modes)
 #+END_SRC
 
@@ -470,6 +470,31 @@ English, and where my dictionary is.
 (setq ispell-program-name "/usr/bin/ispell")
 (setq ispell-dictionary "american")
 (setq ispell-personal-dictionary "~/.emacs.d/dict")
+#+END_SRC
+
+LaTeX also could use a quick tool to compile and view a source file.
+I use the =compile= command for this.
+
+#+BEGIN_SRC emacs-lisp
+  (defun latex-compile (file)
+    (interactive (list (buffer-file-name)))
+
+    (make-local-variable 'latex-compile-outfile)
+
+    (let ((first-run (not (boundp 'latex-compile-outfile))))
+      (when (or first-run (not (get-file-buffer latex-compile-outfile)))
+        (setf latex-compile-outfile
+              (make-temp-file "emacs-latex-compile-" nil ".pdf"))
+        (setf first-run t))
+
+      (save-window-excursion
+        (shell-command (concat "run -c " file " -o " latex-compile-outfile)))
+
+      (if first-run
+          (find-file-other-window latex-compile-outfile)
+        (progn
+          (set-buffer (get-file-buffer latex-compile-outfile))
+          (doc-view-revert-buffer t t)))))
 #+END_SRC
 
 ** Language Modes
