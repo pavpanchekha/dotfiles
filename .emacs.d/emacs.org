@@ -868,13 +868,32 @@ IMAP-synced Maildir.
 (autoload 'notmuch "notmuch" "notmuch mail" t)
 #+END_SRC
 
-My mail gets sent through the GMail IMAP server using =msmtp=.  The
-configuration for that isn't in the =dotfiles= repository since it
-contains passwords.
+** Sending mail
+
+My mail gets sent through the GMail IMAP server.  I used to use =msmtp=
+for sending mail, but I've now switched to using =smtpmail.el=, since
+it's nice to have an Emacs-native solution.
 
 #+BEGIN_SRC emacs-lisp
-(setq sendmail-program "/usr/bin/msmtp")
+(setq message-send-mail-function 'smtpmail-send-it)
 #+END_SRC
+
+We now set up SMTPMail to use GMail.
+
+#+BEGIN_SRC emacs-lisp
+(setq smtpmail-smtp-server "smtp.gmail.com")
+(setq smtpmail-smtp-service 587)
+#+END_SRC
+
+We then set up TLS for GMail's connection:
+
+#+BEGIN_SRC emacs-lisp
+(setq smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil)))
+(setq smtpmail-auth-credentials `(("smtp.gmail.com" 587
+                                   "me@pavpanchekha.com" ,my-gapps-password)))
+#+END_SRC
+
+** Key Bindings
 
 Finally, I have a bunch of tags I might want to apply to mail.  As
 much as possible, the key bindings here mirror the GMail key bindings.
