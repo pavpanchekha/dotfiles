@@ -19,7 +19,6 @@ More on this method can be found [[http://orgmode.org/worg/org-contrib/babel/int
 
   + org         :: Organization and markup system.
   + multi-term  :: Emacs =term= is impossible.  This is not.
-  + jabber      :: Google chat in my Emacs.
   + magit       :: =git= in Emacs
 
   I also use several packages from the Arch AUR, which aren't yet
@@ -345,7 +344,7 @@ Now we write a function to print the current buffer.
   (interactive)
 #+END_SRC
 
-We want to use the function =pr-ps-buffer-pritn= from the =printing=
+We want to use the function =pr-ps-buffer-print= from the =printing=
 package.  We give it a temporary file to print to, and later we'll
 =ps2pdf= that file.
 
@@ -421,11 +420,12 @@ continuous scrolling.
 (setq doc-view-continuous t)
 #+END_SRC
 
-92 is a decent resolution, since it makes a page of text about as wide
-as half my screen (and I generally use Emacs with two vertical panes.
+144 is a decent resolution, since it makes a page of text about as
+wide as half my screen (and I generally use Emacs with two vertical
+panes.
 
 #+BEGIN_SRC emacs-lisp
-(setq doc-view-resolution 92)
+(setq doc-view-resolution 144)
 #+END_SRC
 
 The PDF viewer is in sore need of Vim-style h/j/k/l movement keys
