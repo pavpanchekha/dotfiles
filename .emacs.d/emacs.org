@@ -648,6 +648,7 @@ inline markup:
 #+END_SRC
 
 ** Key bindings
+
 Some key bindings are not bound by Org automatically, so I have to bind
 them myself.
 
@@ -655,43 +656,6 @@ them myself.
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)
 (global-set-key "\C-cc" 'org-capture)
-#+END_SRC
-
-** MobileOrg
-
-I don't really use MobileOrg on my phone, since the Android MobileOrg
-interface is somewhat unloved, but on principle I have it installed,
-and so I need some setup here.
-
-#+BEGIN_SRC emacs-lisp
-(setq org-mobile-inbox-for-pull "~/notes/inbox.txt")
-(setq org-mobile-directory "~/Dropbox/Notes/mobile-org")
-#+END_SRC
-
-I also need to periodically sync MobileOrg.  Here's how I accomplish
-that, with code from [[http://stackoverflow.com/questions/8432108/how-to-automatically-do-org-mobile-push-org-mobile-pull-in-emacs][StackOverflow]].
-
-#+BEGIN_SRC emacs-lisp
-  (defvar my-org-mobile-sync-timer nil)
-  (defvar my-org-mobile-sync-secs (* 60 20))
-
-  (defun my-org-mobile-sync-pull-and-push ()
-    (org-mobile-pull)
-    (org-mobile-push))
-
-  (defun my-org-mobile-sync-start ()
-    "Start automated `org-mobile-push'"
-    (interactive)
-    (setq my-org-mobile-sync-timer
-          (run-with-idle-timer my-org-mobile-sync-secs t
-                               'my-org-mobile-sync-pull-and-push)))
-
-  (defun my-org-mobile-sync-stop ()
-    "Stop automated `org-mobile-push'"
-    (interactive)
-    (cancel-timer my-org-mobile-sync-timer))
-
-  (my-org-mobile-sync-start)                                                         
 #+END_SRC
 
 ** LaTeX Export
@@ -913,29 +877,29 @@ much as possible, the key bindings here mirror the GMail key bindings.
            ((eq how :unset)
             `(notmuch-search-tag (concat "-" ,tag)))))))
   
-  (eval-after-load 'notmuch-search
-    (progn
+  (eval-after-load 'notmuch
+    '(progn
        (define-key notmuch-search-mode-map "c" 'notmuch-mua-new-mail)
        (define-key notmuch-search-mode-map "j" 'notmuch-search-next-thread)
        (define-key notmuch-search-mode-map "k" 'notmuch-search-previous-thread)
-  
-       (define-key notmuch-search-mode-map (kbd "X")
+
+       (define-key notmuch-search-mode-map (kbd "C-.")
          '(lambda () (interactive)
             (let ((changes (notmuch-read-tag-changes "" "")))
-              (apply 'notmuch-tag "tag:marked" changes))
+              (apply 'notmuch-tag "tag:." changes))
             (notmuch-search-refresh-view)))
 
-       (define-key notmuch-search-mode-map (kbd "M-x")
+       (define-key notmuch-search-mode-map (kbd "M-.")
          '(lambda () (interactive)
-            (apply 'notmuch-tag "tag:marked" '("-marked"))
+            (apply 'notmuch-tag "tag:." '("-marked"))
             (notmuch-search-refresh-view)))
   
        (define-notmuch-key "!" :toggle "spam")
        (define-notmuch-key "#" :toggle "deleted")
        (define-notmuch-key "e" :toggle "inbox")
        (define-notmuch-key "I" :toggle "unread")
-       (define-notmuch-key "i" :toggle "keep")
-       (define-notmuch-key "x" :toggle "marked")))
+       (define-notmuch-key "." :toggle ".")
+       (define-key notmuch-search-mode-map (kbd "g") 'notmuch-search-refresh-view)))
 #+END_SRC
 
 I also would like my messages to be PGP-signed by default.

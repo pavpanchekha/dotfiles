@@ -15,5 +15,5 @@ xflux -z 02142
 /usr/lib/notification-daemon-1.0/notification-daemon 2>/dev/null &
 tracker-control --start &
 
-conky -c .config/bar.conky | dzen2 -w 600 -x 766 -fg white -bg black -fn -*-terminus-medium-*-*-*-*-140-*-*-*-*-*-* -ta r &
+conky -c .config/bar.conky | dzen2 -w 920 -x 766 -fg white -bg black -fn -*-terminus-medium-*-*-*-*-140-*-*-*-*-*-* -ta r &
 exec ssh-agent xmonad

@@ -63,6 +63,12 @@ function search () {
     tracker-search "$@" | tail -n +2 | head -n -1 | cut -c10-
 }
 
+function to-emacs () {
+    bg
+    emacsclient -c -e '(term-simple-send (get-buffer-process (ansi-term "/bin/bash")) "reptyr '`jobs -p %+`'")'
+    kill $$
+}
+
 alias math="rlwrap math"
 alias sbcl="rlwrap sbcl"
 alias scheme="rlwrap scheme"
@@ -70,5 +76,6 @@ alias zephyr="tmux -L zephyr attach"
 alias edconfigure="$EDITOR ~/.profile"
 alias reconfigure=". ~/.profile"
 alias py="ipython"
+alias lpr="lpr -Pbean"
 
 alias ls="ls -F --color"
