@@ -59,8 +59,10 @@
 .cabal
 .lesshst
 .googlecl
+.google_authenticator
 .latexdraw
 .java
+.icedtea
 .vimperator
 .minecraft
 .npm
@@ -99,3 +101,6 @@ arc
 *.cache
 *.pid
 *~
+
+.ssh/known_hosts
+
