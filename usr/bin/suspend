@@ -3,7 +3,7 @@
 slock &
 
 if [[ "$1" == "-h" ]]; then
-    sudo pm-hibernate
+    systemctl hibernate
 else
-    sudo pm-suspend
+    systemctl suspend
 fi
