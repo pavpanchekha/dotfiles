@@ -76,6 +76,5 @@ alias zephyr="tmux -L zephyr attach"
 alias edconfigure="$EDITOR ~/.profile"
 alias reconfigure=". ~/.profile"
 alias py="ipython"
-alias lpr="lpr -Pbean"
 
 alias ls="ls -F --color"
