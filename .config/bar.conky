@@ -2,4 +2,4 @@ background no
 out_to_console yes
 out_to_x no
 TEXT
-${if_existing /proc/acpi/battery/BAT0/state}Batt: ${battery_percent BAT0}% |$endif ${texeci 60 dropbox status} | ${time %02H:%02M} 
+Batt: ${battery_percent BAT0}% | ${texeci 60 dropbox status|tail -n1} | ${time %02H:%02M} 
