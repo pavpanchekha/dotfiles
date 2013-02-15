@@ -17,17 +17,20 @@ More on this method can be found [[http://orgmode.org/worg/org-contrib/babel/int
   in particular various modes.  Now that Emacs has a package manager
   built in, I've changed the names to those names.
 
+  + evil        :: A good text editor for Emacs
   + org         :: Organization and markup system.
   + multi-term  :: Emacs =term= is impossible.  This is not.
   + magit       :: =git= in Emacs
+
+
+  A few language modes are also there: =erlang=, =go-mode=,
+  =haskell-mode=, =markdown-mode=, =mediawiki=.
 
   I also use several packages from the Arch AUR, which aren't yet
   available on the package repos.
 
   + emacs-w3m-cvs      :: browse the web in Emacs.
-  + emacs-haskell-mode :: useful for haiku and research papers.
-  + emacs-evil-git     :: Emacs: good operating system, awful text editor.
-             
+
   These packages are, in general, loaded from the =package.el= package
   manager.  In particular, we use the Marmalade repository on top of
   the GNU-maintained one, which gives us access to quite a few tools.
@@ -150,7 +153,7 @@ uses the parent directory name, which I usually know.
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
 #+END_SRC
-   
+
 ** Games
 
 It's very important that score files are placed correctly (can't lose
@@ -264,7 +267,7 @@ as well.  The last line there make =C-k= kill the whole line.
 ** Searching and Scrolling
 
 For searching, I enable highlighting as-I-search for both searches and
-search/replaces.  Also, searches are made case-insensitive.  
+search/replaces.  Also, searches are made case-insensitive.
 
 #+BEGIN_SRC emacs-lisp
 (setq search-highlight t)
@@ -296,6 +299,19 @@ to keep 5 lines between the cursor and the top/bottom of the page.
 #+END_SRC
 
 * Utility Commands
+** Debugging
+
+Every once in a while, I develop in emacs-lisp, and make use of the
+following:
+
+#+BEGIN_SRC emacs-lisp
+  (defun debug-mode ()
+    "Turn on various Emacs debugging features"
+    (interactive)
+
+    (setf debug-on-error t message-log-max 10000))
+#+END_SRC
+
 ** =run= Command
 
 I have a =run= command that I rather like; it compiles and runs some
@@ -332,7 +348,7 @@ the Postscript.
 
 First, I =require= in the =printing= package and ask it to install
 itself into the Emacs menu tree.
-  
+
 #+BEGIN_SRC emacs-lisp
 (require 'printing)
 #+END_SRC
@@ -396,14 +412,14 @@ Since I like Vim key-bindings everywhere, I'll be doing a lot of
 adding to key-maps.  This gets tedious, especially when lots of keys
 on the same key-map.  This macro makes adding a bunch of keys to the
 same key-map very easy.
-   
+
 #+BEGIN_SRC emacs-lisp
   (defmacro define-keys (map &rest keys)
     "Adds several key bindings to a specific map.  Takes a map (as
     a bare symbol) and a several clauses of form (key func); key is
     a string to be passed to (kbd), and func is a function name."
     (declare (indent defun))
-    
+
     `(progn
        ,@(loop for key+func in keys
                collect `(define-key ,map
@@ -565,7 +581,7 @@ on a weekend or weekday.
   (setq org-agenda-ndays 1)
   (setq org-agenda-span 2)
   (setq org-deadline-warning-days 3)
-  
+
   (setq org-agenda-skip-deadline-if-done t)
   (setq org-agenda-skip-scheduled-if-done t)
   (setq org-agenda-start-on-weekday nil)
@@ -577,7 +593,7 @@ view to tell me what file a TODO entry comes from.
 #+BEGIN_SRC emacs-lisp
   (setq org-agenda-file-regexp "\\`[^.].*\\.\\(txt\\|org\\)\\'")
   (setq org-agenda-files '("~/notes/"))
-  (setq org-agenda-prefix-format 
+  (setq org-agenda-prefix-format
         '((agenda . " %i %?-12t% s")
           (timeline . "  % s")
           (todo . " %i %-12:c")
@@ -622,7 +638,7 @@ Org can typeset them nicely.
                             ("QQ" "\\QQ" t "&#8474;" "Q" "Q" "ℚ")
                             ("RR" "\\RR" t "&#8477;" "R" "R" "ℝ")
                             ("ZZ" "\\ZZ" t "&#8484;" "Z" "Z" "ℤ")
-  
+
                             ; Fraktur letters for ideals
                             ("ga" "\\ga" t "&#120094;" "a" "a" "𝔞")
                             ("gb" "\\gb" t "&#120095;" "b" "b" "𝔟")
@@ -669,7 +685,7 @@ I'm just exporting.
 #+END_SRC
 
 * Magit
-  
+
 Magit needs a =(require)= and an autoload.
 
 #+BEGIN_SRC emacs-lisp
@@ -765,7 +781,7 @@ right away; this is silly.
   the background. If the region is active, use the
   `w3m-open-all-links-in-new-session' command instead."
     (interactive)
-    
+
     (save-window-excursion
       (call-interactively 'w3m-view-this-url-new-session)))
 #+END_SRC
@@ -801,7 +817,7 @@ When a tab is closed, W3M should shift to the right tab, not the left tab.
      ((< a 0) 0)
      ((> a n) n)
      (t a)))
-  
+
   (defun w3m-clamp-next-buffer (arg)
     "Turn ARG pages of emacs-w3m buffers ahead."
     (interactive "p")
@@ -817,9 +833,9 @@ When a tab is closed, W3M should shift to the right tab, not the left tab.
       (w3m-history-restore-position)
       (run-hooks 'w3m-select-buffer-hook)
       (w3m-select-buffer-update)))
-  
+
   (add-hook 'w3m-delete-buffer-hook (lambda () (w3m-clamp-next-buffer 1)))
-  
+
 #+END_SRC
 
 * NotMuch Mail
@@ -876,7 +892,7 @@ much as possible, the key bindings here mirror the GMail key bindings.
             `(notmuch-search-tag (concat "+" ,tag)))
            ((eq how :unset)
             `(notmuch-search-tag (concat "-" ,tag)))))))
-  
+
   (eval-after-load 'notmuch
     '(progn
        (define-key notmuch-search-mode-map "c" 'notmuch-mua-new-mail)
@@ -893,7 +909,7 @@ much as possible, the key bindings here mirror the GMail key bindings.
          '(lambda () (interactive)
             (apply 'notmuch-tag "tag:." '("-marked"))
             (notmuch-search-refresh-view)))
-  
+
        (define-notmuch-key "!" :toggle "spam")
        (define-notmuch-key "#" :toggle "deleted")
        (define-notmuch-key "e" :toggle "inbox")
