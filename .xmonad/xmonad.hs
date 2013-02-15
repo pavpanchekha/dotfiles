@@ -107,29 +107,29 @@ myManageHook = [ className =? "stalonetray"--> doIgnore
 myLayout = smartBorders $ avoidStruts $ (tiled ||| Mirror tiled ||| Full)
     where tiled = Tall 1 (3/100) (1/2)
 
-myLog pipe = dynamicLogWithPP $ dzenPP {
+myLog pipe = dynamicLogWithPP $ xmobarPP {
       ppOutput  = hPutStrLn pipe
-    , ppCurrent = dzenColor "black" "#dddddd" . pad
-    , ppVisible = dzenColor "black" "#aaaaaa"  . pad
-    , ppHidden  = dzenColor "white" "black" . pad . (\tag ->
-                            case tag of
-                                 "NSP"         -> ""
-                                 _             -> tag
-                            )
-    , ppLayout  = dzenColor "white" "black" . pad . (\layout ->
-                            case layout of
-                                 "Tall"        -> "Vt"
-                                 "Mirror Tall" -> "Hz"
-                                 "Full"        -> "Fl"
-                                 _             -> layout
-                            )
-    , ppTitle   = dzenColor "white" "black" . dzenEscape
+    , ppCurrent = xmobarColor "black" "#dddddd"
+    , ppVisible = xmobarColor "black" "#aaaaaa"
+    , ppHidden  = xmobarColor "white" "black" . (\tag ->
+                              case tag of
+                                   "NSP"         -> ""
+                                   _             -> tag
+                              )
+    , ppLayout  = xmobarColor "white" "black" . (\layout ->
+                              case layout of
+                                   "Tall"        -> "Vt"
+                                   "Mirror Tall" -> "Hz"
+                                   "Full"        -> "Fl"
+                                   _             -> layout
+                              )
+    , ppTitle   = xmobarColor "white" "black" . xmobarEscape
     }
     
 fontTerminus = "-*-terminus-medium-*-*-*-*-140-*-*-*-*-*-*"
 
 main = do
-    statusbar <- spawnPipe ("dzen2 -w 766 -fg white -bg black -fn " ++ fontTerminus ++ " -ta l")
+    statusbar <- spawnPipe ("xmobar ~/.xmonad/xmobar.hs")
     
     xmonad $ defaultConfig {
       -- simple stuff
@@ -139,8 +139,8 @@ main = do
         modMask            = mod4Mask,
         workspaces         = ["1", "2", "3", "4", "5", "S"],
         
-        normalBorderColor  = "#888888",
-        focusedBorderColor = "#dddddd",
+        normalBorderColor  = "#000000",
+        focusedBorderColor = "#8ae234",
  
         keys               = myKeys,
         mouseBindings      = myMouseBindings,

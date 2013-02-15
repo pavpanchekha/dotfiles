@@ -1,5 +1,0 @@
-background no
-out_to_console yes
-out_to_x no
-TEXT
-Batt: ${battery_percent BAT0}% | ${texeci 60 dropbox status|tail -n1} | ${time %02H:%02M} 
