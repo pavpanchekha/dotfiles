@@ -55,6 +55,7 @@ function drop () {
     else
         name="$1"
     fi
+    ssh server "cd ~www/drop && chmod a+r $name"
     
     echo "http://drop.pavpanchekha.com/$name"
 }
