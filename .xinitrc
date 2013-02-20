@@ -11,6 +11,7 @@ xsetroot -solid '#dddddd' -cursor_name left_ptr
 # Applications
 dropbox start &
 conky -d
+redshift -l 42.359947:-71.08846 &
 tracker-control --start &
 
 exec ssh-agent xmonad
