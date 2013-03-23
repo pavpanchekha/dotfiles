@@ -1,6 +1,7 @@
 -- -*- mode: haskell -*-
 
 import XMonad
+import XMonad.Core
 import XMonad.Util.NamedScratchpad
 import XMonad.Layout.NoBorders
 import XMonad.Hooks.ManageDocks
@@ -32,6 +33,10 @@ myScratchPads = [NS "terminal" spawnTerm findTerm manageTerm] where
     w = 1     -- Width
     t = 1 - h -- Distance from top
     l = 1 - w -- Distance from left
+
+nonScratchpadWS =
+                do cur <- (W.tag . W.workspace . W.current) `fmap` gets windowset
+                   return $ (/= "NSP") . W.tag
 
 myApps = readFile "/home/pavpanchekha/.config/apps" >>= return . lines
 myCompletion s = myApps >>= flip mkComplFunFromList s
@@ -75,8 +80,8 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask, xK_space ), execPrompt)
     
     -- Cycle workspaces
-    , ((modm,               xK_Right),  nextWS)
-    , ((modm,               xK_Left),   prevWS)
+    , ((modm,               xK_Right),  moveTo Next $ WSIs nonScratchpadWS)
+    , ((modm,               xK_Left),   moveTo Prev $ WSIs nonScratchpadWS)
     , ((modm .|. shiftMask, xK_Right),  shiftToNext)
     , ((modm .|. shiftMask, xK_Left),   shiftToPrev)
     ]
