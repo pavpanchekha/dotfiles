@@ -132,6 +132,34 @@ certain text, which is nice for focusing and buffer-cloning magic.
 (put 'narrow-to-region 'disabled nil)
 #+END_SRC
 
+** Visual Line Mode Hacks
+
+I like using visual-line-mode, especially when editing text.  But this is problematic if the width of the window is very large, since in that case the line doesn't wrap until it is 100 or so characters long.  To fix this, I use the following function:
+
+#+BEGIN_SRC emacs-lisp
+  (defun center-within (max-chars)
+    "Expand or shrink the fringe until the text width is
+  MAX-CHARS characters or fewer characters wide or less"
+    (interactive "p")
+    (while (not (or (= (window-width) max-chars)
+                    (and (< (window-width) max-chars)
+                         (= (car (window-fringes)) 0))))
+      (let ((char-width
+             (* (aref (font-info (face-font 'default)) 2) (/ 1.0 12.0) 6.0))
+            (current-chars
+             (window-width))
+            (current-fringe
+             (cons (car (window-fringes)) (cadr (window-fringes)))))
+        (let* ((excess-chars (- current-chars max-chars))
+               (excess-width (* excess-chars char-width))
+               (deficit-margin (floor (/ excess-width 2)))
+               (left-fringe (max 0 (+ (car current-fringe) deficit-margin)))
+               (right-fringe (max 0 (+ (cdr current-fringe) deficit-margin))))
+          (set-window-fringes nil left-fringe right-fringe)))))
+#+END_SRC
+
+Eventually I should make this a minor mode with redisplays keyed off =window-size-change-functions=, but for now I'll hold off on this next step.
+
 ** Basic File Behaviors
 
 Emacs has some stupid defaults, such as making those =file~= files and
@@ -250,6 +278,24 @@ Finally, we add key-bindings using Evil's =evil-normal-state-map.
 (define-key evil-normal-state-map "z=" 'ispell-word)
 (define-key evil-normal-state-map "zg" 'ispell-save-word)
 #+END_SRC
+
+** Visual Line Mode hacks
+
+I like to use visual line mode for text files (more semantic
+information!), so I have the following hack for Evil:
+
+#+BEGIN_SRC emacs-lisp
+(define-key evil-motion-state-map "j" #'evil-next-visual-line)
+(define-key evil-motion-state-map "k" #'evil-previous-visual-line)
+(define-key evil-motion-state-map "$" #'evil-end-of-visual-line)
+(define-key evil-motion-state-map "^" #'evil-first-non-blank-of-visual-line)
+(define-key evil-motion-state-map "0" #'evil-beginning-of-visual-line)
+#+END_SRC
+
+Note that these work fine in hard-wrapped text, too; they're
+just not as necessary.  Also note that commands like =I= and =A=
+should in theory also receive this treatment, but alas, they
+don't have associated =-visual-line= versions.
 
 ** Miscellaneous
 
@@ -471,10 +517,11 @@ Python code) and $\LaTeX$ (for class):
 #+BEGIN_SRC emacs-lisp
 (defun text-minor-modes ()
   (interactive)
-  (auto-fill-mode 1)
+  (visual-line-mode 1)
   (flyspell-mode 1))
 
 (add-hook 'latex-mode-hook 'text-minor-modes)
+(add-hook 'markdown-mode-hook 'text-minor-modes)
 (add-hook 'org-mode-hook   'text-minor-modes)
 #+END_SRC
 
