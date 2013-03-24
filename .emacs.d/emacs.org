@@ -972,6 +972,14 @@ I have a few bookmarks that set up my email flow.
 #+END_SRC
 
 * Shells
+** Shell mode
+
+The Emacs shell mode is great, but barfs on ANSI escape sequence.  There's a fix:
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+#+END_SRC
+
 ** Eshell
 
 Eshell doesn't actually require that much prodding.  The only thing I

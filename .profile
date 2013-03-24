@@ -79,3 +79,7 @@ alias reconfigure=". ~/.profile"
 alias py="ipython"
 
 alias ls="ls -F --color"
+
+# Explain commands that weren't found
+source /usr/share/doc/pkgfile/command-not-found.bash
+
