@@ -1,12 +1,11 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
 # -*- mode: python -*-
+__VERSION__ = "1.5"
+
 import sys, os
-sys.path.append(os.path.expanduser("~/usr/lib/run"))
-
-__VERSION__ = "1.0"
-
-import exts
 import subprocess
+
+TIME_FMT="[time] %Us user %Ss sys %P cpu %t mem (total: %e)"
 
 class FiletypeError(ValueError): pass
 
@@ -30,49 +29,179 @@ def run(f, args, measure=False, filetype=None):
     if filetype == None:
         filetype = get_type(f)
 
-    if filetype not in exts.registry or not hasattr(exts.registry[filetype], "run"):
+    if not Extensions.have(filetype, "run"):
         if filetype:
             raise ValueError("Unsupported file type")
         else:
             raise FiletypeError("Unable to divine file type")
-    commands = exts.registry[filetype].run
+
     d = tempdir()
+    commands = Extensions.get(filetype, "run")(f, args=args, tempdir=d)
 
-    for cmd in commands[:-1]:
-        sh = cmd(f=f, args=args, tempdir=d)
-        if sh: subprocess.call(sh)
-
-    finalcmd = commands[-1](f=f, args=args, tempdir=d)
-    if measure:
-        finalcmd = ["time", "-f", "[time] %Us user %Ss sys %P cpu %t mem (total: %e)"] + finalcmd
-    if finalcmd: subprocess.Popen(finalcmd).wait()
+    for cmd in commands:
+        sh = cmd
+        if measure:
+            sh = ["time", "-f", TIME_FMT] + sh
+        subprocess.call(sh)
 
 def compile(f, args, outfile=None, filetype=None):
     if filetype == None:
         filetype = get_type(f)
 
-    if filetype not in exts.registry or not hasattr(exts.registry[filetype], "compile"):
+    if not Extensions.have(filetype, "compile"):
         if filetype:
             raise ValueError("Unsupported file type")
         else:
             raise FiletypeError("Unable to divine file type")
-    commands = exts.registry[filetype].compile
 
     if outfile == None:
-        outfile = exts.registry[filetype].outfile(f)
+        outfile = Extensions.get(filetype, "outfile")(f)
     elif os.path.isdir(outfile):
-        fname = os.path.basename(exts.registry[filetype].outfile(f))
+        fname = os.path.basename(Extensions.get(filetype, "outfile")(f))
         outfile = os.path.join(outfile, fname)
 
     d = tempdir()
+    commands = Extensions.get(filetype, "compile")(f, args=args, tempdir=d, target=outfile)
 
-    for cmd in commands[:-1]:
-        sh = cmd(f=f, args=args, tempdir=d, target=outfile)
-        if sh: subprocess.call(sh)
+    for cmd in commands:
+        subprocess.call(cmd)
 
-    finalcmd = commands[-1](f=f, args=args, tempdir=d, target=outfile)
-    if finalcmd: return subprocess.Popen(finalcmd).wait()
+class Extensions:
+    @classmethod
+    def have(cls, ext, type):
+        return ext and hasattr(cls, ext) and hasattr(getattr(cls, ext), type)
 
+    @classmethod
+    def get(cls, ext, type):
+        return ext and getattr(getattr(cls, ext), type)
+    
+    class c:
+        @classmethod
+        def run(cls, f, args, tempdir):
+            yield ["gcc", "-O3", "-o", os.path.join(tempdir, "-out")]
+            yield [os.path.join(tempdir, "-out")] + args
+
+        @classmethod
+        def compile(cls, f, args, tempdir, target):
+            yield ["gcc", "-O3", "-o", os.path.join(tempdir, "-out")]
+
+        @classmethod
+        def outfile(cls, f):
+            return f.split(".", 1)[0]
+
+    class cpp:
+        @classmethod
+        def run(cls, f, args, tempdir):
+            yield ["g++", "-O3", "-o", os.path.join(tempdir, "-out")]
+            yield [os.path.join(tempdir, "-out")] + args
+
+        @classmethod
+        def compile(cls, f, args, tempdir, target):
+            yield ["g++", "-O3", "-o", os.path.join(tempdir, "-out")] + args
+
+        @classmethod
+        def outfile(cls, f):
+            return f.split("/")[-1].rsplit(".", 1)[0]
+
+    class hs:
+        @classmethod
+        def run(cls, f, args, tempdir):
+            yield ["ghc", "-O3", "-o", os.path.join(tempdir, "-out"),
+                   "-outputdir", tempdir, "--make"]
+            yield [os.path.join(tempdir, "-out")] + args
+
+        @classmethod
+        def compile(cls, f, args, tempdir, target):
+            yield ["g++", "-O3", "-o", os.path.join(tempdir, "-out"),
+                   "-outputdir", tempdir, "--make"] + args
+
+        @classmethod
+        def outfile(cls, f):
+            return f.split("/")[-1].rsplit(".", 1)[0]
+
+    class java:
+        @classmethod
+        def run(cls, f, args, tempdir):
+            yield ["javac", "-d", tempdir, f]
+            yield ["java", "-cp", tempdir, cls.outfile(f)]
+
+        @classmethod
+        def compile(cls, f, args, tempdir, target):
+            yield ["javac", "-d", tempdir, f] + args
+            yield ["mv", os.path.join(tempdir, cls.outfile(f) + ".class"), target]
+
+        @classmethod
+        def outfile(cls, f):
+            return f.split("/")[-1].rsplit(".", 1)[0]
+
+    class org:
+        @classmethod
+        def EMACS_COMMAND(cls, f):
+            return [ "emacs",
+                     "--batch", "-Q",
+                     "--load", "~/.emacs.d/export.el",
+                     "--eval", "(require 'org-install)",
+                     "--visit", f,
+                     "--funcall", "org-export-as-latex-batch"]
+        
+        @classmethod
+        def run(cls, f, tempdir, args):
+            yield ["cp", f, tempdir]
+            yield EMACS_COMMAND(cls.tempname(tempdir, f)) + args
+            yield ["rubber", "-d", "--into", tempdir,
+                   cls.texname(tempdir, f)] + args
+            yield ["evince", cls.outname(tempdir, f)]
+
+        @classmethod
+        def compile(cls, f, tempdir, target, args):
+            yield ["cp", f, tempdir]
+            yield EMACS_COMMAND(cls.tempname(tempdir, f)) + args
+            yield ["rubber", "-d", "--into", tempdir,
+                   cls.texname(tempdir, f)] + args
+            yield ["mv", cls.outname(tempdir, f), target]
+
+        @classmethod
+        def texfile(cls, f):
+            return f.rsplit(".", 1)[0] + ".tex"
+
+        @classmethod
+        def outfile(cls, f):
+            return f.rsplit(".", 1)[0] + ".pdf"
+        
+        @classmethod
+        def tempname(cls, tempdir, f):
+            return os.path.join(tempdir, os.path.split(f)[1])
+
+        @classmethod
+        def texname(cls, tempdir, f):
+            return os.path.join(tempdir, os.path.split(cls.texfile(f))[1])
+            
+    class py:
+        @classmethod
+        def run(cls, f, args, tempdir):
+            yield ["python", f] + args
+
+    class sh:
+        @classmethod
+        def run(cls, f, args, tempdir):
+            yield ["bash", f] + args
+
+    class tex:
+        @classmethod
+        def run(cls, f, args, tempdir):
+            yield ["rubber", "-d", "--into", tempdir, f] + args
+            yield ["evince", os.path.join(tempdir,
+                                          os.path.split(cls.outfile(f))[1])]
+
+        @classmethod
+        def compile(cls, f, args, tempdir, target):
+            yield ["rubber", "-d", "--into", tempdir, f] + args
+            yield ["mv", os.path.join(tempdir, os.path.split(cls.outfile(f))[1]), target]
+
+        @classmethod
+        def outfile(cls, f):
+            return f.rsplit(".", 1)[0] + ".pdf"
+            
 if __name__ == "__main__":
     from optparse import OptionParser
 
@@ -83,14 +212,14 @@ if __name__ == "__main__":
     parser.add_option("-t", "--type", action="store", type="string", dest="filetype", help="Type of code in file", default=None)
 
     def print_help():
-        print "Compile and run files of various types"
-        print
-        print "USAGE: run <file>                Run <file>"
-        print "     | run -m <file>             Run <file>, and measure runtime"
-        print "     | run -c <file>             Compile <file>"
-        print "     | run -c <file> -o <dest>   Compile <file> into file <dest>"
-        print
-        print "One can also always pass the option `-t <type>` to specify the type of <file>"
+        print("Compile and run files of various types")
+        print()
+        print("USAGE: run <file>                Run <file>")
+        print("     | run -m <file>             Run <file>, and measure runtime")
+        print("     | run -c <file>             Compile <file>")
+        print("     | run -c <file> -o <dest>   Compile <file> into file <dest>")
+        print()
+        print("One can also always pass the option `-t <type>` to specify the type of <file>")
 
     parser.print_help = print_help
     options, args = parser.parse_args()
