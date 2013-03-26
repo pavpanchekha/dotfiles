@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export PATH="$PATH:$HOME/usr/bin"
+export PATH="$PATH:$HOME/bin"
 xset +fp /usr/share/fonts/local
 
 # X server stuff

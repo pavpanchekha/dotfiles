@@ -9,6 +9,6 @@ elif [[ -e "/tmp/old.xkb" ]]; then
     rm /tmp/old.xkb
 else
     xkbcomp -xkb $DISPLAY /tmp/old.xkb
-    xkbcomp $HOME/usr/bin/mirrorboard.xkb $DISPLAY 2>/dev/null
+    xkbcomp $HOME/bin/mirrorboard.xkb $DISPLAY 2>/dev/null
 fi
 

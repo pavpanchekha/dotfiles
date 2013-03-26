@@ -87,7 +87,6 @@ data
 icons
 lib
 arc
-!usr/lib
 .Private
 .fetchmailrc
 .msmtprc

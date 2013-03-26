@@ -73,8 +73,8 @@ imap <F4> <Esc>:call ToggleSpell()<CR>a
 imap <c-space> <c-x><c-o>
 
 " My compile commands
-nmap <F5> :! zsh -c "~/usr/bin/run %"<CR><CR>
-nmap <F6> :! zsh -c "~/usr/bin/run -c %"<CR><CR>
+nmap <F5> :! sh -c "~/bin/run %"<CR><CR>
+nmap <F6> :! sh -c "~/bin/run -c %"<CR><CR>
 
 runtime macros/matchit.vim
 

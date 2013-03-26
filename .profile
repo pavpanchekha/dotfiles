@@ -20,8 +20,11 @@ shopt -s extglob # Crazy globbing tricks: [?*+@!]\(xxxx\)
 # Completion
 . /usr/share/bash-completion/bash_completion &
 
+# Explain commands that weren't found
+source /usr/share/doc/pkgfile/command-not-found.bash
+
 # Some actual environment variables
-     PATH="$HOME/usr/bin:$PATH"
+     PATH="$HOME/bin:$PATH"
 TEXINPUTS=".:$HOME/dev/resume.tex:$HOME/dev/simple.tex:"
    GPGKEY="371E352C"
  LESSHIST="-"
@@ -79,7 +82,4 @@ alias reconfigure=". ~/.profile"
 alias py="ipython"
 
 alias ls="ls -F --color"
-
-# Explain commands that weren't found
-source /usr/share/doc/pkgfile/command-not-found.bash
 
