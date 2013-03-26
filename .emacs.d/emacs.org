@@ -1048,6 +1048,27 @@ it.
   (set (make-local-variable 'scroll-margin) 0)))
 #+END_SRC
 
+* Dropbox
+
+[[http://github.com/pavpanchekha/dropbox.el/][dropbox.el]] is a Dropbox client I wrote -- it accesses files from
+Dropbox through the [[http://developers.dropbox.com][Dropbox API]].  It needs a bit of setup, mostly to
+set the API secret and key.  The actual values are in the [[file:passwords.org][passwords
+file]], but I unpack them here to remind myself that the entry in the
+passwords file exists.
+
+#+BEGIN_SRC emacs-lisp
+(load "~/dev/dropbox.el/dropbox.el")
+(setf dropbox-consumer-key    (car  my-dropbox-key))
+(setf dropbox-consumer-secret (cadr my-dropbox-key))
+#+END_SRC
+
+Since I don't have many concurrent clients and rarely use shared
+folders, a longer cache time makes a lot of sense.
+
+#+BEGIN_SRC emacs-lisp
+(setf dropbox-cache-timeout 300)
+#+END_SRC
+
 * Personal Analytics
 ** Inter-Key Timings
 
