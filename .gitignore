@@ -92,6 +92,7 @@ arc
 .msmtprc
 .offlineimaprc
 .zephyr.subs
+.authinfo
 
 *.pyc
 *.hi

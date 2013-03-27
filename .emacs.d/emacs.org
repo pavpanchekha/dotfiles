@@ -953,13 +953,17 @@ We now set up SMTPMail to use GMail.
 We then set up TLS for GMail’s connection:
 
 #+BEGIN_SRC emacs-lisp
-  (setq smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil)))
-  (setq smtpmail-auth-credentials `(("smtp.gmail.com" 587
-                                     "me@pavpanchekha.com" ,my-gapps-password)))
+  (setq starttls-use-gnutls t)
+
   (setq smtpmail-default-smtp-server "smtp.gmail.com"
         smtpmail-smtp-server "smtp.gmail.com"
         smtpmail-smtp-service 587
-        smtpmail-local-domain "pavpanchekha.com")
+        smtpmail-smtp-user "me@pavpanchekha.com"
+        smtpmail-local-domain "pavpanchekha.com"
+        smtpmail-sendto-domain "pavpanchekha.com"
+        smtpmail-debug-info t)
+
+  (require 'smtpmail)
 #+END_SRC
 
 ** Bookmarks
