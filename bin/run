@@ -1,33 +1,25 @@
 #!/usr/bin/env python
 # -*- mode: python -*-
-__VERSION__ = "1.5"
+__VERSION__ = "1.6"
 
 import sys, os
 import subprocess
 
-TIME_FMT="[time] %Us user %Ss sys %P cpu %t mem (total: %e)"
+TIME_FMT="[time] total: %e (%Us user %Ss sys %P cpu | %t mem)"
 
 class FiletypeError(ValueError): pass
 
-def get_type(f):
-    ptype = f.split(".")
-    if len(ptype) > 1:
-        return ptype[-1]
-    else:
-        return None
-
 def tempdir():
-    import tempfile
-    import shutil
-    import atexit
+    import tempfile, shutil, atexit
 
     path = tempfile.mkdtemp()
     atexit.register(shutil.rmtree, path)
     return path
 
-def run(f, args, measure=False, filetype=None):
+def get_type(f, filetype=None):
     if filetype == None:
-        filetype = get_type(f)
+        ptype = f.split(".")
+        filetype = ptype[-1] if len(ptype) > 1 else None
 
     if not Extensions.have(filetype, "run"):
         if filetype:
@@ -35,107 +27,147 @@ def run(f, args, measure=False, filetype=None):
         else:
             raise FiletypeError("Unable to divine file type")
 
-    d = tempdir()
-    commands = Extensions.get(filetype, "run")(f, args=args, tempdir=d)
+    return filetype
+
+def run(f, args, opts):
+    filetype = get_type(f, opts.filetype)
+    dir = tempdir()
+    commands = Extensions.get(filetype, "run")(f, args=args, tempdir=dir)
 
     for cmd in commands:
         sh = cmd
-        if measure:
+        if opts.verbose:
+            import shlex
+            print("#", *map(shlex.quote, sh))
+        if opts.measure:
             sh = ["time", "-f", TIME_FMT] + sh
         subprocess.call(sh)
 
-def compile(f, args, outfile=None, filetype=None):
-    if filetype == None:
-        filetype = get_type(f)
+def compile(f, args, opts):
+    filetype = get_type(f, opts.filetype)
+    outfile = opts.outfile or Extensions.get(filetype, "outfile")(f)
 
-    if not Extensions.have(filetype, "compile"):
-        if filetype:
-            raise ValueError("Unsupported file type")
-        else:
-            raise FiletypeError("Unable to divine file type")
-
-    if outfile == None:
-        outfile = Extensions.get(filetype, "outfile")(f)
-    elif os.path.isdir(outfile):
+    if os.path.isdir(opts.outfile):
         fname = os.path.basename(Extensions.get(filetype, "outfile")(f))
-        outfile = os.path.join(outfile, fname)
+        outfile = os.path.join(opts.outfile, fname)
 
-    d = tempdir()
-    commands = Extensions.get(filetype, "compile")(f, args=args, tempdir=d, target=outfile)
+    dir = tempdir()
+    compile_fn = Extensions.get(filetype, "compile")
+    commands = compile_fn(f, args=args, tempdir=dir, target=outfile)
 
     for cmd in commands:
+        if opts.verbose:
+            import shlex
+            print("#", *map(shlex.quote, cmd))
+
         subprocess.call(cmd)
 
-class Extensions:
-    @classmethod
-    def have(cls, ext, type):
-        return ext and hasattr(cls, ext) and hasattr(getattr(cls, ext), type)
+def arg_parser():
+    import argparse
 
-    @classmethod
-    def get(cls, ext, type):
-        return ext and getattr(getattr(cls, ext), type)
+    parser = argparse.ArgumentParser(description="Compile and run files of various types")
+    parser.add_argument('--version', action='version', version='%(prog)s ' + __VERSION__)
+    parser.add_argument("-c", "--compile", action="store_true", dest="compile",
+                        help="Compile file instead of just running it", default=False)
+    parser.add_argument("-m", "--measure", action="store_true", dest="measure",
+                        help="Measure program runtime with `time`", default=False)
+    parser.add_argument("-o", action="store", type=str, dest="outfile",
+                        help="Where to put compiled code", default=None)
+    parser.add_argument("-t", action="store", type=str, dest="filetype",
+                        help="Type of code in file", default=None)
+    parser.add_argument("-v", "--verbose", action="store_true", dest="verbose",
+                        help="Print each command as it is run", default=False)
+    parser.add_argument("file", type=str, help="File to compile or run")
+    parser.add_argument("args", nargs="*", type=str,
+                        help="Arguments to pass when running the file")
+
+    options = parser.parse_args()
+
+    if options.outfile and not options.compile:
+        parser.error("`--outfile` requires `--compile`")
+
+    if options.compile and options.measure:
+        parser.error("Cannot set both `--measure` and `--compile`")
     
+    return options
+
+def main():
+    options = arg_parser()
+    
+    if options.compile:
+        compile(options.file, options.args, opts=options)
+    else:
+        run(options.file, options.args, opts=options)
+
+# ------------------------------------------------------------------------------
+
+class Extensions:
+    def have(ext, type):
+        return ext and hasattr(Extensions, ext) and hasattr(getattr(Extensions, ext), type)
+
+    def get(ext, type):
+        return ext and getattr(getattr(Extensions, ext), type)
+
+    def instantiate(cls): return cls()
+    
+    @instantiate
     class c:
-        @classmethod
         def run(cls, f, args, tempdir):
-            yield ["gcc", "-O3", "-o", os.path.join(tempdir, "-out")]
-            yield [os.path.join(tempdir, "-out")] + args
+            fname = os.path.join(tempdir, cls.outfile(f))
+            yield from cls.compile(f, args, tempdir, fname)
+            yield [fname] + args
 
-        @classmethod
         def compile(cls, f, args, tempdir, target):
-            yield ["gcc", "-O3", "-o", os.path.join(tempdir, "-out")]
+            yield ["clang", "--std=c11", "-O3", f, "-o", target]
 
-        @classmethod
-        def outfile(cls, f):
-            return f.split(".", 1)[0]
-
-    class cpp:
-        @classmethod
-        def run(cls, f, args, tempdir):
-            yield ["g++", "-O3", "-o", os.path.join(tempdir, "-out")]
-            yield [os.path.join(tempdir, "-out")] + args
-
-        @classmethod
-        def compile(cls, f, args, tempdir, target):
-            yield ["g++", "-O3", "-o", os.path.join(tempdir, "-out")] + args
-
-        @classmethod
         def outfile(cls, f):
             return f.split("/")[-1].rsplit(".", 1)[0]
 
-    class hs:
-        @classmethod
+    @instantiate
+    class cpp:
         def run(cls, f, args, tempdir):
-            yield ["ghc", "-O3", "-o", os.path.join(tempdir, "-out"),
-                   "-outputdir", tempdir, "--make"]
-            yield [os.path.join(tempdir, "-out")] + args
+            fname = os.path.join(tempdir, cls.outfile(f))
+            yield from cls.compile(f, args, tempdir, fname)
+            yield [fname] + args
 
-        @classmethod
         def compile(cls, f, args, tempdir, target):
-            yield ["g++", "-O3", "-o", os.path.join(tempdir, "-out"),
+            yield ["clang++", "--std=c++11", "-O3", f, "-o", target] + args
+
+        def outfile(cls, f):
+            return f.split("/")[-1].rsplit(".", 1)[0]
+
+    @instantiate
+    class hs:
+        def run(cls, f, args, tempdir):
+            fname = os.path.join(tempdir, cls.outfile(f))
+            yield from cls.compile(f, args, tempdir, fname)
+            yield [fname] + args
+
+        def compile(cls, f, args, tempdir, target):
+            yield ["ghc", "-O3", "-o", target,
                    "-outputdir", tempdir, "--make"] + args
 
-        @classmethod
         def outfile(cls, f):
             return f.split("/")[-1].rsplit(".", 1)[0]
 
+    @instantiate
     class java:
-        @classmethod
         def run(cls, f, args, tempdir):
-            yield ["javac", "-d", tempdir, f]
+            yield from cls.make(f, args, tempdir, target)
             yield ["java", "-cp", tempdir, cls.outfile(f)]
 
-        @classmethod
         def compile(cls, f, args, tempdir, target):
-            yield ["javac", "-d", tempdir, f] + args
+            yield from cls.make(f, args, tempdir, target)
             yield ["mv", os.path.join(tempdir, cls.outfile(f) + ".class"), target]
 
-        @classmethod
+        def make(cls, f, args, tempdir, target):
+            yield ["javac", "-d", tempdir, f] + args
+
         def outfile(cls, f):
             return f.split("/")[-1].rsplit(".", 1)[0]
 
+    @instantiate
     class org:
-        @classmethod
         def EMACS_COMMAND(cls, f):
             return [ "emacs",
                      "--batch", "-Q",
@@ -144,96 +176,57 @@ class Extensions:
                      "--visit", f,
                      "--funcall", "org-export-as-latex-batch"]
         
-        @classmethod
         def run(cls, f, tempdir, args):
-            yield ["cp", f, tempdir]
-            yield EMACS_COMMAND(cls.tempname(tempdir, f)) + args
-            yield ["rubber", "-d", "--into", tempdir,
-                   cls.texname(tempdir, f)] + args
+            yield from cls.make(f, tempdir, args)
             yield ["evince", cls.outname(tempdir, f)]
 
-        @classmethod
         def compile(cls, f, tempdir, target, args):
-            yield ["cp", f, tempdir]
-            yield EMACS_COMMAND(cls.tempname(tempdir, f)) + args
-            yield ["rubber", "-d", "--into", tempdir,
-                   cls.texname(tempdir, f)] + args
+            yield from cls.make(f, tempdir, args)
             yield ["mv", cls.outname(tempdir, f), target]
 
-        @classmethod
-        def texfile(cls, f):
-            return f.rsplit(".", 1)[0] + ".tex"
+        def make(cls, f, tempdir, args):
+            yield ["cp", f, tempdir]
+            yield from cls.link_dir("im", f, tempdir)
+            yield from cls.link_dir("etc", f, tempdir)
+            tempname = os.path.join(tempdir, os.path.split(f)[1])
+            yield EMACS_COMMAND(tempname)
+            texfile = cls.outfile(f)[:-4] + ".tex" # Replace .pdf extension with .tex
+            texname = os.path.join(tempdir, os.path.split(texfile)[1])
+            yield ["rubber", "-d", "--into", tempdir, texname] + args
 
-        @classmethod
+        def link_dir(cls, dir, f, tempdir):
+            dir_path = os.path.join(os.path.dirname(f), dir)
+            target_path = os.path.join(tempdir, dir)
+
+            if os.path.isdir(dir_path):
+                yield ["ln", "-s", dir_path, target_path]
+
         def outfile(cls, f):
-            return f.rsplit(".", 1)[0] + ".pdf"
-        
-        @classmethod
-        def tempname(cls, tempdir, f):
-            return os.path.join(tempdir, os.path.split(f)[1])
-
-        @classmethod
-        def texname(cls, tempdir, f):
-            return os.path.join(tempdir, os.path.split(cls.texfile(f))[1])
+            return f.split("/")[-1].rsplit(".", 1)[0] + ".pdf"
             
+    @instantiate
     class py:
-        @classmethod
         def run(cls, f, args, tempdir):
             yield ["python", f] + args
 
+    @instantiate
     class sh:
-        @classmethod
         def run(cls, f, args, tempdir):
             yield ["bash", f] + args
 
+    @instantiate
     class tex:
-        @classmethod
         def run(cls, f, args, tempdir):
             yield ["rubber", "-d", "--into", tempdir, f] + args
             yield ["evince", os.path.join(tempdir,
                                           os.path.split(cls.outfile(f))[1])]
 
-        @classmethod
         def compile(cls, f, args, tempdir, target):
             yield ["rubber", "-d", "--into", tempdir, f] + args
             yield ["mv", os.path.join(tempdir, os.path.split(cls.outfile(f))[1]), target]
 
-        @classmethod
         def outfile(cls, f):
-            return f.rsplit(".", 1)[0] + ".pdf"
+            return f.split("/")[-1].rsplit(".", 1)[0] + ".pdf"
             
 if __name__ == "__main__":
-    from optparse import OptionParser
-
-    parser = OptionParser(usage="Compile and run files of various types\n\nUSAGE: %prog [OPTIONS] file [-- args]", version="%prog " + __VERSION__)
-    parser.add_option("-c", "--compile", action="store_true", dest="compile", help="Compile file instead of just running it", default=False)
-    parser.add_option("-m", "--measure", action="store_true", dest="measure", help="Measure program runtime with `time`", default=False)
-    parser.add_option("-o", "--outfile", action="store", type="string", dest="outfile", help="Location of compiled code; use with `--compile`", default=None)
-    parser.add_option("-t", "--type", action="store", type="string", dest="filetype", help="Type of code in file", default=None)
-
-    def print_help():
-        print("Compile and run files of various types")
-        print()
-        print("USAGE: run <file>                Run <file>")
-        print("     | run -m <file>             Run <file>, and measure runtime")
-        print("     | run -c <file>             Compile <file>")
-        print("     | run -c <file> -o <dest>   Compile <file> into file <dest>")
-        print()
-        print("One can also always pass the option `-t <type>` to specify the type of <file>")
-
-    parser.print_help = print_help
-    options, args = parser.parse_args()
-    
-    if options.outfile and not options.compile:
-        parser.error("`--outfile` requires `--compile` to be set")
-
-    if options.compile and options.measure:
-        parser.error("Setting both `--measure` and `--compile` makes no sense; what would I measure?")
-    
-    if len(args) == 0:
-        parser.error("At least one argument must be specified!")
-
-    if options.compile:
-        compile(args[0], args[1:], outfile=options.outfile, filetype=options.filetype)
-    else:
-        run(args[0], args[1:], measure=options.measure, filetype=options.filetype)
+    main()
