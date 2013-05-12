@@ -913,6 +913,8 @@ There're a few graphical things to change about Mu4e:
 #+BEGIN_SRC emacs-lisp
   (setf mu4e-use-fancy-chars t)
   (setf mu4e-view-show-images t)
+  (setf mu4e-headers-skip-duplicates t)
+  (setf mu4e-headers-include-related t)
 #+END_SRC
 
 ** Sending mail
@@ -966,8 +968,9 @@ I also have a standard signature.
 I have a few bookmarks that set up my email flow.
 
 #+BEGIN_SRC emacs-lisp
-  (add-to-list 'mu4e-bookmarks
-    '("flag:unread AND maildir:/important"  "Important New Messages" ?i))
+  (setf mu4e-maildir-shortcuts
+    '(("/inbox" . ?i)
+      ("flag:unread AND maildir:/important"  . ?u)))
 #+END_SRC
 
 * Shells
