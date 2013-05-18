@@ -131,6 +131,16 @@ certain text, which is nice for focusing and buffer-cloning magic.
 (put 'narrow-to-region 'disabled nil)
 #+END_SRC
 
+I use a time tracker that keys off window titles.  Thus, I'd like the
+currently-active file in the window title:
+
+#+BEGIN_SRC emacs-lisp
+  (setq frame-title-format
+        '((:eval (if (buffer-file-name)
+                     (concat "Emacs: " (abbreviate-file-name (buffer-file-name)))
+                   "Emacs: %b"))))
+#+END_SRC
+
 ** Visual Line Mode Hacks
 
 I like using visual-line-mode, especially when editing text.  But this is problematic if the width of the window is very large, since in that case the line doesn't wrap until it is 100 or so characters long.  To fix this, I use a minor mode that I myself wrote, =center-text-mode=:
