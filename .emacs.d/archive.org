@@ -1,0 +1,93 @@
+#+TITLE: Emacs Snippets
+
+* W3M Fixes
+** New blank tab
+
+I prefer there to be a key to enter a new URL, blank-slate.
+
+#+BEGIN_SRC emacs-lisp
+  (defun w3m-clean-slate-goto-url (url)
+    (interactive (list (w3m-input-url nil "" nil nil 'feeling-lucky)))
+    (w3m-goto-url url))
+#+END_SRC
+
+The symmetric operations should clearly exist for tabs.
+
+#+BEGIN_SRC emacs-lisp
+  (defun w3m-clean-slate-goto-url-new-session (url)
+    (interactive (list (w3m-input-url nil "" nil nil 'feeling-lucky)))
+    (w3m-goto-url-new-session url))
+#+END_SRC
+
+** Open in Background
+
+Unfortunately, the open-in-new-tab command switches to the new tab
+right away; this is silly.
+
+#+BEGIN_SRC emacs-lisp
+  (defun w3m-view-this-url-new-session-background ()
+    "Display the page of the link under point in a new session, in
+  the background. If the region is active, use the
+  `w3m-open-all-links-in-new-session' command instead."
+    (interactive)
+
+    (save-window-excursion
+      (call-interactively 'w3m-view-this-url-new-session)))
+#+END_SRC
+** Clamp next buffer
+
+When a tab is closed, W3M should shift to the right tab, not the left tab.
+
+#+BEGIN_SRC emacs-lisp
+  (defun clamp (a n)
+    (cond
+     ((< a 0) 0)
+     ((> a n) n)
+     (t a)))
+
+  (defun w3m-clamp-next-buffer (arg)
+    "Turn ARG pages of emacs-w3m buffers ahead."
+    (interactive "p")
+    (unless arg (setq arg 1))
+    (when (and (/= arg 0) (eq major-mode 'w3m-mode))
+      (w3m-history-store-position)
+      (let* ((buffers (w3m-list-buffers))
+         (len (length buffers)))
+        (switch-to-buffer
+         (nth (clamp (+ arg (- len (length (memq (current-buffer) buffers))))
+           len)
+          buffers)))
+      (w3m-history-restore-position)
+      (run-hooks 'w3m-select-buffer-hook)
+      (w3m-select-buffer-update)))
+
+  (add-hook 'w3m-delete-buffer-hook (lambda () (w3m-clamp-next-buffer 1)))
+
+#+END_SRC
+
+* LaTeX Compilation
+
+LaTeX also could use a quick tool to compile and view a source file.
+I use the =compile= command for this.
+
+#+BEGIN_SRC emacs-lisp
+  (defun latex-compile (file)
+    (interactive (list (buffer-file-name)))
+
+    (make-local-variable 'latex-compile-outfile)
+
+    (let ((first-run (not (boundp 'latex-compile-outfile))))
+      (when (or first-run (not (get-file-buffer latex-compile-outfile)))
+        (setf latex-compile-outfile
+              (make-temp-file "emacs-latex-compile-" nil ".pdf"))
+        (setf first-run t))
+
+      (save-window-excursion
+        (shell-command (concat "run -c " file " -o " latex-compile-outfile)))
+
+      (if first-run
+          (find-file-other-window latex-compile-outfile)
+        (progn
+          (set-buffer (get-file-buffer latex-compile-outfile))
+          (doc-view-revert-buffer t t)))))
+#+END_SRC

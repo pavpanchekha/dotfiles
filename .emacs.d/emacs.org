@@ -13,35 +13,47 @@ More on this method can be found [[http://orgmode.org/worg/org-contrib/babel/int
 
 * Packages
 
-  My Emacs configuration relies on several packages being installed,
-  in particular various modes.  Now that Emacs has a package manager
-  built in, I've changed the names to those names.
+  My Emacs configuration relies on several packages being installed.
+  Luckily, Emacs now has a package manager.
+  
+#+BEGIN_SRC emacs-lisp
+  (defun package-safe-install (package)
+    (if (not (package-installed-p package))
+        (package-install package)))
+#+END_SRC
 
-  + evil        :: A good text editor for Emacs
-  + org         :: Organization and markup system.
-  + multi-term  :: Emacs =term= is impossible.  This is not.
-  + magit       :: =git= in Emacs
+  Some packages I couldn't live without; there are:
 
-  A few language modes are also there: =erlang=, =go-mode=,
-  =haskell-mode=, =markdown-mode=, =mediawiki=.
+   + evil        :: A good text editor for Emacs
+   + org         :: Organization and markup system.
+   + multi-term  :: Emacs =term= is impossible.  This is not.
+   + magit       :: =git= in Emacs
 
-  I also use several packages from the Arch AUR, which aren't yet
-  available on the package repos.
+  There are also a few languages modes that are nice to have around:
+  =erlang=, =go-mode=, =haskell-mode=, =markdown-mode=, =mediawiki=.
 
-  + emacs-w3m-cvs      :: browse the web in Emacs.
+#+BEGIN_SRC emacs-lisp
+  (defvar *packages-core*
+    '(evil org multi-term magit))
 
-  These packages are, in general, loaded from the =package.el= package
-  manager.  In particular, we use the Marmalade repository on top of
-  the GNU-maintained one, which gives us access to quite a few tools.
+  (defvar *packages-extra*
+    '(erlang go-mode haskell-mode markdown-mode mediawiki
+      magithub rainbow-mode htmlize))
+#+END_SRC
+
+  We use the Marmalade repository on top of the GNU-maintained one.
 
 #+BEGIN_SRC emacs-lisp
   (require 'package)
-  (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
+  (add-to-list 'package-archives
+               '("marmalade" . "http://marmalade-repo.org/packages/"))
   (package-initialize)
+  
+  (mapcar #'package-safe-install
+          (append *packages-core* *packages-extra*))
 #+END_SRC
 
-* Miscellany
-** Startup
+* Personal Information
 
 Emacs might as well know my name and email address.  I trust it.
 
@@ -58,13 +70,110 @@ files, so I like to move the =custom-file=.
 (load custom-file 'noerror)
 #+END_SRC
 
-Finally, since I publish this file on the Internet, I don't want
-passwords in it.  So I keep them elsewhere, and load them here:
+Since I publish this file on the Internet, I keep my passwords elsewhere:
 
 #+BEGIN_SRC emacs-lisp
 (org-babel-load-file "~/.emacs.d/passwords.org")
 #+END_SRC
 
+* Key Bindings
+
+We use the [[http://gitorious.org/evil/pages/Home][Evil package]] for Vim keybindings in Emacs.
+
+#+BEGIN_SRC emacs-lisp
+  (require 'evil)
+  (evil-mode 1)
+#+END_SRC
+
+But I actually rather like the cyclic undo that Emacs has.  Since Evil mode turns on undo-tree by default, we need to turn it off.
+
+#+BEGIN_SRC emacs-lisp
+  (global-undo-tree-mode t)
+#+END_SRC
+
+** Key-map commands
+
+Since I like Vim key-bindings everywhere, I'll be doing a lot of
+adding to key-maps.  This gets tedious, especially when lots of keys
+on the same key-map.  This macro makes adding a bunch of keys to the
+same key-map very easy.
+
+#+BEGIN_SRC emacs-lisp
+  (require 'cl) ; For LOOP
+
+  (defmacro define-keys (map &rest keys)
+    "Adds several key bindings to a specific map.  Takes a map (as
+    a bare symbol) and a several clauses of form (key func); key is
+    a string to be passed to (kbd), and func is a function name."
+    (declare (indent defun))
+
+    `(progn
+       ,@(cl-loop for key+func in keys
+                  collect `(define-key ,map
+                             (kbd ,(car key+func))
+                             ',(cadr key+func)))))
+#+END_SRC
+
+** Visual Line Mode hacks
+
+I like to use visual line mode for text files (more semantic
+information!), so I have the following hack for Evil:
+
+#+BEGIN_SRC emacs-lisp
+(define-key evil-motion-state-map "j" #'evil-next-visual-line)
+(define-key evil-motion-state-map "k" #'evil-previous-visual-line)
+(define-key evil-motion-state-map "$" #'evil-end-of-visual-line)
+(define-key evil-motion-state-map "^" #'evil-first-non-blank-of-visual-line)
+(define-key evil-motion-state-map "0" #'evil-beginning-of-visual-line)
+#+END_SRC
+
+Note that these work fine in hard-wrapped text, too; they're
+just not as necessary.  Also note that commands like =I= and =A=
+should in theory also receive this treatment, but alas, they
+don't have associated =-visual-line= versions.
+
+** Miscellaneous
+
+I prefer to work with indented text at all times, so =RET= should be
+bound to =newline-and-indent=, and some terminals have problems with
+the delete key or something, so I keep the following bindings around
+as well.  The last line there make =C-k= kill the whole line.
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key [C-m] 'newline-and-indent)
+(global-set-key [delete] 'delete-char)
+(setq kill-whole-line t)
+#+END_SRC
+
+** Doc-View
+
+I generally use doc-vew for long PDFs, so I find it best to have
+continuous scrolling.
+
+#+BEGIN_SRC emacs-lisp
+(setq doc-view-continuous t)
+#+END_SRC
+
+144 is a decent resolution, since it makes a page of text about as
+wide as half my screen (and I generally use Emacs with two vertical
+panes.
+
+#+BEGIN_SRC emacs-lisp
+(setq doc-view-resolution 144)
+#+END_SRC
+
+The PDF viewer is in sore need of Vim-style h/j/k/l movement keys
+
+#+BEGIN_SRC emacs-lisp
+(require 'doc-view)
+(define-keys doc-view-mode-map
+    ("j" doc-view-next-line-or-next-page)
+    ("k" doc-view-previous-line-or-previous-page)
+    ("h" image-backward-hscroll)
+    ("l" image-forward-hscroll))
+#+END_SRC
+
+* Miscellany
 ** GUI Settings
 
 Some things Emacs does by default just use up screen real estate and
@@ -173,43 +282,151 @@ uses the parent directory name, which I usually know.
 (setq uniquify-buffer-name-style 'post-forward-angle-brackets)
 #+END_SRC
 
-** Games
+** Searching and Scrolling
 
-It's very important that score files are placed correctly (can't lose
-my tetris high scores!):
-
-#+BEGIN_SRC emacs-lisp
-(setq tetris-score-file "~/.emacs.d/scores/tetris")
-(setq snake-score-file  "~/.emacs.d/scores/snake")
-#+END_SRC
-
-** Utility Libraries
-
-I like =(loop)= and extended argument lists, so I need the =cl=
-library.
+For searching, I enable highlighting as-I-search for both searches and
+search/replaces.  Also, searches are made case-insensitive.
 
 #+BEGIN_SRC emacs-lisp
-(require 'cl)
-#+END_SRC
+(setq search-highlight t)
+(setq query-replace-highlight t)
+(setq case-fold-search t)
+#+END_SRC emacs-lisp
 
-* Key Bindings
-** Vim Key Bindings
-
-We use the [[http://gitorious.org/evil/pages/Home][Evil package]] for Vim keybindings in Emacs.
+For scrolling, I ask Emacs to scroll at most five lines at a time and
+to keep 5 lines between the cursor and the top/bottom of the page.
 
 #+BEGIN_SRC emacs-lisp
-  (require 'evil)
-  (evil-mode 1)
+(setq scroll-conservatively 5)
+(setq scroll-margin 5)
 #+END_SRC
 
-** Ispell =ispell-save-word=
+* Utility Commands
+** Debugging
 
-Another key binding I really miss from Vim is the spelling key
-bindings =zg= and =z==; these make spell-checking much nicer to use.
-Emacs has a great spell-check built-in: Ispell.  All we need to do is
-add a few key-bindings.  But first we need a function to bind to, and
-for =zg=, one does not exist.  So off we go to implement
-=ispell-save-word.=
+Every once in a while, I develop in emacs-lisp, and make use of the
+following:
+
+#+BEGIN_SRC emacs-lisp
+  (defun debug-mode ()
+    "Turn on various Emacs debugging features"
+    (interactive)
+
+    (setf debug-on-error t message-log-max 10000))
+#+END_SRC
+
+** =run= Command
+
+I have a =run= command that I rather like; it compiles and runs some
+program or file in a temporary program.  I use it for, for example,
+compiling LaTeX, or testing C code.
+
+#+BEGIN_SRC emacs-lisp
+  (defun run-command (file)
+    (interactive (list (buffer-file-name)))
+    (save-window-excursion
+     (shell-command (concat "run " file " &"))))
+
+  (defun compile-command (file)
+    (interactive (list (buffer-file-name)))
+    (save-window-excursion
+     (shell-command (concat "run -c " file " &"))))
+#+END_SRC
+
+hThen we attach them to =[f5]= and =[C-f5]=.
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "<f5>") 'run-command)
+(global-set-key (kbd "C-<f5>") 'compile-command)
+#+END_SRC
+** Configuration editing configuration
+
+I actually edit my Emacs configuration a lot.  I call it "cultivating"
+my Emacs configuration.  So here are some utility functions for that.
+
+The first function just reloads the Emacs configuration.
+
+#+BEGIN_SRC emacs-lisp
+(defun reconfigure ()
+  (interactive)
+  (load-file "~/.emacs.d/init.el"))
+#+END_SRC
+
+The second function opens the configuration up for editing.
+
+#+BEGIN_SRC emacs-lisp
+(defun edconfigure ()
+  (interactive)
+  (find-file "~/.emacs.d/emacs.org"))
+#+END_SRC
+
+* Printing Buffers to PDF
+
+Sometimes, I need to print an Emacs buffer to PDF.  The standard
+printing commands are less than ideal for this, since they rely on
+=lpr=, a program I have no interest in installing and configuring.
+Instead, I can use the Emacs =printing= package, which can export
+buffers to Postscript, and then call =ps2pdf= to produce a PDF from
+the Postscript.
+
+First, I =require= in the =printing= package and ask it to install
+itself into the Emacs menu tree.
+
+#+BEGIN_SRC emacs-lisp
+(require 'printing)
+#+END_SRC
+
+Now we write a function to print the current buffer.
+
+#+BEGIN_SRC emacs-lisp
+(defun print-to-pdf ()
+  (interactive)
+#+END_SRC
+
+We want to use the function =pr-ps-buffer-print= from the =printing=
+package.  We give it a temporary file to print to, and later we'll
+=ps2pdf= that file.
+
+#+BEGIN_SRC emacs-lisp
+  (let* ((outfile (make-temp-file pr-ps-temp-file))
+         (pdffile (concat outfile ".pdf")))
+    (pr-ps-buffer-print 1 outfile)
+    (shell-command (concat "ps2pdf "
+                           (shell-quote-argument outfile)
+                           " "
+                           (shell-quote-argument pdffile)))
+    (find-file pdffile)))
+#+END_SRC
+
+The default print settings are silly, especially once you consider
+that my use case is print-to-PDF.  So I would rather print with syntax
+highlighting and no headers.
+
+#+BEGIN_SRC emacs-lisp
+(setq pr-faces-p t
+      ps-print-header nil
+      ps-print-header-frame)
+#+END_SRC
+
+* Ispell
+
+Of course, if we're activating ISpell, we should set it up.  Firstly
+we want to tell it to use =ispell=, to check spelling against American
+English, and where my dictionary is.
+
+#+BEGIN_SRC emacs-lisp
+(setq ispell-program-name "/usr/bin/ispell")
+(setq ispell-dictionary "american")
+(setq ispell-personal-dictionary "~/.emacs.d/dict")
+#+END_SRC
+
+** =ispell-save-word= and Vim Spell-checking
+
+A key binding I really miss from Vim is the spell checking keys
+=zg= and =z==.  Emacs has a great spell-check built-in: Ispell.
+All we need to do is add a few key-bindings.  But first we need
+a function to bind to, and for =zg=, one does not exist.  So off
+we go to implement =ispell-save-word.=
 
 #+BEGIN_SRC emacs-lisp
 (defun ispell-save-word ()
@@ -270,304 +487,24 @@ Finally, we add key-bindings using Evil's =evil-normal-state-map.
 (define-key evil-normal-state-map "zg" 'ispell-save-word)
 #+END_SRC
 
-** Visual Line Mode hacks
-
-I like to use visual line mode for text files (more semantic
-information!), so I have the following hack for Evil:
-
-#+BEGIN_SRC emacs-lisp
-(define-key evil-motion-state-map "j" #'evil-next-visual-line)
-(define-key evil-motion-state-map "k" #'evil-previous-visual-line)
-(define-key evil-motion-state-map "$" #'evil-end-of-visual-line)
-(define-key evil-motion-state-map "^" #'evil-first-non-blank-of-visual-line)
-(define-key evil-motion-state-map "0" #'evil-beginning-of-visual-line)
-#+END_SRC
-
-Note that these work fine in hard-wrapped text, too; they're
-just not as necessary.  Also note that commands like =I= and =A=
-should in theory also receive this treatment, but alas, they
-don't have associated =-visual-line= versions.
-
-** Miscellaneous
-
-I prefer to work with indented text at all times, so =RET= should be
-bound to =newline-and-indent=, and some terminals have problems with
-the delete key or something, so I keep the following bindings around
-as well.  The last line there make =C-k= kill the whole line.
-
-#+BEGIN_SRC emacs-lisp
-(global-set-key [C-m] 'newline-and-indent)
-(global-set-key [delete] 'delete-char)
-(setq kill-whole-line t)
-#+END_SRC
-
-** Searching and Scrolling
-
-For searching, I enable highlighting as-I-search for both searches and
-search/replaces.  Also, searches are made case-insensitive.
-
-#+BEGIN_SRC emacs-lisp
-(setq search-highlight t)
-(setq query-replace-highlight t)
-(setq case-fold-search t)
-#+END_SRC emacs-lisp
-
-For scrolling, I ask Emacs to scroll at most five lines at a time and
-to keep 5 lines between the cursor and the top/bottom of the page.
-
-#+BEGIN_SRC emacs-lisp
-(setq scroll-conservatively 5)
-(setq scroll-margin 5)
-#+END_SRC
-
-** Showing my To Do list
-
-   My To Do list opens with the actual list on the left and the agenda
-   and the per-project todos on the right
-
-#+BEGIN_SRC emacs-lisp
-  (defun show-todo ()
-    (interactive)
-    (find-file "~/notes/pavel.txt")
-    (org-agenda-list)
-    (split-window-vertically)
-    (other-window 1)
-    (find-file "~/notes/projects.txt"))
-#+END_SRC
-
-* Utility Commands
-** Debugging
-
-Every once in a while, I develop in emacs-lisp, and make use of the
-following:
-
-#+BEGIN_SRC emacs-lisp
-  (defun debug-mode ()
-    "Turn on various Emacs debugging features"
-    (interactive)
-
-    (setf debug-on-error t message-log-max 10000))
-#+END_SRC
-
-** =run= Command
-
-I have a =run= command that I rather like; it compiles and runs some
-program or file in a temporary program.  I use it for, for example,
-compiling LaTeX, or testing C code.
-
-#+BEGIN_SRC emacs-lisp
-  (defun run-command (file)
-    (interactive (list (buffer-file-name)))
-    (save-window-excursion
-     (shell-command (concat "run " file " &"))))
-
-  (defun compile-command (file)
-    (interactive (list (buffer-file-name)))
-    (save-window-excursion
-     (shell-command (concat "run -c " file " &"))))
-#+END_SRC
-
-hThen we attach them to =[f5]= and =[C-f5]=.
-
-#+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "<f5>") 'run-command)
-(global-set-key (kbd "C-<f5>") 'compile-command)
-#+END_SRC
-
-** Printing to PDF
-
-Sometimes, I need to print an Emacs buffer to PDF.  The standard
-printing commands are less than ideal for this, since they rely on
-=lpr=, a program I have no interest in installing and configuring.
-Instead, I can use the Emacs =printing= package, which can export
-buffers to Postscript, and then call =ps2pdf= to produce a PDF from
-the Postscript.
-
-First, I =require= in the =printing= package and ask it to install
-itself into the Emacs menu tree.
-
-#+BEGIN_SRC emacs-lisp
-(require 'printing)
-#+END_SRC
-
-Now we write a function to print the current buffer.
-
-#+BEGIN_SRC emacs-lisp
-(defun print-to-pdf ()
-  (interactive)
-#+END_SRC
-
-We want to use the function =pr-ps-buffer-print= from the =printing=
-package.  We give it a temporary file to print to, and later we'll
-=ps2pdf= that file.
-
-#+BEGIN_SRC emacs-lisp
-  (let* ((outfile (make-temp-file pr-ps-temp-file))
-         (pdffile (concat outfile ".pdf")))
-    (pr-ps-buffer-print 1 outfile)
-    (shell-command (concat "ps2pdf "
-                           (shell-quote-argument outfile)
-                           " "
-                           (shell-quote-argument pdffile)))
-    (find-file pdffile)))
-#+END_SRC
-
-The default print settings are silly, especially once you consider
-that my use case is print-to-PDF.  So I would rather print with syntax
-highlighting and no headers.
-
-#+BEGIN_SRC emacs-lisp
-(setq pr-faces-p t
-      ps-print-header nil
-      ps-print-header-frame)
-#+END_SRC
-
-** Configuration editing configuration
-
-I actually edit my Emacs configuration a lot.  I call it "cultivating"
-my Emacs configuration.  So here are some utility functions for that.
-
-The first function just reloads the Emacs configuration.
-
-#+BEGIN_SRC emacs-lisp
-(defun reconfigure ()
-  (interactive)
-  (load-file "~/.emacs.d/init.el"))
-#+END_SRC
-
-The second function opens the configuration up for editing.
-
-#+BEGIN_SRC emacs-lisp
-(defun edconfigure ()
-  (interactive)
-  (find-file "~/.emacs.d/emacs.org"))
-#+END_SRC
-
-** Key-map commands
-
-Since I like Vim key-bindings everywhere, I'll be doing a lot of
-adding to key-maps.  This gets tedious, especially when lots of keys
-on the same key-map.  This macro makes adding a bunch of keys to the
-same key-map very easy.
-
-#+BEGIN_SRC emacs-lisp
-  (defmacro define-keys (map &rest keys)
-    "Adds several key bindings to a specific map.  Takes a map (as
-    a bare symbol) and a several clauses of form (key func); key is
-    a string to be passed to (kbd), and func is a function name."
-    (declare (indent defun))
-
-    `(progn
-       ,@(loop for key+func in keys
-               collect `(define-key ,map
-                          (kbd ,(car key+func))
-                          ',(cadr key+func)))))
-#+END_SRC
-
-* Doc-View
-
-I generally use doc-vew for long PDFs, so I find it best to have
-continuous scrolling.
-
-#+BEGIN_SRC emacs-lisp
-(setq doc-view-continuous t)
-#+END_SRC
-
-144 is a decent resolution, since it makes a page of text about as
-wide as half my screen (and I generally use Emacs with two vertical
-panes.
-
-#+BEGIN_SRC emacs-lisp
-(setq doc-view-resolution 144)
-#+END_SRC
-
-The PDF viewer is in sore need of Vim-style h/j/k/l movement keys
-
-#+BEGIN_SRC emacs-lisp
-(require 'doc-view)
-(define-keys doc-view-mode-map
-    ("j" doc-view-next-line-or-next-page)
-    ("k" doc-view-previous-line-or-previous-page)
-    ("h" image-backward-hscroll)
-    ("l" image-forward-hscroll))
-#+END_SRC
-
 * Mode-specific Behaviors
-** Text-like Modes
 
-Since I like Org-mode so much, I feel it should be default for text
-files.
+I like Org-mode a lot; it should be default for text files.
 
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'auto-mode-alist '("\\.txt$" . org-mode))
 #+END_SRC
 
-Other modes I use quite a bit are Restructured Text (for writing
-Python code) and $\LaTeX$ (for class):
+Other modes I use are Markdown (it's the standard) and $\LaTeX$ (for class):
 
 #+BEGIN_SRC emacs-lisp
-(defun text-minor-modes ()
-  (interactive)
-  (visual-line-mode 1)
-  (flyspell-mode 1))
+(add-hook 'latex-mode-hook 'auto-fill-mode)
+(add-hook 'markdown-mode-hook 'visual-line-mode)
+(add-hook 'org-mode-hook   'visual-line-mode)
 
-(add-hook 'latex-mode-hook 'text-minor-modes)
-(add-hook 'markdown-mode-hook 'text-minor-modes)
-(add-hook 'org-mode-hook   'text-minor-modes)
-#+END_SRC
-
-Of course, if we're activating ISpell, we should set it up.  Firstly
-we want to tell it to use =ispell=, to check spelling against American
-English, and where my dictionary is.
-
-#+BEGIN_SRC emacs-lisp
-(setq ispell-program-name "/usr/bin/ispell")
-(setq ispell-dictionary "american")
-(setq ispell-personal-dictionary "~/.emacs.d/dict")
-#+END_SRC
-
-LaTeX also could use a quick tool to compile and view a source file.
-I use the =compile= command for this.
-
-#+BEGIN_SRC emacs-lisp
-  (defun latex-compile (file)
-    (interactive (list (buffer-file-name)))
-
-    (make-local-variable 'latex-compile-outfile)
-
-    (let ((first-run (not (boundp 'latex-compile-outfile))))
-      (when (or first-run (not (get-file-buffer latex-compile-outfile)))
-        (setf latex-compile-outfile
-              (make-temp-file "emacs-latex-compile-" nil ".pdf"))
-        (setf first-run t))
-
-      (save-window-excursion
-        (shell-command (concat "run -c " file " -o " latex-compile-outfile)))
-
-      (if first-run
-          (find-file-other-window latex-compile-outfile)
-        (progn
-          (set-buffer (get-file-buffer latex-compile-outfile))
-          (doc-view-revert-buffer t t)))))
-#+END_SRC
-
-** Language Modes
-
-Some modes I just need to =(require)= in.  First, =load-path= need
-setting up.
-
-#+BEGIN_SRC emacs-lisp
-(setq load-path
-      (append load-path
-              '("/usr/share/emacs/site-lisp/clojure-mode"
-                "/usr/share/emacs/site-lisp/haskell-mode")))
-#+END_SRC
-
-Now we can require in the Haskell and Clojure modes.
-
-#+BEGIN_SRC emacs-lisp
-(require 'haskell-mode nil t)
-(require 'clojure-mode nil t)
+(add-hook 'latex-mode-hook 'flyspell-mode)
+(add-hook 'markdown-mode-hook 'flyspell-mode)
+(add-hook 'org-mode-hook 'flyspell-mode)
 #+END_SRC
 
 * Org Mode
@@ -714,160 +651,6 @@ I'm just exporting.
 (load "~/.emacs.d/export.el")
 #+END_SRC
 
-* Magit
-
-Magit needs a =(require)= and an autoload.
-
-#+BEGIN_SRC emacs-lisp
-(autoload 'magit-status "magit" nil t)
-#+END_SRC
-
-* W3M Browser
-
-W3M is a nice web browser to use for tasks such as reading Hacker
-News.  If it got a bit more love, it would be perfect...
-
-#+BEGIN_SRC emacs-lisp
-  (load-library "w3m/w3m-load.el")
-#+END_SRC
-
-First off, W3M should use UTF8 everywhere it can.
-
-#+BEGIN_SRC emacs-lisp
-  (setq w3m-coding-system 'utf-8
-        w3m-default-coding-system 'utf-8
-        w3m-file-coding-system 'utf-8
-        w3m-file-name-coding-system 'utf-8
-        w3m-terminal-coding-system 'utf-8)
-#+END_SRC
-
-I change a few file locations.
-
-#+BEGIN_SRC emacs-lisp
-  (setq w3m-default-save-directory "/tmp/")
-  (setq w3m-icon-directory "/tmp/")
-#+END_SRC
-
-W3M has some features that are, for whatever reason, off by default
-(they're /experimental/; eh, work fine).
-
-#+BEGIN_SRC emacs-lisp
-  (setq w3m-use-cookies t w3m-use-favicon t)
-#+END_SRC
-
-Finally I set up my homepage.
-
-#+BEGIN_SRC emacs-lisp
-  (setq w3m-home-page "about:blank")
-#+END_SRC
-
-** Default Browsers
-
-I prefer to set Firefox as Emacs's default browser, simply because
-there are lots of sites W3M just doesn't work that well on.
-
-#+BEGIN_SRC emacs-lisp
-(setq browse-url-browser-function 'browse-url-firefox)
-(setq browse-url-generic-program "google-chrome")
-#+END_SRC
-
-However, I still like the ability to throw open W3M easily.
-
-#+BEGIN_SRC emacs-lisp
-(autoload 'w3m-browse-url "w3m" "Ask a WWW browser to show a URL." t)
-#+END_SRC
-
-So I make a quick keybinding for browsing a URL.
-
-#+BEGIN_SRC emacs-lisp
-(global-set-key "\C-xm" 'browse-url-at-point)
-(global-set-key "\C-xM" 'w3m-browse-url-at-point)
-#+END_SRC
-
-** Utility Commands
-
-I prefer there to be a key to enter a new URL, blank-slate.
-
-#+BEGIN_SRC emacs-lisp
-  (defun w3m-clean-slate-goto-url (url)
-    (interactive (list (w3m-input-url nil "" nil nil 'feeling-lucky)))
-    (w3m-goto-url url))
-#+END_SRC
-
-The symmetric operations should clearly exist for tabs.
-
-#+BEGIN_SRC emacs-lisp
-  (defun w3m-clean-slate-goto-url-new-session (url)
-    (interactive (list (w3m-input-url nil "" nil nil 'feeling-lucky)))
-    (w3m-goto-url-new-session url))
-#+END_SRC
-
-Unfortunately, the open-in-new-tab command switches to the new tab
-right away; this is silly.
-
-#+BEGIN_SRC emacs-lisp
-  (defun w3m-view-this-url-new-session-background ()
-    "Display the page of the link under point in a new session, in
-  the background. If the region is active, use the
-  `w3m-open-all-links-in-new-session' command instead."
-    (interactive)
-
-    (save-window-excursion
-      (call-interactively 'w3m-view-this-url-new-session)))
-#+END_SRC
-
-** Key-bindings
-
-I like single-character key bindings instead of the crazy Emacs stuff.
-Most of the following are following Vimperator/Vimium conventions.
-
-#+BEGIN_SRC emacs-lisp
-  (eval-after-load "w3m"
-    '(define-keys w3m-mode-map
-       ("f" w3m-view-this-url)
-       ("F" w3m-view-this-url-new-session-background)
-       ("o" w3m-clean-slate-goto-url)
-       ("O" w3m-goto-url)
-       ("H" w3m-view-previous-page)
-       ("L" w3m-view-next-page)
-       ("t" w3m-clean-slate-goto-url-new-session)
-       ("T" w3m-goto-url-new-session)
-       ("d" w3m-delete-buffer)
-       ("r" w3m-reload-this-page)
-       (">" w3m-next-buffer)
-       ("<" w3m-previous-buffer)
-       ("/" isearch-forward)))
-#+END_SRC
-
-When a tab is closed, W3M should shift to the right tab, not the left tab.
-
-#+BEGIN_SRC emacs-lisp
-  (defun clamp (a n)
-    (cond
-     ((< a 0) 0)
-     ((> a n) n)
-     (t a)))
-
-  (defun w3m-clamp-next-buffer (arg)
-    "Turn ARG pages of emacs-w3m buffers ahead."
-    (interactive "p")
-    (unless arg (setq arg 1))
-    (when (and (/= arg 0) (eq major-mode 'w3m-mode))
-      (w3m-history-store-position)
-      (let* ((buffers (w3m-list-buffers))
-         (len (length buffers)))
-        (switch-to-buffer
-         (nth (clamp (+ arg (- len (length (memq (current-buffer) buffers))))
-           len)
-          buffers)))
-      (w3m-history-restore-position)
-      (run-hooks 'w3m-select-buffer-hook)
-      (w3m-select-buffer-update)))
-
-  (add-hook 'w3m-delete-buffer-hook (lambda () (w3m-clamp-next-buffer 1)))
-
-#+END_SRC
-
 * Mu For Emacs
 
 I'm now reading my mail in =mu4e=, from the =mu-git= Arch Linux package.
@@ -984,7 +767,6 @@ I have a few bookmarks that set up my email flow.
 #+END_SRC
 
 * Shells
-** Shell mode
 
 The Emacs shell mode is great, but barfs on ANSI escape sequence.  There's a fix:
 
@@ -1081,8 +863,7 @@ folders, a longer cache time makes a lot of sense.
 (setf dropbox-cache-timeout 300)
 #+END_SRC
 
-* Personal Analytics
-** Inter-Key Timings
+* Inter-Key Timings
 
 One interesting characteristic of a person's typing is their inter-key
 timings -- the time between typing two letters in succession.  For
