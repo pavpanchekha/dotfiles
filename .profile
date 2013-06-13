@@ -13,6 +13,8 @@ else
     PS1="\[\033[0;36m\]\w\[\033[0m\]:\$> "
 fi
 
+PROMPT_COMMAND='printf "\033]0;Bash: %s@%s %s\007" "${USER}" "${HOSTNAME}" "${PWD/#$HOME/~}"'
+
 shopt -s cdspell # Spell-correct `cd _`
 shopt -s cmdhist # Add multiline commands as one-liners in my history
 shopt -s extglob # Crazy globbing tricks: [?*+@!]\(xxxx\)
