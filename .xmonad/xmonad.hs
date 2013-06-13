@@ -22,6 +22,7 @@ myPrompt = defaultXPConfig {
            , fgColor = "white"
            , font = "xft:Terminus-12"
            , height = 24
+           , position = Top
            , promptBorderWidth = 0
            }
 
