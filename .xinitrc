@@ -4,7 +4,7 @@ export PATH="$PATH:$HOME/bin"
 xset +fp /usr/share/fonts/local
 
 # X server stuff
-xbindkeys
+[ `hostname` == "desktop" ] && xbindkeys
 setxkbmap -option caps:escape
 xsetroot -solid '#dddddd' -cursor_name left_ptr
 
