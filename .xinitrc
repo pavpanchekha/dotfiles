@@ -11,7 +11,7 @@ xsetroot -solid '#dddddd' -cursor_name left_ptr
 # Applications
 dropbox start &
 conky -d
-redshift -l 42.359947:-71.08846 &
+redshift -l 37.8:-122.4 &
 [ `hostname` == "desktop" ] && tracker-control --start &
 
 # Time tracker
