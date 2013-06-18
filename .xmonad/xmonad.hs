@@ -78,6 +78,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask, xK_q     ), io (exitWith ExitSuccess))
     , ((modm .|. shiftMask, xK_r     ), spawn "xmonad --recompile; xmonad --restart")
     , ((modm              , xK_space ), spawn "emacsclient -c --alternate-editor=")
+    , ((modm .|. shiftMask, xK_n     ), spawn "notepaster")
     , ((modm .|. shiftMask, xK_space ), execPrompt)
     
     -- Cycle workspaces
