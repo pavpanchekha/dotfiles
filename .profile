@@ -13,10 +13,10 @@ else
     PS1="\[\033[0;36m\]\w\[\033[0m\]:\$> "
 fi
 
-if [ "x$TERM" = "xlinux" ]; then
-    PROMPT_COMMAND=''
-else
+if [ "x$TERM" = "xxterm" ]; then
     PROMPT_COMMAND='printf "\033]0;Bash: %s@%s %s\007" "${USER}" "${HOSTNAME}" "${PWD/#$HOME/~}"'
+else
+    PROMPT_COMMAND=''
 fi
 
 shopt -s cdspell # Spell-correct `cd _`
@@ -32,7 +32,7 @@ source /usr/share/doc/pkgfile/command-not-found.bash
 # Some actual environment variables
      PATH="$HOME/bin:$PATH"
 TEXINPUTS=".:$HOME/dev/resume.tex:$HOME/dev/simple.tex:"
-   GPGKEY="371E352C"
+   GPGKEY="180C02EB09D0BE15"
  LESSHIST="-"
 export PATH TEXINPUTS GPGKEY LESSHIST
 umask 077
