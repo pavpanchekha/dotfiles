@@ -5,7 +5,6 @@ Babel file.  I use the Babel system in Org-mode to evaluate the code
 within on Emacs startup, which lets me write nice descriptive text for
 my code.  My =.emacs.d/init.el= file contains only:
 
-: (require 'org-install)
 : (require 'ob-tangle)
 : (org-babel-load-file "~/.emacs.d/emacs.org")
 
@@ -30,15 +29,14 @@ More on this method can be found [[http://orgmode.org/worg/org-contrib/babel/int
    + magit       :: =git= in Emacs
 
   There are also a few languages modes that are nice to have around:
-  =erlang=, =go-mode=, =haskell-mode=, =markdown-mode=, =mediawiki=.
+  =erlang=, =go-mode=, =haskell-mode=, =markdown-mode=.
 
 #+BEGIN_SRC emacs-lisp
   (defvar *packages-core*
     '(evil org multi-term magit))
 
   (defvar *packages-extra*
-    '(erlang go-mode haskell-mode markdown-mode mediawiki
-      magithub rainbow-mode htmlize))
+    '(erlang go-mode haskell-mode markdown-mode magithub htmlize))
 #+END_SRC
 
   We use the Marmalade repository on top of the GNU-maintained one.
@@ -256,7 +254,7 @@ I like using visual-line-mode, especially when editing text.  But this is proble
 
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'load-path
-               "~/dev/center-text.el/")
+               "~/src/center-text.el/")
   (require 'center-text)
 #+END_SRC
 
@@ -509,12 +507,6 @@ Other modes I use are Markdown (it's the standard) and $\LaTeX$ (for class):
 
 * Org Mode
 
-We first include Org mode, and tell it which modules to use.
-
-#+BEGIN_SRC emacs-lisp
-(require 'org-install)
-#+END_SRC
-
 First things first!  We should set up the file structure.
 
 #+BEGIN_SRC emacs-lisp
@@ -658,7 +650,7 @@ This package is a lot like =notmuch= in that it's search-based and
 works well with =offlineimap=, but has a much nicer interface and tries
 very hard to stay compatible with the upstream IMAP folder.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle nil
 (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
 (require 'mu4e)
 #+END_SRC
@@ -667,7 +659,7 @@ I need to tell Mu which folders store what on my system.  Note that I
 only sync "important" messages with GMail to my system, so the
 archive folder is the "important" folder.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle nil
   (setf mu4e-maildir "~/mail"
         mu4e-sent-folder "/sent"
         mu4e-drafts-folder "/drafts"
@@ -679,14 +671,14 @@ archive folder is the "important" folder.
 Mail is synced with =offlineimap=, so I tell Mu to run that to get new
 mail.  OfflineIMAP will automatically run the Mu indexer.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle nil
   (setf mu4e-get-mail-command "mu index -m ~/mail --my-address me@pavpanchekha.com")
 #+END_SRC
 
 Finally, since I'm using GMail, GMail will automatically deal with
 filing sent messages, so I can tell Mu to just delete sent messages.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle nil
   (setf mu4e-sent-messages-behavior 'delete)
 #+END_SRC
 
@@ -694,7 +686,7 @@ In all of the =mu4e= modes, I want the Evil extensions off, since they
 do naught but get in the way.  But somehow, this doesn't work for
 =mu4e-view-mode=, so we use a special dispension for that.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle nil
   (setf evil-emacs-state-modes (list* 'mu4e-headers-mode 'mu4e-main-mode
                                       'mu4e-main-mode 'mu4e-view-mode
                                       evil-emacs-state-modes))
@@ -703,7 +695,7 @@ do naught but get in the way.  But somehow, this doesn't work for
 
 There're a few graphical things to change about Mu4e:
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle nil
   (setf mu4e-use-fancy-chars t)
   (setf mu4e-view-show-images t)
   (setf mu4e-headers-skip-duplicates t)
@@ -760,7 +752,7 @@ I also have a standard signature.
 
 I have a few bookmarks that set up my email flow.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle nil
   (setf mu4e-maildir-shortcuts
     '(("/inbox" . ?i)
       ("flag:unread AND maildir:/important"  . ?u)))
@@ -851,7 +843,7 @@ file]], but I unpack them here to remind myself that the entry in the
 passwords file exists.
 
 #+BEGIN_SRC emacs-lisp
-(load "~/dev/dropbox.el/dropbox.el")
+(load "~/src/dropbox.el/dropbox.el")
 (setf dropbox-consumer-key    (car  my-dropbox-key))
 (setf dropbox-consumer-secret (cadr my-dropbox-key))
 #+END_SRC
@@ -877,7 +869,7 @@ Emacs Lisp extension and an analyzer written in Javascript.  Anyway,
 I'd like to turn it on when Emacs starts:
 
 #+BEGIN_SRC emacs-lisp
-(load "~/dev/keylogger.el/keylogger.el")
+(load "~/src/keylogger.el/keylogger.el")
 (load-every-key-press)
 (remember-every-key-press)
 (autosave-every-key-press)
