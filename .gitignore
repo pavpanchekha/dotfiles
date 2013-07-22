@@ -87,6 +87,10 @@ data
 icons
 lib
 arc
+classes
+rp
+src
+var
 .Private
 .fetchmailrc
 .msmtprc
