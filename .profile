@@ -30,11 +30,11 @@ shopt -s extglob # Crazy globbing tricks: [?*+@!]\(xxxx\)
 source /usr/share/doc/pkgfile/command-not-found.bash
 
 # Some actual environment variables
-     PATH="$HOME/bin:$PATH"
+PATH="$HOME/bin:$PATH"
 TEXINPUTS=".:$HOME/dev/resume.tex:$HOME/dev/simple.tex:"
-   GPGKEY="180C02EB09D0BE15"
- LESSHIST="-"
-export PATH TEXINPUTS GPGKEY LESSHIST
+GPGKEY="180C02EB09D0BE15"
+LESSHISTFILE="/dev/null"
+export PATH TEXINPUTS GPGKEY LESSHISTFILE
 umask 077
 
 # Some definitions of programs
