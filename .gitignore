@@ -1,6 +1,7 @@
 # System directories
 .local
 .cache
+.thumbnails
 
 # Things that should really go into ~/.config
 .Skype
