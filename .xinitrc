@@ -17,4 +17,5 @@ redshift -l 37.8:-122.4 &
 # Time tracker
 python ~/src/TimeTracker/src/timetracker.py -b 60 -f ~/data/timetrack.`hostname`.log &
 
+eval $(gpg-agent --daemon)
 exec ssh-agent xmonad

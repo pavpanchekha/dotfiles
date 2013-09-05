@@ -86,6 +86,11 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm,               xK_Left),   moveTo Prev $ WSIs nonScratchpadWS)
     , ((modm .|. shiftMask, xK_Right),  shiftToNext)
     , ((modm .|. shiftMask, xK_Left),   shiftToPrev)
+
+    -- Volume up and down
+    , ((0, 0x1008FF11), spawn "amixer set Master 5dB-")
+    , ((0, 0x1008FF13), spawn "amixer set Master 5dB+")
+    , ((0, 0x1008FFB2), spawn "amixer set Capture toggle")
     ]
     ++ -- Switch to workspace
     [((m .|. modm, k), windows $ f i)
