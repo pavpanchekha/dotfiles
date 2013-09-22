@@ -266,7 +266,7 @@ I like using visual-line-mode, especially when editing text.  But this is proble
 
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'load-path
-               "~/src/center-text.el/")
+               "~/Dropbox/Work/center-text.el/")
   (require 'center-text)
 #+END_SRC
 
@@ -855,7 +855,7 @@ file]], but I unpack them here to remind myself that the entry in the
 passwords file exists.
 
 #+BEGIN_SRC emacs-lisp
-(load "~/src/dropbox.el/dropbox.el")
+(load "~/Dropbox/Work/dropbox.el/dropbox.el")
 (setf dropbox-consumer-key    (car  my-dropbox-key))
 (setf dropbox-consumer-secret (cadr my-dropbox-key))
 #+END_SRC
