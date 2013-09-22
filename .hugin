@@ -1,0 +1,218 @@
+version=2012.0
+actualPath=
+language=0
+ProjectNamingConvention=0
+smartUndo=0
+tempDir=/home/pavpanchekha/tmp
+file1=
+file2=
+file3=
+file4=
+file5=
+file6=
+file7=
+file8=
+file9=
+[AutoPano]
+AutoPanoCount=10
+Default=0
+[AutoPano/AutoPano_0]
+Type=1
+Description=Hugin's CPFind
+Program=cpfind
+Arguments=--multirow -o %o %s
+ProgramMatcher=
+ArgumentsMatcher=
+Option=1
+[AutoPano/AutoPano_1]
+Type=1
+Description=Hugin's CPFind + Celeste (slower but more accurate, no cps on clouds)
+Program=cpfind
+Arguments=--celeste --multirow -o %o %s
+ProgramMatcher=
+ArgumentsMatcher=
+Option=1
+[AutoPano/AutoPano_2]
+Type=2
+Description=Cpfind (multirow/stacked)
+Program=cpfind
+Arguments=-o %o --multirow %s
+ProgramMatcher=
+ArgumentsMatcher=
+ProgramStack=align_image_stack
+ArgumentsStack=-f %v -v -p %o %i
+Option=1
+[AutoPano/AutoPano_3]
+Type=1
+Description=Autopano-SIFT-C
+Program=autopano-noop.sh
+Arguments=--maxmatches %p --projection %f,%v %o %i
+ProgramMatcher=
+ArgumentsMatcher=
+Option=1
+[AutoPano/AutoPano_4]
+Type=1
+Description=Panomatic
+Program=panomatic
+Arguments=-o %o %i
+ProgramMatcher=
+ArgumentsMatcher=
+Option=1
+[AutoPano/AutoPano_5]
+Type=4
+Description=Autopano-SIFT-C (multirow/stacked)
+Program=generatekeys
+Arguments=%i %k 800
+ProgramMatcher=autopano
+ArgumentsMatcher=--maxmatches %p %o %k
+ArgumentsCleanup=
+ProgramStack=align_image_stack
+ArgumentsStack=-f %v -v -p %o %i
+Option=1
+[AutoPano/AutoPano_6]
+Type=1
+Description=Align image stack
+Program=align_image_stack
+Arguments=-f %v -v -p %o %i
+ProgramMatcher=
+ArgumentsMatcher=
+Option=1
+[AutoPano/AutoPano_7]
+Type=1
+Description=Align image stack FullFrameFisheye
+Program=align_image_stack
+Arguments=-f %v -e -p %o %i
+ProgramMatcher=
+ArgumentsMatcher=
+Option=1
+[AutoPano/AutoPano_8]
+Type=1
+Description=Vertical lines
+Program=linefind
+Arguments=-o %o %s
+ProgramMatcher=
+ArgumentsMatcher=
+Option=1
+[AutoPano/AutoPano_9]
+Type=1
+Description=Hugin's CPFind (prealigned)
+Program=cpfind
+Arguments=--prealigned -o %o %s
+ProgramMatcher=
+ArgumentsMatcher=
+Option=1
+[MainFrame]
+ShowStartTip=0
+width=780
+height=654
+positionX=0
+positionY=20
+maximized=0
+[Enblend]
+Custom=1
+Exe=enblend
+Args=
+[Enfuse]
+Custom=1
+Exe=enfuse
+Args=
+[Assistant]
+autoAlign=1
+nControlPoints=20
+panoDownsizeFactor=0.7
+PreviewWindow=0
+Linefind=1
+AutoCPClean=1
+[Celeste]
+Auto=1
+Threshold=0.5
+Filter=1
+[Stitcher]
+RunEditor=0
+Editor=gimp-remote
+EditorArgs=%f
+DefaultRemapper=0
+[ImageCache]
+Mapping=1
+UpperBound=268435456
+[Finetune]
+SearchAreaPercent=10
+TemplateSize=21
+LocalSearchWidth=14
+CorrThreshold=0.8
+CurvThreshold=0
+RotationSearch=0
+RotationStartAngle=-30
+RotationStopAngle=30
+RotationSteps=12
+[Nona]
+NumberOfThreads=2
+Interpolator=0
+CroppedImages=1
+UseGPU=0
+[GLPreviewFrame]
+ShowProjectionHints=1
+width=1366
+height=723
+positionX=0
+positionY=20
+maximized=0
+isShown=0
+blendMode=0
+OpenGLLayout=layout2|name=preview;caption=Preview;state=896;dir=5;layer=0;row=0;pos=0;prop=100000;bestw=300;besth=200;minw=300;minh=200;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=overview;caption=Overview;state=16779260;dir=4;layer=0;row=0;pos=0;prop=100000;bestw=300;besth=200;minw=300;minh=200;maxw=-1;maxh=-1;floatx=500;floaty=500;floatw=100;floath=100|dock_size(5,0,0)=302|dock_size(4,0,0)=302|
+overview_hidden=1
+showPreviewGrid=1
+individualDragMode=0
+guide=0
+[output]
+ldr_format=1
+tiff_compression=2
+jpeg_quality=90
+useExiftool=1
+NumberOfThreads=0
+[Processor]
+gui=0
+start=1
+parallel=0
+overwrite=0
+verbose=1
+[PreviewFrame]
+width=833
+height=205
+positionX=0
+positionY=44
+maximized=0
+isShown=0
+autoUpdate=0
+blendMode=0
+[OptimizePhotometricPanel]
+OnlyActiveImages=1
+[OptimizePanel]
+OnlyActiveImages=1
+[CPEditorPanel]
+autoAdd=0
+autoFineTune=1
+autoEstimate=1
+[MaskEditorPanel]
+ShowActiveMasks=0
+[PreferencesDialog]
+width=642
+height=579
+positionX=0
+positionY=44
+maximized=0
+[BatchFrame]
+VerboseCheck=1
+Max=0
+Minimized=0
+Width=1366
+Height=748
+[FailedProjectsDialog]
+width=1356
+height=643
+positionX=0
+positionY=44
+maximized=0
+splitterPos=319
+[BatchList]
+ColumnWidth5=213
