@@ -22,8 +22,14 @@
 # Things that should really go into ~/.local
 .cabal
 .racket
+.offlineimap
+.mutt
+.purple
+.thunderbird
 .node_libraries
+.dropbox-dist
 .texmf-var
+.texlive
 .ghc
 .java
 .npm
@@ -48,29 +54,12 @@
 .ICEauthority
 .Xauthority
 
-# Old files and projects
-arc
-# School projects
-classes
-# Data I collect about myself
-data
-# Texts I for later reference
-lib
+# Synchronizing it all behind the scenes
+Dropbox
 # Private data
 priv
-# My website, http://pavpanchekha.com
-pub
-# Role-playing campaigns
-rp
-# Source code and projects
-src
-# Various documents and notes
-var
 # A backup of all my email (sometimes)
 mail
-
-# Synchronizing it add behind the scenes
-Dropbox
 
 # These are never useful to sync
 *.lock

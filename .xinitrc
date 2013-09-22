@@ -15,7 +15,7 @@ redshift -l 37.8:-122.4 &
 [ `hostname` == "desktop" ] && tracker-control --start &
 
 # Time tracker
-python ~/src/TimeTracker/src/timetracker.py -b 60 -f ~/data/timetrack.`hostname`.log &
+python ~/bin/timetracker -b 60 -f ~/Dropbox/Data/timetrack.`hostname`.log &
 
 eval $(gpg-agent --daemon)
 exec ssh-agent xmonad
