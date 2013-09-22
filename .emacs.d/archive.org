@@ -91,3 +91,118 @@ I use the =compile= command for this.
           (set-buffer (get-file-buffer latex-compile-outfile))
           (doc-view-revert-buffer t t)))))
 #+END_SRC
+
+* Mu For Emacs
+
+I'm now reading my mail in =mu4e=, from the =mu-git= Arch Linux package.
+This package is a lot like =notmuch= in that it's search-based and
+works well with =offlineimap=, but has a much nicer interface and tries
+very hard to stay compatible with the upstream IMAP folder.
+
+#+BEGIN_SRC emacs-lisp :tangle nil
+(add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
+(require 'mu4e)
+#+END_SRC
+
+I need to tell Mu which folders store what on my system.  Note that I
+only sync "important" messages with GMail to my system, so the
+archive folder is the "important" folder.
+
+#+BEGIN_SRC emacs-lisp :tangle nil
+  (setf mu4e-maildir "~/mail"
+        mu4e-sent-folder "/sent"
+        mu4e-drafts-folder "/drafts"
+        mu4e-trash-folder "/trash"
+        mu4e-refile-folder "/important")
+  (setf mu4e-attachment-dir  "/tmp")
+#+END_SRC
+
+Mail is synced with =offlineimap=, so I tell Mu to run that to get new
+mail.  OfflineIMAP will automatically run the Mu indexer.
+
+#+BEGIN_SRC emacs-lisp :tangle nil
+  (setf mu4e-get-mail-command "mu index -m ~/mail --my-address me@pavpanchekha.com")
+#+END_SRC
+
+Finally, since I'm using GMail, GMail will automatically deal with
+filing sent messages, so I can tell Mu to just delete sent messages.
+
+#+BEGIN_SRC emacs-lisp :tangle nil
+  (setf mu4e-sent-messages-behavior 'delete)
+#+END_SRC
+
+In all of the =mu4e= modes, I want the Evil extensions off, since they
+do naught but get in the way.  But somehow, this doesn't work for
+=mu4e-view-mode=, so we use a special dispension for that.
+
+#+BEGIN_SRC emacs-lisp :tangle nil
+  (setf evil-emacs-state-modes (list* 'mu4e-headers-mode 'mu4e-main-mode
+                                      'mu4e-main-mode 'mu4e-view-mode
+                                      evil-emacs-state-modes))
+  (add-hook 'mu4e-view-mode-hook 'evil-emacs-state)
+#+END_SRC
+
+There're a few graphical things to change about Mu4e:
+
+#+BEGIN_SRC emacs-lisp :tangle nil
+  (setf mu4e-use-fancy-chars t)
+  (setf mu4e-view-show-images t)
+  (setf mu4e-headers-skip-duplicates t)
+  (setf mu4e-headers-include-related t)
+#+END_SRC
+
+** Sending mail
+
+My mail gets sent through the GMail IMAP server. I used to use msmtp for sending mail, but I’ve now switched to using smtpmail.el, since it’s nice to have an Emacs-native solution.
+
+#+BEGIN_SRC emacs-lisp
+(setq send-mail-function 'smtpmail-send-it)
+(setq message-send-mail-function 'smtpmail-send-it)
+#+END_SRC
+
+We now set up SMTPMail to use GMail.
+
+#+BEGIN_SRC emacs-lisp
+(setq smtpmail-smtp-server "smtp.gmail.com")
+(setq smtpmail-smtp-service 587)
+#+END_SRC
+
+We then set up TLS for GMail’s connection:
+
+#+BEGIN_SRC emacs-lisp
+  (setq starttls-use-gnutls t)
+
+  (setq smtpmail-default-smtp-server "smtp.gmail.com"
+        smtpmail-smtp-server "smtp.gmail.com"
+        smtpmail-smtp-service 587
+        smtpmail-smtp-user "me@pavpanchekha.com"
+        smtpmail-local-domain "pavpanchekha.com"
+        smtpmail-sendto-domain "pavpanchekha.com"
+        smtpmail-debug-info t)
+
+  (require 'smtpmail)
+#+END_SRC
+
+** Composing messages
+
+When composing replies, there are a few things I change from their defaults.  Firstly, I prefer quotes not to have citations, since I rarely participate in massive, many-person email threads.
+
+#+BEGIN_SRC emacs-lisp
+(setf message-citation-line-format "")
+#+END_SRC
+
+I also have a standard signature.
+
+#+BEGIN_SRC emacs-lisp
+(setf message-signature " - Pavel Panchekha")
+#+END_SRC
+
+** Bookmarks
+
+I have a few bookmarks that set up my email flow.
+
+#+BEGIN_SRC emacs-lisp :tangle nil
+  (setf mu4e-maildir-shortcuts
+    '(("/inbox" . ?i)
+      ("flag:unread AND maildir:/important"  . ?u)))
+#+END_SRC
