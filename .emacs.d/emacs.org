@@ -74,6 +74,18 @@ Since I publish this file on the Internet, I keep my passwords elsewhere:
 (org-babel-load-file "~/.emacs.d/passwords.org")
 #+END_SRC
 
+Finally, a few files are stored once for each computer and then synchronized over Dropbox.  To keep things sane, each computer's file is named by its hostname.  This bit of code extracts the hostname itself.
+
+#+BEGIN_SRC emacs-lisp
+  (setf hostname
+        (with-temp-buffer
+          (call-process "hostname" nil t)
+          (let ((hostname* (buffer-string)))
+            (while (string-match "[\r\n\t ]+" hostname*)
+              (setq hostname* (replace-match "" t t hostname*)))
+            hostname*)))
+#+END_SRC
+
 * Key Bindings
 
 We use the [[http://gitorious.org/evil/pages/Home][Evil package]] for Vim keybindings in Emacs.
@@ -138,7 +150,7 @@ the delete key or something, so I keep the following bindings around
 as well.  The last line there make =C-k= kill the whole line.
 
 #+BEGIN_SRC emacs-lisp
-(global-set-key [C-m] 'newline-and-indent)
+(global-set-key (kbd "RET") 'newline-and-indent)
 (global-set-key [delete] 'delete-char)
 (setq kill-whole-line t)
 #+END_SRC
@@ -869,10 +881,11 @@ Emacs Lisp extension and an analyzer written in Javascript.  Anyway,
 I'd like to turn it on when Emacs starts:
 
 #+BEGIN_SRC emacs-lisp
-(load "~/src/keylogger.el/keylogger.el")
-(load-every-key-press)
-(remember-every-key-press)
-(autosave-every-key-press)
+(load "~/Dropbox/Work/keylogger.el/keylogger.el")
+(setf keylogger-filename (concat "~/Dropbox/Data/keys." hostname ".el"))
+(keylogger-load)
+(keylogger-start)
+(keylogger-autosave)
 #+END_SRC
 
 Note that each startup, I load the file, load my previously-saved
