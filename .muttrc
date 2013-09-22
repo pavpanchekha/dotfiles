@@ -1,0 +1,96 @@
+source /etc/Muttrc.gpg.dist
+
+set realname = "Pavel Panchekha"
+set from = "me@pavpanchekha.com"
+
+set imap_user = "me@pavpanchekha.com"
+set imap_check_subscribed
+source ~/.mutt/passwords
+
+set smtp_url = "smtp://me@pavpanchekha.com@smtp.gmail.com:587/"
+
+set folder = ~/mail/
+set spoolfile = +INBOX
+set mbox = +archive
+set postponed = +drafts
+
+set header_cache=~/.mutt/cache/headers
+set message_cachedir=~/.mutt/cache/bodies
+set certificate_file=~/.mutt/certificates
+set mailcap_path = ~/.mutt/mailcap
+set alias_file=~/.mutt/alias
+set signature=~/.mutt/sig
+
+set move=no
+set wait_key=no
+set delete
+set quit
+unset confirmappend
+unset mark_old
+set beep_new
+set timeout=10
+auto_view text/html
+
+# Headers
+ignore *
+unignore from: to: cc: date: subject:
+unhdr_order *
+hdr_order from: to: cc: date: subject:
+
+set date_format = "%m/%d"
+set index_format = "[%Z]  %D  %-20.20F  %s"
+set sort = threads
+set sort_aux = reverse-last-date-received
+set sort_re
+set reply_regexp = "^(([Rr][Ee]?(\[[0-9]+\])?: *)?(\[[^]]+\] *)?)*"
+
+# Index key bindings
+bind index gg       first-entry
+bind index G        last-entry
+
+bind index R        group-reply
+bind index <tab>    sync-mailbox
+bind index <space>  collapse-thread
+
+macro index C "<copy-message>?<toggle-mailboxes>" "copy a message to a mailbox"
+macro index M "<save-message>?<toggle-mailboxes>" "move a message to a mailbox"
+
+# Pager options
+set pager_index_lines = 10 # number of index lines to show
+set pager_context = 3      # number of context lines to show
+set pager_stop             # don't go to next message automatically
+set menu_scroll
+set tilde
+unset markers
+
+set quote_regexp = "^( {0,4}[>|:#%]| {0,4}[a-z0-9]+[>|]+)+"
+alternative_order text/plain text/enriched text/html
+
+bind pager k  previous-line
+bind pager j  next-line
+bind pager gg top
+bind pager G  bottom
+
+bind pager R  group-reply
+bind attach <return> view-mailcap
+
+set envelope_from
+set edit_headers
+set fast_reply
+set fcc_attach
+set forward_format = "Fwd: %s"
+set forward_decode
+unset attribution
+set reply_to
+set reverse_name
+set editor = "emacsclient"
+
+bind compose p postpone-message
+bind index p recall-message
+
+# GPG
+set crypt_use_gpgme=yes
+set crypt_autosign=yes
+set crypt_replyencrypt=yes
+set crypt_replysignencrypted=yes
+set crypt_verify_sig=yes
