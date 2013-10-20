@@ -206,3 +206,68 @@ I have a few bookmarks that set up my email flow.
     '(("/inbox" . ?i)
       ("flag:unread AND maildir:/important"  . ?u)))
 #+END_SRC
+* Org Mode
+
+** Agenda View
+
+I use the agenda view a lot, so I customize it a bit.  The agenda
+should show two days (including, yes, the ones without events); it
+shouldn't show me things I've done; and I won't worry about starting
+on a weekend or weekday.
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-agenda-ndays 1)
+  (setq org-agenda-span 2)
+  (setq org-deadline-warning-days 3)
+
+  (setq org-agenda-skip-deadline-if-done t)
+  (setq org-agenda-skip-scheduled-if-done t)
+  (setq org-agenda-start-on-weekday nil)
+#+END_SRC
+
+Since all of my TODO entries are in one file, I don't need the agenda
+view to tell me what file a TODO entry comes from.
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-agenda-file-regexp "\\`[^.].*\\.\\(txt\\|org\\)\\'")
+  (setq org-agenda-files '("~/notes/"))
+  (setq org-agenda-prefix-format
+        '((agenda . " %i %?-12t% s")
+          (timeline . "  % s")
+          (todo . " %i %-12:c")
+          (tags . " %i %-12:c")
+          (search . " %i %-12:c")))
+#+END_SRC
+
+Finally, given my use of the TODO list, I would like fewer deadline
+reminders and more scheduled reminders
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-agenda-move-date-from-past-immediately-to-today t)
+  (setq org-agenda-skip-deadline-prewarning-if-scheduled t)
+  (setq org-agenda-skip-scheduled-if-deadline-is-shown nil)
+#+END_SRC
+
+** Todo Keywords
+
+The keywords here represent a good chunk of possible work-flows.  TODO
+to DONE is the standard one, but sometimes I go to WONT or spent time
+cycling between TODO and WAIT.  SOMEDAY exists for the projects that
+I'd like to do, but that are currently in limbo.
+
+#+BEGIN_SRC emacs-lisp
+(setq org-todo-keywords
+      '((sequence "TODO(t)" "SOMEDAY(s)" "|" "DONE(d)" "WAIT(w)" "WONT(n)")))
+(setq org-use-fast-todo-selection t)
+#+END_SRC
+
+** Key bindings
+
+Some key bindings are not bound by Org automatically, so I have to bind
+them myself.
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key "\C-cl" 'org-store-link)
+(global-set-key "\C-ca" 'org-agenda)
+(global-set-key "\C-cc" 'org-capture)
+#+END_SRC

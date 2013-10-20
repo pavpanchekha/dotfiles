@@ -1,9 +1,6 @@
 #+TITLE: Emacs Initialization Script
 
-All of my Emacs initialization is contained within this one Literate
-Babel file.  I use the Babel system in Org-mode to evaluate the code
-within on Emacs startup, which lets me write nice descriptive text for
-my code.  My =.emacs.d/init.el= file contains only:
+All of my Emacs initialization is contained within this one Literate Babel file.  I use the Babel system in Org-mode to evaluate the code within on Emacs startup, which lets me write nice descriptive text for my code.  My =.emacs.d/init.el= file contains only:
 
 : (require 'ob-tangle)
 : (org-babel-load-file "~/.emacs.d/emacs.org")
@@ -12,8 +9,7 @@ More on this method can be found [[http://orgmode.org/worg/org-contrib/babel/int
 
 * Packages
 
-  My Emacs configuration relies on several packages being installed.
-  Luckily, Emacs now has a package manager.
+My Emacs configuration relies on several packages being installed. Luckily, Emacs now has a package manager.
   
 #+BEGIN_SRC emacs-lisp
   (defun package-safe-install (package)
@@ -21,15 +17,14 @@ More on this method can be found [[http://orgmode.org/worg/org-contrib/babel/int
         (package-install package)))
 #+END_SRC
 
-  Some packages I couldn't live without; there are:
+Some packages I couldn't live without; they are:
 
-   + evil        :: A good text editor for Emacs
-   + org         :: Organization and markup system.
-   + multi-term  :: Emacs =term= is impossible.  This is not.
-   + magit       :: =git= in Emacs
+ + evil :: A good text editor for Emacs
+ + org :: Organization and markup system.
+ + multi-term :: Emacs =term= is impossible.  This is not.
+ + magit :: =git= in Emacs
 
-  There are also a few languages modes that are nice to have around:
-  =erlang=, =go-mode=, =haskell-mode=, =markdown-mode=.
+There are also a few languages modes that are nice to have around: =erlang=, =go-mode=, =haskell-mode=, =markdown-mode=.
 
 #+BEGIN_SRC emacs-lisp
   (defvar *packages-core*
@@ -39,7 +34,7 @@ More on this method can be found [[http://orgmode.org/worg/org-contrib/babel/int
     '(erlang go-mode haskell-mode markdown-mode magithub htmlize))
 #+END_SRC
 
-  We use the Marmalade repository on top of the GNU-maintained one.
+We use the Marmalade repository on top of the GNU-maintained one.
 
 #+BEGIN_SRC emacs-lisp
   (require 'package)
@@ -60,8 +55,7 @@ Emacs might as well know my name and email address.  I trust it.
 (setq user-mail-address "me@pavpanchekha.com")
 #+END_SRC
 
-Also, I like to keep my custom-set variables from polluting my other
-files, so I like to move the =custom-file=.
+Also, I like to keep my custom-set variables from polluting my other files, so I like to move the =custom-file=.
 
 #+BEGIN_SRC emacs-lisp
 (setq custom-file "~/.emacs.d/custom.el")
@@ -98,14 +92,12 @@ We use the [[http://gitorious.org/evil/pages/Home][Evil package]] for Vim keybin
 But I actually rather like the cyclic undo that Emacs has.  Since Evil mode turns on undo-tree by default, we need to turn it off.
 
 #+BEGIN_SRC emacs-lisp
-  (global-undo-tree-mode t)
+  (global-undo-tree-mode -1)
 #+END_SRC
 
 ** Key-map commands
 
-Since I like Vim key-bindings everywhere, I'll be doing a lot of
-adding to key-maps.  This gets tedious, especially when lots of keys
-on the same key-map.  This macro makes adding a bunch of keys to the
+Since I like Vim key-bindings everywhere, I'll be doing a lot of adding to key-maps.  This gets tedious, especially when lots of keys on the same key-map.  This macro makes adding a bunch of keys to the
 same key-map very easy.
 
 #+BEGIN_SRC emacs-lisp
@@ -126,8 +118,7 @@ same key-map very easy.
 
 ** Visual Line Mode hacks
 
-I like to use visual line mode for text files (more semantic
-information!), so I have the following hack for Evil:
+I like to use visual line mode for text files (more semantic information!), so I have the following hack for Evil:
 
 #+BEGIN_SRC emacs-lisp
 (define-key evil-motion-state-map "j" #'evil-next-visual-line)
@@ -137,17 +128,11 @@ information!), so I have the following hack for Evil:
 (define-key evil-motion-state-map "0" #'evil-beginning-of-visual-line)
 #+END_SRC
 
-Note that these work fine in hard-wrapped text, too; they're
-just not as necessary.  Also note that commands like =I= and =A=
-should in theory also receive this treatment, but alas, they
-don't have associated =-visual-line= versions.
+Note that these work fine in hard-wrapped text, too; they're just not as necessary.  Also note that commands like =I= and =A= should in theory also receive this treatment, but alas, they don't have associated =-visual-line= versions.
 
 ** Miscellaneous
 
-I prefer to work with indented text at all times, so =RET= should be
-bound to =newline-and-indent=, and some terminals have problems with
-the delete key or something, so I keep the following bindings around
-as well.  The last line there make =C-k= kill the whole line.
+I prefer to work with indented text at all times, so =RET= should be bound to =newline-and-indent=, and some terminals have problems with the delete key or something, so I keep the following bindings around as well.  The last line there make =C-k= kill the whole line.
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "RET") 'newline-and-indent)
@@ -157,16 +142,13 @@ as well.  The last line there make =C-k= kill the whole line.
 
 ** Doc-View
 
-I generally use doc-vew for long PDFs, so I find it best to have
-continuous scrolling.
+I generally use doc-vew for long PDFs, so I find it best to have continuous scrolling.
 
 #+BEGIN_SRC emacs-lisp
 (setq doc-view-continuous t)
 #+END_SRC
 
-144 is a decent resolution, since it makes a page of text about as
-wide as half my screen (and I generally use Emacs with two vertical
-panes.
+144 is a decent resolution, since it makes a page of text about as wide as half my screen (and I generally use Emacs with two vertical panes.
 
 #+BEGIN_SRC emacs-lisp
 (setq doc-view-resolution 144)
@@ -186,10 +168,7 @@ The PDF viewer is in sore need of Vim-style h/j/k/l movement keys
 * Miscellany
 ** GUI Settings
 
-Some things Emacs does by default just use up screen real estate and
-programmer patience.  Note that =tool-bar-mode= requires a *nonzero*
-parameter, not a truthy parameter, to display the toolbar.  This is
-absolutely absurd, but what can one do?
+Some things Emacs does by default just use up screen real estate and programmer patience.  Note that =tool-bar-mode= requires a *nonzero* parameter, not a truthy parameter, to display the toolbar.  This is absolutely absurd, but what can one do?
 
 #+BEGIN_SRC emacs-lisp
 (setq inhibit-startup-screen t
@@ -199,20 +178,16 @@ absolutely absurd, but what can one do?
 (tool-bar-mode 0)
 #+END_SRC
 
-I'm not yet pro enough to forsake =menu-bar-mode=, though one day I'll
-get there.
+I'm not yet pro enough to forsake =menu-bar-mode=, though one day I'll get there.
 
-Also, I like knowing where my files end; ergo I ask Emacs to show
-empty lines.
+Also, I like knowing where my files end; ergo I ask Emacs to show empty lines.
 
 #+BEGIN_SRC emacs-lisp
 (if (not indicate-empty-lines)
   (toggle-indicate-empty-lines))
 #+END_SRC
 
-The modeline should really be pressed into useful service.  I make it
-display the time, and for the position display, have it give the column
-number and file size:
+The modeline should really be pressed into useful service.  I make it display the time, and for the position display, have it give the column number and file size:
 
 #+BEGIN_SRC emacs-lisp
 (display-time-mode t)
@@ -220,23 +195,19 @@ number and file size:
 (setq size-indication-mode t)
 #+END_SRC
 
-The =yes or no= prompts get annoying quickly.  Instead, we ask Emacs to
-use single-character responses
+The =yes or no= prompts get annoying quickly.  Instead, we ask Emacs to use single-character responses
 
 #+BEGIN_SRC emacs-lisp
 (fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 
-Whenever I do something that Emacs finds odd, it beeps.  Why?  Who
-knows.  In any case, I turn it off, because when I'm lounging about
-with music on the overhead speakers, I don't want a beep interfering.
+Whenever I do something that Emacs finds odd, it beeps.  Why?  Who knows.  In any case, I turn it off, because when I'm lounging about with music on the overhead speakers, I don't want a beep interfering.
 
 #+BEGIN_SRC emacs-lisp
   (setq visible-bell t)
 #+END_SRC
 
-Since I rarely use the mouse, tooltips are more an annoyance than
-anything else.  This switches them to appear in the echo area.
+Since I rarely use the mouse, tooltips are more an annoyance than anything else.  This switches them to appear in the echo area.
 
 #+BEGIN_SRC emacs-lisp
 (tooltip-mode -1)
@@ -272,9 +243,7 @@ I like using visual-line-mode, especially when editing text.  But this is proble
 
 ** Basic File Behaviors
 
-Emacs has some stupid defaults, such as making those =file~= files and
-using tabs for indentation.  I also make Emacs add final newlines and
-to prompt me for only single characters (why is that default?).
+Emacs has some stupid defaults, such as making those =file~= files and using tabs for indentation.  I also make Emacs add final newlines and to prompt me for only single characters (why is that default?).
 
 #+BEGIN_SRC emacs-lisp
 (setq make-backup-files nil)
@@ -294,8 +263,7 @@ uses the parent directory name, which I usually know.
 
 ** Searching and Scrolling
 
-For searching, I enable highlighting as-I-search for both searches and
-search/replaces.  Also, searches are made case-insensitive.
+For searching, I enable highlighting as-I-search for both searches and search/replaces.  Also, searches are made case-insensitive.
 
 #+BEGIN_SRC emacs-lisp
 (setq search-highlight t)
@@ -303,8 +271,7 @@ search/replaces.  Also, searches are made case-insensitive.
 (setq case-fold-search t)
 #+END_SRC emacs-lisp
 
-For scrolling, I ask Emacs to scroll at most five lines at a time and
-to keep 5 lines between the cursor and the top/bottom of the page.
+For scrolling, I ask Emacs to scroll at most five lines at a time and to keep 5 lines between the cursor and the top/bottom of the page.
 
 #+BEGIN_SRC emacs-lisp
 (setq scroll-conservatively 5)
@@ -314,8 +281,7 @@ to keep 5 lines between the cursor and the top/bottom of the page.
 * Utility Commands
 ** Debugging
 
-Every once in a while, I develop in emacs-lisp, and make use of the
-following:
+Every once in a while, I develop in emacs-lisp, and make use of the following:
 
 #+BEGIN_SRC emacs-lisp
   (defun debug-mode ()
@@ -327,9 +293,7 @@ following:
 
 ** =run= Command
 
-I have a =run= command that I rather like; it compiles and runs some
-program or file in a temporary program.  I use it for, for example,
-compiling LaTeX, or testing C code.
+I have a =run= command that I rather like; it compiles and runs some program or file in a temporary program.  I use it for, for example, compiling LaTeX, or testing C code.
 
 #+BEGIN_SRC emacs-lisp
   (defun run-command (file)
@@ -343,7 +307,7 @@ compiling LaTeX, or testing C code.
      (shell-command (concat "run -c " file " &"))))
 #+END_SRC
 
-hThen we attach them to =[f5]= and =[C-f5]=.
+Then we attach them to =[f5]= and =[C-f5]=.
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "<f5>") 'run-command)
@@ -351,8 +315,7 @@ hThen we attach them to =[f5]= and =[C-f5]=.
 #+END_SRC
 ** Configuration editing configuration
 
-I actually edit my Emacs configuration a lot.  I call it "cultivating"
-my Emacs configuration.  So here are some utility functions for that.
+I actually edit my Emacs configuration a lot.  I call it "cultivating" my Emacs configuration.  So here are some utility functions for that.
 
 The first function just reloads the Emacs configuration.
 
@@ -372,15 +335,9 @@ The second function opens the configuration up for editing.
 
 * Printing Buffers to PDF
 
-Sometimes, I need to print an Emacs buffer to PDF.  The standard
-printing commands are less than ideal for this, since they rely on
-=lpr=, a program I have no interest in installing and configuring.
-Instead, I can use the Emacs =printing= package, which can export
-buffers to Postscript, and then call =ps2pdf= to produce a PDF from
-the Postscript.
+Sometimes, I need to print an Emacs buffer to PDF.  The standard printing commands are less than ideal for this, since they rely on =lpr=, a program I have no interest in installing and configuring. Instead, I can use the Emacs =printing= package, which can export buffers to Postscript, and then call =ps2pdf= to produce a PDF from the Postscript.
 
-First, I =require= in the =printing= package and ask it to install
-itself into the Emacs menu tree.
+First, I =require= in the =printing= package and ask it to install itself into the Emacs menu tree.
 
 #+BEGIN_SRC emacs-lisp
 (require 'printing)
@@ -393,9 +350,7 @@ Now we write a function to print the current buffer.
   (interactive)
 #+END_SRC
 
-We want to use the function =pr-ps-buffer-print= from the =printing=
-package.  We give it a temporary file to print to, and later we'll
-=ps2pdf= that file.
+We want to use the function =pr-ps-buffer-print= from the =printing= package.  We give it a temporary file to print to, and later we'll =ps2pdf= that file.
 
 #+BEGIN_SRC emacs-lisp
   (let* ((outfile (make-temp-file pr-ps-temp-file))
@@ -408,9 +363,7 @@ package.  We give it a temporary file to print to, and later we'll
     (find-file pdffile)))
 #+END_SRC
 
-The default print settings are silly, especially once you consider
-that my use case is print-to-PDF.  So I would rather print with syntax
-highlighting and no headers.
+The default print settings are silly, especially once you consider that my use case is print-to-PDF.  So I would rather print with syntax highlighting and no headers.
 
 #+BEGIN_SRC emacs-lisp
 (setq pr-faces-p t
@@ -420,9 +373,7 @@ highlighting and no headers.
 
 * Ispell
 
-Of course, if we're activating ISpell, we should set it up.  Firstly
-we want to tell it to use =ispell=, to check spelling against American
-English, and where my dictionary is.
+Of course, if we're activating ISpell, we should set it up.  Firstly we want to tell it to use =ispell=, to check spelling against American English, and where my dictionary is.
 
 #+BEGIN_SRC emacs-lisp
 (setq ispell-program-name "/usr/bin/ispell")
@@ -432,48 +383,33 @@ English, and where my dictionary is.
 
 ** =ispell-save-word= and Vim Spell-checking
 
-A key binding I really miss from Vim is the spell checking keys
-=zg= and =z==.  Emacs has a great spell-check built-in: Ispell.
-All we need to do is add a few key-bindings.  But first we need
-a function to bind to, and for =zg=, one does not exist.  So off
-we go to implement =ispell-save-word.=
+A key binding I really miss from Vim is the spell checking keys =zg= and =z==.  Emacs has a great spell-check built-in: Ispell. All we need to do is add a few key-bindings.  But first we need a function to bind to, and for =zg=, one does not exist.  So off we go to implement =ispell-save-word.=
 
 #+BEGIN_SRC emacs-lisp
 (defun ispell-save-word ()
   (interactive)
 #+END_SRC
 
-First, we need to *get* the current word.  We don't need to explicitly
-use =ispell-following-word=, since =ispell-get-word= does this for us.
-=ispell-get-word= returns a list of =word=, =start=, =end= (though its
-documentation certainly doesn't hint at such), so we call =car= to
-extract the word itself.
+First, we need to *get* the current word.  We don't need to explicitly use =ispell-following-word=, since =ispell-get-word= does this for us. =ispell-get-word= returns a list of =word=, =start=, =end= (though its documentation certainly doesn't hint at such), so we call =car= to extract the word itself.
 
 #+BEGIN_SRC emacs-lisp
   (let ((word (car (ispell-get-word nil))))
 #+END_SRC
 
-Now we can call =ispell-send-string=.  Its documentation is pretty
-weak (and that's if I want to be nice), but from reading the code of
-=ispell-command-loop= (search for =?i=), it seems like we want to send
-=*word\n=, where =word= is the word in question.
+Now we can call =ispell-send-string=.  Its documentation is pretty weak (and that's if I want to be nice), but from reading the code of =ispell-command-loop= (search for =?i=), it seems like we want to send =*word\n=, where =word= is the word in question.
 
 #+BEGIN_SRC emacs-lisp
   (ispell-send-string (concat "*" word "\n"))
 #+END_SRC
 
-Finally, since we modified the dictionary, we want to save it.  To be
-nice, we're going to first mark the dictionary as modified.  We only
-want to force a save, though, if the dictionary was clean before-hand,
-so we save the old value.
+Finally, since we modified the dictionary, we want to save it.  To be nice, we're going to first mark the dictionary as modified.  We only want to force a save, though, if the dictionary was clean before-hand, so we save the old value.
 
 #+BEGIN_SRC emacs-lisp
   (let ((old-ispell-pdict-modified-p ispell-pdict-modified-p))
     (setq ispell-pdict-modified-p '(t))
 #+END_SRC
 
-And finally, we want force a save if necessary.  The "if necessary"
-part is actually annoyingly complicated...
+And finally, we want force a save if necessary.  The "if necessary" part is actually annoyingly complicated...
 
 #+BEGIN_SRC emacs-lisp
     (when (or (and old-ispell-pdict-modified-p
@@ -483,14 +419,13 @@ part is actually annoyingly complicated...
                    (not (listp ispell-pdict-modified-p)))))
 #+END_SRC
 
-But once that's out of the way, we can just call =ispell-pdict-save=
-with =no-query=.
+But once that's out of the way, we can just call =ispell-pdict-save= with =no-query=.
 
 #+BEGIN_SRC emacs-lisp
       (ispell-pdict-save t))))
 #+END_SRC
 
-Finally, we add key-bindings using Evil's =evil-normal-state-map.
+Finally, we add key-bindings using Evil's =evil-normal-state-map=.
 
 #+BEGIN_SRC emacs-lisp
 (define-key evil-normal-state-map "z=" 'ispell-word)
@@ -509,12 +444,19 @@ Other modes I use are Markdown (it's the standard) and $\LaTeX$ (for class):
 
 #+BEGIN_SRC emacs-lisp
 (add-hook 'latex-mode-hook 'auto-fill-mode)
+(add-hook 'bibtex-mode-hook 'auto-fill-mode)
 (add-hook 'markdown-mode-hook 'visual-line-mode)
 (add-hook 'org-mode-hook   'visual-line-mode)
 
 (add-hook 'latex-mode-hook 'flyspell-mode)
+(add-hook 'bibtex-mode-hook 'variable-pitch-mode)
 (add-hook 'markdown-mode-hook 'flyspell-mode)
 (add-hook 'org-mode-hook 'flyspell-mode)
+
+(add-hook 'latex-mode-hook 'variable-pitch-mode)
+(add-hook 'bibtex-mode-hook 'variable-pitch-mode)
+(add-hook 'markdown-mode-hook 'variable-pitch-mode)
+(add-hook 'org-mode-hook 'variable-pitch-mode)
 #+END_SRC
 
 * Org Mode
@@ -533,65 +475,10 @@ split a bullet point in two).
 (setq org-M-RET-may-split-line '((default)))
 #+END_SRC
 
-Finally, Org-mode has this odd love of indenting the entries in
-description lists so that there is a consistent left edge.  I don't
-like it, and luckily I can turn it off.
+Finally, Org-mode has this odd love of indenting the entries in description lists so that there is a consistent left edge.  I don't like it, and luckily I can turn it off.
 
 #+BEGIN_SRC emacs-lisp
 (setq org-description-max-indent 0)
-#+END_SRC
-
-** Agenda View
-
-I use the agenda view a lot, so I customize it a bit.  The agenda
-should show two days (including, yes, the ones without events); it
-shouldn't show me things I've done; and I won't worry about starting
-on a weekend or weekday.
-
-#+BEGIN_SRC emacs-lisp
-  (setq org-agenda-ndays 1)
-  (setq org-agenda-span 2)
-  (setq org-deadline-warning-days 3)
-
-  (setq org-agenda-skip-deadline-if-done t)
-  (setq org-agenda-skip-scheduled-if-done t)
-  (setq org-agenda-start-on-weekday nil)
-#+END_SRC
-
-Since all of my TODO entries are in one file, I don't need the agenda
-view to tell me what file a TODO entry comes from.
-
-#+BEGIN_SRC emacs-lisp
-  (setq org-agenda-file-regexp "\\`[^.].*\\.\\(txt\\|org\\)\\'")
-  (setq org-agenda-files '("~/notes/"))
-  (setq org-agenda-prefix-format
-        '((agenda . " %i %?-12t% s")
-          (timeline . "  % s")
-          (todo . " %i %-12:c")
-          (tags . " %i %-12:c")
-          (search . " %i %-12:c")))
-#+END_SRC
-
-Finally, given my use of the TODO list, I would like fewer deadline
-reminders and more scheduled reminders
-
-#+BEGIN_SRC emacs-lisp
-  (setq org-agenda-move-date-from-past-immediately-to-today t)
-  (setq org-agenda-skip-deadline-prewarning-if-scheduled t)
-  (setq org-agenda-skip-scheduled-if-deadline-is-shown nil)
-#+END_SRC
-
-** Todo Keywords
-
-The keywords here represent a good chunk of possible work-flows.  TODO
-to DONE is the standard one, but sometimes I go to WONT or spent time
-cycling between TODO and WAIT.  SOMEDAY exists for the projects that
-I'd like to do, but that are currently in limbo.
-
-#+BEGIN_SRC emacs-lisp
-(setq org-todo-keywords
-      '((sequence "TODO(t)" "SOMEDAY(s)" "|" "DONE(d)" "WAIT(w)" "WONT(n)")))
-(setq org-use-fast-todo-selection t)
 #+END_SRC
 
 ** Entities
@@ -634,22 +521,9 @@ inline markup:
 (setq org-hide-emphasis-markers t)
 #+END_SRC
 
-** Key bindings
-
-Some key bindings are not bound by Org automatically, so I have to bind
-them myself.
-
-#+BEGIN_SRC emacs-lisp
-(global-set-key "\C-cl" 'org-store-link)
-(global-set-key "\C-ca" 'org-agenda)
-(global-set-key "\C-cc" 'org-capture)
-#+END_SRC
-
 ** LaTeX Export
 
-Org-mode requires you to define things to use other classes for LaTeX
-files.  I put this in a separate file so I can avoid loading it when
-I'm just exporting.
+Org-mode requires you to define things to use other classes for LaTeX files.  I put this in a separate file so I can avoid loading it when I'm just exporting.
 
 #+BEGIN_SRC emacs-lisp
 (load "~/.emacs.d/export.el")
@@ -665,17 +539,13 @@ The Emacs shell mode is great, but barfs on ANSI escape sequence.  There's a fix
 
 ** Eshell
 
-Eshell doesn't actually require that much prodding.  The only thing I
-do is change its directory.
+Eshell doesn't actually require that much prodding.  The only thing I do is change its directory.
 
 #+BEGIN_SRC emacs-lisp
   (setq eshell-directory-name "~/.emacs.d/eshell/")
 #+END_SRC
 
-Eshell has an awesome "smart mode" where it emulates Plan 9 by
-allowing you to edit command lines instead of re-executing them.  Here
-I tell Eshell to not review commands that successfully exit, since
-those are normally easy to re-execute anyways.
+Eshell has an awesome "smart mode" where it emulates Plan 9 by allowing you to edit command lines instead of re-executing them.  Here I tell Eshell to not review commands that successfully exit, since those are normally easy to re-execute anyways.
 
 #+BEGIN_SRC emacs-lisp
   (require 'eshell)
@@ -693,8 +563,7 @@ or to Elisp variables with
 
 : cmd > #'adsf
 
-Since I don't expect to use the second feature at all, I'd prefer its
-syntax be used for buffer redirections instead.
+Since I don't expect to use the second feature at all, I'd prefer its syntax be used for buffer redirections instead.
 
 #+BEGIN_SRC emacs-lisp
   (setq eshell-buffer-shorthand t)
@@ -709,8 +578,7 @@ Multiterm requires a bit more setup.
 (setq multi-term-program "/bin/bash")
 #+END_SRC
 
-For simplicity, I also add the =mterm= command to just call
-=multi-term=.
+For simplicity, I also add the =mterm= command to just call =multi-term=.
 
 #+BEGIN_SRC emacs-lisp
 (defun mterm ()
@@ -718,13 +586,7 @@ For simplicity, I also add the =mterm= command to just call
   (multi-term))
 #+END_SRC
 
-One annoyance is that the screen bounces in multi-term due to my
-=scroll-margin=.  But there's a solution: file-local variables.  We
-attach a handler to =term-mode-hook= that makes =scroll-margin= local
-and then sets it to =0=.  Because =make-local-variable= returns the
-variable (as a symbol), we can call =set= (that's right: not =setq=,
-but =set=, since we already have the variable quoted for us) to set
-it.
+One annoyance is that the screen bounces in multi-term due to my =scroll-margin=.  But there's a solution: file-local variables.  We attach a handler to =term-mode-hook= that makes =scroll-margin= local and then sets it to =0=.  Because =make-local-variable= returns the variable (as a symbol), we can call =set= (that's right: not =setq=, but =set=, since we already have the variable quoted for us) to set it.
 
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'term-mode-hook (lambda ()
@@ -733,11 +595,7 @@ it.
 
 * Dropbox
 
-[[http://github.com/pavpanchekha/dropbox.el/][dropbox.el]] is a Dropbox client I wrote -- it accesses files from
-Dropbox through the [[http://developers.dropbox.com][Dropbox API]].  It needs a bit of setup, mostly to
-set the API secret and key.  The actual values are in the [[file:passwords.org][passwords
-file]], but I unpack them here to remind myself that the entry in the
-passwords file exists.
+[[http://github.com/pavpanchekha/dropbox.el/][dropbox.el]] is a Dropbox client I wrote -- it accesses files from Dropbox through the [[http://developers.dropbox.com][Dropbox API]].  It needs a bit of setup, mostly to set the API secret and key.  The actual values are in the [[file:passwords.org][passwords file]], but I unpack them here to remind myself that the entry in the passwords file exists.
 
 #+BEGIN_SRC emacs-lisp
 (load "~/Dropbox/Work/dropbox.el/dropbox.el")
@@ -745,8 +603,7 @@ passwords file exists.
 (setf dropbox-consumer-secret (cadr my-dropbox-key))
 #+END_SRC
 
-Since I don't have many concurrent clients and rarely use shared
-folders, a longer cache time makes a lot of sense.
+Since I don't have many concurrent clients and rarely use shared folders, a longer cache time makes a lot of sense.
 
 #+BEGIN_SRC emacs-lisp
 (setf dropbox-cache-timeout 300)
@@ -754,16 +611,7 @@ folders, a longer cache time makes a lot of sense.
 
 * Inter-Key Timings
 
-One interesting characteristic of a person's typing is their inter-key
-timings -- the time between typing two letters in succession.  For
-example, it usually takes more time to type "cr" than ";l", since one
-involves moving the left index finger a large distance and the other
-uses the really natural rolling chord on the right hand.  By recording
-all key character pairs, we can actually track timings for this.  And
-since I do a lot of my work in Emacs, it is easiest to do this as an
-Emacs extension.  I've written such a thing: [[http://git.pavpanchekha.com/?p=keylogger.el.git;a=summary][keylogger.el]].  It has an
-Emacs Lisp extension and an analyzer written in Javascript.  Anyway,
-I'd like to turn it on when Emacs starts:
+One interesting characteristic of a person's typing is their inter-key timings -- the time between typing two letters in succession.  For example, it usually takes more time to type "cr" than ";l", since one involves moving the left index finger a large distance and the other uses the really natural rolling chord on the right hand.  By recording all key character pairs, we can actually track timings for this.  And since I do a lot of my work in Emacs, it is easiest to do this as an Emacs extension.  I've written such a thing: [[http://git.pavpanchekha.com/?p=keylogger.el.git;a=summary][keylogger.el]].  It has an Emacs Lisp extension and an analyzer written in Javascript.  Anyway, I'd like to turn it on when Emacs starts:
 
 #+BEGIN_SRC emacs-lisp
 (load "~/Dropbox/Work/keylogger.el/keylogger.el")
@@ -773,6 +621,4 @@ I'd like to turn it on when Emacs starts:
 (keylogger-autosave)
 #+END_SRC
 
-Note that each startup, I load the file, load my previously-saved
-data, tell it to record new key presses, and to autosave them every
-fifteen minutes.
+Note that each startup, I load the file, load my previously-saved data, tell it to record new key presses, and to autosave them every fifteen minutes.
