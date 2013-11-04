@@ -15,9 +15,7 @@
 
 (define-abbrev-table 'coq-goals-mode-abbrev-table '())
 
-(define-abbrev-table 'coq-mode-abbrev-table
-  '(
-   ))
+(define-abbrev-table 'coq-mode-abbrev-table '())
 
 (define-abbrev-table 'coq-response-mode-abbrev-table '())
 
@@ -37,11 +35,15 @@
 
 (define-abbrev-table 'fundamental-mode-abbrev-table '())
 
+(define-abbrev-table 'gfm-mode-abbrev-table '())
+
 (define-abbrev-table 'global-abbrev-table '())
 
 (define-abbrev-table 'help-mode-abbrev-table '())
 
 (define-abbrev-table 'html-mode-abbrev-table '())
+
+(define-abbrev-table 'inferior-python-mode-abbrev-table '())
 
 (define-abbrev-table 'latex-mode-abbrev-table '())
 
@@ -68,6 +70,20 @@
 (define-abbrev-table 'magit-wazzup-mode-abbrev-table '())
 
 (define-abbrev-table 'magithub-message-mode-abbrev-table '())
+
+(define-abbrev-table 'makefile-automake-mode-abbrev-table '())
+
+(define-abbrev-table 'makefile-bsdmake-mode-abbrev-table '())
+
+(define-abbrev-table 'makefile-gmake-mode-abbrev-table '())
+
+(define-abbrev-table 'makefile-imake-mode-abbrev-table '())
+
+(define-abbrev-table 'makefile-makepp-mode-abbrev-table '())
+
+(define-abbrev-table 'makefile-mode-abbrev-table '())
+
+(define-abbrev-table 'markdown-mode-abbrev-table '())
 
 (define-abbrev-table 'occur-edit-mode-abbrev-table '())
 
@@ -98,6 +114,10 @@
 (define-abbrev-table 'proof-splash-mode-abbrev-table '())
 
 (define-abbrev-table 'proof-universal-keys-only-mode-abbrev-table '())
+
+(define-abbrev-table 'python-mode-abbrev-table
+  '(
+   ))
 
 (define-abbrev-table 'rst-mode-abbrev-table
   '(
@@ -146,7 +166,7 @@
 
 (define-abbrev-table 'vc-git-log-view-mode-abbrev-table '())
 
-(define-abbrev-table 'verilog-mode-abbrev-table
-  '(
-   ))
+(define-abbrev-table 'vc-hg-log-view-mode-abbrev-table '())
+
+(define-abbrev-table 'verilog-mode-abbrev-table '())
 

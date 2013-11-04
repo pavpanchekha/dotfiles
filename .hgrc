@@ -1,3 +1,6 @@
+[ui]
+username = Pavel Panchekha <me@pavpanchekha.com>
+
 [extensions]
 record =
 mq =
