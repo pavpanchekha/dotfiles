@@ -27,6 +27,8 @@
 
 (define-abbrev-table 'doctex-mode-abbrev-table '())
 
+(define-abbrev-table 'dsssl-mode-abbrev-table '())
+
 (define-abbrev-table 'emacs-lisp-byte-code-mode-abbrev-table '())
 
 (define-abbrev-table 'emacs-lisp-mode-abbrev-table '())
@@ -34,6 +36,10 @@
 (define-abbrev-table 'eshell-mode-abbrev-table '())
 
 (define-abbrev-table 'fundamental-mode-abbrev-table '())
+
+(define-abbrev-table 'geiser-messages-mode-abbrev-table '())
+
+(define-abbrev-table 'geiser-repl-mode-abbrev-table '())
 
 (define-abbrev-table 'gfm-mode-abbrev-table '())
 
@@ -44,6 +50,8 @@
 (define-abbrev-table 'html-mode-abbrev-table '())
 
 (define-abbrev-table 'inferior-python-mode-abbrev-table '())
+
+(define-abbrev-table 'inferior-scheme-mode-abbrev-table '())
 
 (define-abbrev-table 'latex-mode-abbrev-table '())
 
@@ -115,9 +123,7 @@
 
 (define-abbrev-table 'proof-universal-keys-only-mode-abbrev-table '())
 
-(define-abbrev-table 'python-mode-abbrev-table
-  '(
-   ))
+(define-abbrev-table 'python-mode-abbrev-table '())
 
 (define-abbrev-table 'rst-mode-abbrev-table
   '(
@@ -140,7 +146,14 @@
   " nil 0)
    ))
 
+(define-abbrev-table 'scheme-mode-abbrev-table
+  '(
+    ("lambda" "λ" nil 0)
+   ))
+
 (define-abbrev-table 'scomint-mode-abbrev-table '())
+
+(define-abbrev-table 'select-tags-table-mode-abbrev-table '())
 
 (define-abbrev-table 'sgml-mode-abbrev-table '())
 
