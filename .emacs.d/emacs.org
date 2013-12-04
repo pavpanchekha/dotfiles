@@ -1,65 +1,45 @@
 #+TITLE: Emacs Initialization Script
 
-All of my Emacs initialization is contained within this one Literate Babel file.  I use the Babel system in Org-mode to evaluate the code within on Emacs startup, which lets me write nice descriptive text for my code.  My =.emacs.d/init.el= file contains only:
+I use Org's [[http://orgmode.org/worg/org-contrib/babel/intro.html#sec-8_2][Babel system]] for this configuration file. My =.emacs.d/init.el= file contains only:
 
-: (require 'ob-tangle)
-: (org-babel-load-file "~/.emacs.d/emacs.org")
-
-More on this method can be found [[http://orgmode.org/worg/org-contrib/babel/intro.html#sec-8_2][in the Babel tutorial]].
+#+BEGIN_SRC emacs-lisp :tangle "init.el"
+(package-initialize)
+(require 'ob-tangle)
+(org-babel-load-file "~/.emacs.d/emacs.org")
+#+END_SRC
 
 * Packages
 
-My Emacs configuration relies on several packages being installed. Luckily, Emacs now has a package manager.
-  
+I use Emacs's package manager to install others' Emacs scripts and helpers. I install most packages from [[http://marmalade-repo.org/][Marmalade]], so I need to enable that repository.
+
 #+BEGIN_SRC emacs-lisp
-  (defun package-safe-install (package)
-    (if (not (package-installed-p package))
-        (package-install package)))
+  (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
 #+END_SRC
 
-Some packages I couldn't live without; they are:
-
- + evil :: A good text editor for Emacs
- + org :: Organization and markup system.
- + multi-term :: Emacs =term= is impossible.  This is not.
- + magit :: =git= in Emacs
-
-There are also a few languages modes that are nice to have around: =erlang=, =go-mode=, =haskell-mode=, =markdown-mode=.
+I'll be littering the rest of this file with package names, and I'll use this function to avoid re-installing packages.
 
 #+BEGIN_SRC emacs-lisp
-  (defvar *packages-core*
-    '(evil org multi-term magit))
-
-  (defvar *packages-extra*
-    '(erlang go-mode haskell-mode markdown-mode magithub htmlize))
-#+END_SRC
-
-We use the Marmalade repository on top of the GNU-maintained one.
-
-#+BEGIN_SRC emacs-lisp
-  (require 'package)
-  (add-to-list 'package-archives
-               '("marmalade" . "http://marmalade-repo.org/packages/"))
-  (package-initialize)
-  
-  (mapcar #'package-safe-install
-          (append *packages-core* *packages-extra*))
+  (defun package-safe-install (&rest packages)
+    (dolist (package packages)
+      (unless (package-installed-p package)
+        (package-install package)
+        (require package))))
 #+END_SRC
 
 * Personal Information
 
-Emacs might as well know my name and email address.  I trust it.
+My name and email address helps Emacs format various messages.
 
 #+BEGIN_SRC emacs-lisp
-(setq user-full-name "Pavel Panchekha")
-(setq user-mail-address "me@pavpanchekha.com")
+  (setf user-full-name "Pavel Panchekha")
+  (setf user-mail-address "me@pavpanchekha.com")
 #+END_SRC
 
-Also, I like to keep my custom-set variables from polluting my other files, so I like to move the =custom-file=.
+I keep my custom-set variables separate from my true configuration file.
 
 #+BEGIN_SRC emacs-lisp
-(setq custom-file "~/.emacs.d/custom.el")
-(load custom-file 'noerror)
+  (setf custom-file "~/.emacs.d/custom.el")
+  (load custom-file)
 #+END_SRC
 
 Since I publish this file on the Internet, I keep my passwords elsewhere:
@@ -68,7 +48,7 @@ Since I publish this file on the Internet, I keep my passwords elsewhere:
 (org-babel-load-file "~/.emacs.d/passwords.org")
 #+END_SRC
 
-Finally, a few files are stored once for each computer and then synchronized over Dropbox.  To keep things sane, each computer's file is named by its hostname.  This bit of code extracts the hostname itself.
+I store some collected data in Dropbox. To avoid one computer overwriting another's data, I include the hostname in the file name. This code extracts the hostname itself.
 
 #+BEGIN_SRC emacs-lisp
   (setf hostname
@@ -79,46 +59,83 @@ Finally, a few files are stored once for each computer and then synchronized ove
               (setq hostname* (replace-match "" t t hostname*)))
             hostname*)))
 #+END_SRC
+* Graphical Interface Quirks
 
-* Key Bindings
+I'm believe in maximizing screen real estate, so I turn off the scroll bar and the tool bar.
 
-We use the [[http://gitorious.org/evil/pages/Home][Evil package]] for Vim keybindings in Emacs.
+Some things Emacs does by default just use up screen real estate and programmer patience.  Note that =tool-bar-mode= requires a *nonzero* parameter, not a truthy parameter, to display the toolbar.  This is absolutely absurd, but what can one do?
 
 #+BEGIN_SRC emacs-lisp
-  (require 'evil)
+  (set-scroll-bar-mode nil)
+  (tool-bar-mode 0)
+  (menu-bar-mode 0)
+#+END_SRC
+
+Emacs also has an unnecessary startup screen which I inhibit.
+
+#+BEGIN_SRC emacs-lisp
+  (setq inhibit-startup-screen t
+        inhibit-startup-message t
+        inhibit-startup-echo-area-message t)
+#+END_SRC
+
+The mode-line is made more useful by showing the column number and progress through the file.
+
+#+BEGIN_SRC emacs-lisp
+(setq column-number-mode t)
+(setq size-indication-mode t)
+#+END_SRC
+
+Emacs's default =yes or no= prompts annoy. I ask Emacs to accept =y= and =n=.
+
+#+BEGIN_SRC emacs-lisp
+(fset 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+
+I hate my computer beeping when I err. I ask Emacs to express its discontent visually.
+
+#+BEGIN_SRC emacs-lisp
+  (setf visible-bell t)
+#+END_SRC
+
+I rarely use the mouse, so tooltips are an annoyance.  This code causes them to appear in the echo area instead.
+
+#+BEGIN_SRC emacs-lisp
+  (tooltip-mode -1)
+  (setf tooltip-use-echo-area t)
+#+END_SRC
+
+I use a [[https://github.com/cathywu/TimeTracker][time tracker]] that records window titles.  Thus I display the currently file path in the window title.
+
+#+BEGIN_SRC emacs-lisp
+  (setq frame-title-format
+        '((:eval (if (buffer-file-name)
+                     (concat "Emacs: " (abbreviate-file-name (buffer-file-name)))
+                   "Emacs: %b"))))
+#+END_SRC
+
+* Evil: key commands à la Vim
+
+I use [[http://gitorious.org/evil/pages/Home][Evil]]; it is the Vim key-stroke language for Emacs.
+
+#+BEGIN_SRC emacs-lisp
+  (package-safe-install 'evil)
   (evil-mode 1)
 #+END_SRC
 
-But I actually rather like the cyclic undo that Emacs has.  Since Evil mode turns on undo-tree by default, we need to turn it off.
+By default Evil uses [[http://www.dr-qubit.org/undo-tree/undo-tree-0.6.4.el][undo-tree]], which represents previous document states as a tree. I, however, prefer the more confusing but simpler cyclic undo that comes with vanilla Emacs.
 
 #+BEGIN_SRC emacs-lisp
   (global-undo-tree-mode -1)
 #+END_SRC
 
-** Key-map commands
-
-Since I like Vim key-bindings everywhere, I'll be doing a lot of adding to key-maps.  This gets tedious, especially when lots of keys on the same key-map.  This macro makes adding a bunch of keys to the
-same key-map very easy.
+I cause =RET= to automatically indent the new line. This tends to make sense in all modes except text; and in text mode it is usually not much of a bother.
 
 #+BEGIN_SRC emacs-lisp
-  (require 'cl) ; For LOOP
-
-  (defmacro define-keys (map &rest keys)
-    "Adds several key bindings to a specific map.  Takes a map (as
-    a bare symbol) and a several clauses of form (key func); key is
-    a string to be passed to (kbd), and func is a function name."
-    (declare (indent defun))
-
-    `(progn
-       ,@(cl-loop for key+func in keys
-                  collect `(define-key ,map
-                             (kbd ,(car key+func))
-                             ',(cadr key+func)))))
+(global-set-key (kbd "RET") 'newline-and-indent)
 #+END_SRC
 
-** Visual Line Mode hacks
-
-I like to use visual line mode for text files (more semantic information!), so I have the following hack for Evil:
+Visual line mode creates proper visual line breaks without wrapping words. I use it often, so I ask Evil to count many commands in visual lines. The commands =I= and =A= should act similarly, but they do not yet have associated =-visual-line= versions.
 
 #+BEGIN_SRC emacs-lisp
 (define-key evil-motion-state-map "j" #'evil-next-visual-line)
@@ -128,266 +145,108 @@ I like to use visual line mode for text files (more semantic information!), so I
 (define-key evil-motion-state-map "0" #'evil-beginning-of-visual-line)
 #+END_SRC
 
-Note that these work fine in hard-wrapped text, too; they're just not as necessary.  Also note that commands like =I= and =A= should in theory also receive this treatment, but alas, they don't have associated =-visual-line= versions.
+* Auto-completion
 
-** Miscellaneous
-
-I prefer to work with indented text at all times, so =RET= should be bound to =newline-and-indent=, and some terminals have problems with the delete key or something, so I keep the following bindings around as well.  The last line there make =C-k= kill the whole line.
+The [[http://cx4a.org/software/auto-complete/][Auto Complete Mode]] provides self-effacing yet effective inline auto-completion.
 
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "RET") 'newline-and-indent)
-(global-set-key [delete] 'delete-char)
-(setq kill-whole-line t)
+  (package-safe-install 'auto-complete)
 #+END_SRC
 
-** Doc-View
-
-I generally use doc-vew for long PDFs, so I find it best to have continuous scrolling.
+Auto Complete Mode automatically enables itself in all buffers, so little configuration is really needed. I ask it to use fuzzy matching, which accounts for typos.
 
 #+BEGIN_SRC emacs-lisp
-(setq doc-view-continuous t)
+  (setf ac-use-fuzzy t)
 #+END_SRC
 
-144 is a decent resolution, since it makes a page of text about as wide as half my screen (and I generally use Emacs with two vertical panes.
+* For text documents
+
+I also use Markdown and BibTeX for some files. Markdown has become a standard format for many in the open-source community. My BibTeX files contain commentaries and so are also text files.
 
 #+BEGIN_SRC emacs-lisp
-(setq doc-view-resolution 144)
+  (package-safe-install 'markdown)
 #+END_SRC
 
-The PDF viewer is in sore need of Vim-style h/j/k/l movement keys
+For all of these I enable the variable-pitch and fly-spell modes. The first switches to a proportional font; the second spell-checks as I type (more below).
 
 #+BEGIN_SRC emacs-lisp
-(require 'doc-view)
-(define-keys doc-view-mode-map
-    ("j" doc-view-next-line-or-next-page)
-    ("k" doc-view-previous-line-or-previous-page)
-    ("h" image-backward-hscroll)
-    ("l" image-forward-hscroll))
+  (dolist (hook '(bibtex-mode-hook markdown-mode-hook org-mode-hook))
+    (add-hook hook 'variable-pitch-mode)
+    (add-hook hook 'flyspell-mode))
 #+END_SRC
 
-* Miscellany
-** GUI Settings
-
-Some things Emacs does by default just use up screen real estate and programmer patience.  Note that =tool-bar-mode= requires a *nonzero* parameter, not a truthy parameter, to display the toolbar.  This is absolutely absurd, but what can one do?
+The visual-line mode implements proper line wrapping. I prefer to use this, but traditionally BibTeX and Markdown files do not use it. If a window's width is very large, visual lines can become nigh-unreadable. My [[https://github.com/pavpanchekha/center-text.el][center-text mode]] narrows the width of buffer contents to account for this.
 
 #+BEGIN_SRC emacs-lisp
-(setq inhibit-startup-screen t
-      inhibit-startup-message t
-      inhibit-startup-echo-area-message t)
-(set-scroll-bar-mode nil)
-(tool-bar-mode 0)
-#+END_SRC
-
-I'm not yet pro enough to forsake =menu-bar-mode=, though one day I'll get there.
-
-Also, I like knowing where my files end; ergo I ask Emacs to show empty lines.
-
-#+BEGIN_SRC emacs-lisp
-(if (not indicate-empty-lines)
-  (toggle-indicate-empty-lines))
-#+END_SRC
-
-The modeline should really be pressed into useful service.  I make it display the time, and for the position display, have it give the column number and file size:
-
-#+BEGIN_SRC emacs-lisp
-(display-time-mode t)
-(setq column-number-mode t)
-(setq size-indication-mode t)
-#+END_SRC
-
-The =yes or no= prompts get annoying quickly.  Instead, we ask Emacs to use single-character responses
-
-#+BEGIN_SRC emacs-lisp
-(fset 'yes-or-no-p 'y-or-n-p)
-#+END_SRC
-
-Whenever I do something that Emacs finds odd, it beeps.  Why?  Who knows.  In any case, I turn it off, because when I'm lounging about with music on the overhead speakers, I don't want a beep interfering.
-
-#+BEGIN_SRC emacs-lisp
-  (setq visible-bell t)
-#+END_SRC
-
-Since I rarely use the mouse, tooltips are more an annoyance than anything else.  This switches them to appear in the echo area.
-
-#+BEGIN_SRC emacs-lisp
-(tooltip-mode -1)
-(setq tooltip-use-echo-area t)
-#+END_SRC
-
-I'm old enough for no training wheels.  Narrowing a buffer hides
-certain text, which is nice for focusing and buffer-cloning magic.
-
-#+BEGIN_SRC emacs-lisp
-(put 'narrow-to-region 'disabled nil)
-#+END_SRC
-
-I use a time tracker that keys off window titles.  Thus, I'd like the
-currently-active file in the window title:
-
-#+BEGIN_SRC emacs-lisp
-  (setq frame-title-format
-        '((:eval (if (buffer-file-name)
-                     (concat "Emacs: " (abbreviate-file-name (buffer-file-name)))
-                   "Emacs: %b"))))
-#+END_SRC
-
-** Visual Line Mode Hacks
-
-I like using visual-line-mode, especially when editing text.  But this is problematic if the width of the window is very large, since in that case the line doesn't wrap until it is 100 or so characters long.  To fix this, I use a minor mode that I myself wrote, =center-text-mode=:
-
-#+BEGIN_SRC emacs-lisp
-  (add-to-list 'load-path
-               "~/Dropbox/Work/center-text.el/")
+  (add-to-list 'load-path "~/Dropbox/Work/center-text.el/")
+  (setf center-text-default-width 58)
   (require 'center-text)
+
+  (add-hook 'org-mode-hook 'center-text-mode)
+  (add-hook 'bibtex-mode-hook 'auto-fill-mode)
+  (add-hook 'markdown-mode-hook 'auto-fill-mode)
 #+END_SRC
 
-** Basic File Behaviors
-
-Emacs has some stupid defaults, such as making those =file~= files and using tabs for indentation.  I also make Emacs add final newlines and to prompt me for only single characters (why is that default?).
+I give Org-mode files a =txt= extension because this allows editing them on other devices. As mentioned, my BibTeX files contain paper commentaries, so I set them to Org mode as well.
 
 #+BEGIN_SRC emacs-lisp
-(setq make-backup-files nil)
-(setq-default indent-tabs-mode nil)
-(setq require-final-newline t)
+(add-to-list 'auto-mode-alist '("\\.txt$" . org-mode))
+(add-to-list 'auto-mode-alist '("\\.bib$" . org-mode))
 #+END_SRC
 
-Also, I often have multiple buffers open with the same name.  Emacs
-usually deals with this by appending the buffer number to the buffer
-name.  This is hard to keep track of.  Instead, the =uniquify= library
-uses the parent directory name, which I usually know.
+* For LaTeX documents
 
 #+BEGIN_SRC emacs-lisp
-(require 'uniquify)
-(setq uniquify-buffer-name-style 'post-forward-angle-brackets)
+  (add-hook 'latex-mode-hook 'flyspell-mode)
+  (add-hook 'latex-mode-hook 'variable-pitch-mode)
+  (add-hook 'latex-mode-hook 'auto-fill-mode)
 #+END_SRC
 
-** Searching and Scrolling
+* Org-mode
 
-For searching, I enable highlighting as-I-search for both searches and search/replaces.  Also, searches are made case-insensitive.
-
-#+BEGIN_SRC emacs-lisp
-(setq search-highlight t)
-(setq query-replace-highlight t)
-(setq case-fold-search t)
-#+END_SRC emacs-lisp
-
-For scrolling, I ask Emacs to scroll at most five lines at a time and to keep 5 lines between the cursor and the top/bottom of the page.
+[[http://orgmode.org/][Org-mode]] is a suite of plain-text organization and authoring tools.
 
 #+BEGIN_SRC emacs-lisp
-(setq scroll-conservatively 5)
-(setq scroll-margin 5)
+  (package-safe-install 'org)
 #+END_SRC
 
-* Utility Commands
-** Debugging
-
-Every once in a while, I develop in emacs-lisp, and make use of the following:
+To make it easier to embed Unicode characters into Org-mode files, I turn on the TeX input mode.
 
 #+BEGIN_SRC emacs-lisp
-  (defun debug-mode ()
-    "Turn on various Emacs debugging features"
-    (interactive)
-
-    (setf debug-on-error t message-log-max 10000))
+  (add-hook 'org-mode-hook (lambda () (set-input-method 'TeX)))
 #+END_SRC
 
-** =run= Command
-
-I have a =run= command that I rather like; it compiles and runs some program or file in a temporary program.  I use it for, for example, compiling LaTeX, or testing C code.
+Org-mode indents description lists so as to keep a consistent left edge. I don't like this behavior.
 
 #+BEGIN_SRC emacs-lisp
-  (defun run-command (file)
-    (interactive (list (buffer-file-name)))
-    (save-window-excursion
-     (shell-command (concat "run " file " &"))))
-
-  (defun compile-command (file)
-    (interactive (list (buffer-file-name)))
-    (save-window-excursion
-     (shell-command (concat "run -c " file " &"))))
+  (setf org-description-max-indent 0)
 #+END_SRC
 
-Then we attach them to =[f5]= and =[C-f5]=.
+I prefer to hide the inline markup used by Org-mode.
 
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "<f5>") 'run-command)
-(global-set-key (kbd "C-<f5>") 'compile-command)
+  (setf org-hide-emphasis-markers t)
 #+END_SRC
-** Configuration editing configuration
 
-I actually edit my Emacs configuration a lot.  I call it "cultivating" my Emacs configuration.  So here are some utility functions for that.
-
-The first function just reloads the Emacs configuration.
+Org-mode needs more information to use alternate LaTeX document classes.  I put this information into a separate file so I can load it separately in Makefiles.
 
 #+BEGIN_SRC emacs-lisp
-(defun reconfigure ()
-  (interactive)
-  (load-file "~/.emacs.d/init.el"))
+  (load "~/.emacs.d/export.el")
 #+END_SRC
+* ISpell spell checker
 
-The second function opens the configuration up for editing.
+Fly-spell mode uses ISpell. I want to use the =ispell= program, to use American English, and to locate my personal dictionary within my =.emacs.d= directory.
 
 #+BEGIN_SRC emacs-lisp
-(defun edconfigure ()
-  (interactive)
-  (find-file "~/.emacs.d/emacs.org"))
+(setf ispell-program-name "/usr/bin/ispell")
+(setf ispell-dictionary "american")
+(setf ispell-personal-dictionary "~/.emacs.d/dict")
 #+END_SRC
-
-* Printing Buffers to PDF
-
-Sometimes, I need to print an Emacs buffer to PDF.  The standard printing commands are less than ideal for this, since they rely on =lpr=, a program I have no interest in installing and configuring. Instead, I can use the Emacs =printing= package, which can export buffers to Postscript, and then call =ps2pdf= to produce a PDF from the Postscript.
-
-First, I =require= in the =printing= package and ask it to install itself into the Emacs menu tree.
-
-#+BEGIN_SRC emacs-lisp
-(require 'printing)
-#+END_SRC
-
-Now we write a function to print the current buffer.
-
-#+BEGIN_SRC emacs-lisp
-(defun print-to-pdf ()
-  (interactive)
-#+END_SRC
-
-We want to use the function =pr-ps-buffer-print= from the =printing= package.  We give it a temporary file to print to, and later we'll =ps2pdf= that file.
-
-#+BEGIN_SRC emacs-lisp
-  (let* ((outfile (make-temp-file pr-ps-temp-file))
-         (pdffile (concat outfile ".pdf")))
-    (pr-ps-buffer-print 1 outfile)
-    (shell-command (concat "ps2pdf "
-                           (shell-quote-argument outfile)
-                           " "
-                           (shell-quote-argument pdffile)))
-    (find-file pdffile)))
-#+END_SRC
-
-The default print settings are silly, especially once you consider that my use case is print-to-PDF.  So I would rather print with syntax highlighting and no headers.
-
-#+BEGIN_SRC emacs-lisp
-(setq pr-faces-p t
-      ps-print-header nil
-      ps-print-header-frame)
-#+END_SRC
-
-* Ispell
-
-Of course, if we're activating ISpell, we should set it up.  Firstly we want to tell it to use =ispell=, to check spelling against American English, and where my dictionary is.
-
-#+BEGIN_SRC emacs-lisp
-(setq ispell-program-name "/usr/bin/ispell")
-(setq ispell-dictionary "american")
-(setq ispell-personal-dictionary "~/.emacs.d/dict")
-#+END_SRC
-
-** =ispell-save-word= and Vim Spell-checking
 
 A key binding I really miss from Vim is the spell checking keys =zg= and =z==.  Emacs has a great spell-check built-in: Ispell. All we need to do is add a few key-bindings.  But first we need a function to bind to, and for =zg=, one does not exist.  So off we go to implement =ispell-save-word.=
 
 #+BEGIN_SRC emacs-lisp
-(defun ispell-save-word ()
-  (interactive)
+(defun ispell-save-word () (interactive)
 #+END_SRC
 
 First, we need to *get* the current word.  We don't need to explicitly use =ispell-following-word=, since =ispell-get-word= does this for us. =ispell-get-word= returns a list of =word=, =start=, =end= (though its documentation certainly doesn't hint at such), so we call =car= to extract the word itself.
@@ -432,165 +291,172 @@ Finally, we add key-bindings using Evil's =evil-normal-state-map=.
 (define-key evil-normal-state-map "zg" 'ispell-save-word)
 #+END_SRC
 
-* Mode-specific Behaviors
+* Magit Git integration
 
-I like Org-mode a lot; it should be default for text files.
+[[http://magit.github.io/magit/][Magit]] is an incredible Emacs interface to the [[https://git-scm.com][Git version-control system]].
 
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'auto-mode-alist '("\\.txt$" . org-mode))
+  (package-safe-install 'magit)
+#+END_SRC
+* Miscellaneous
+
+Emacs has some stupid defaults, such as making those =file~= files and using tabs for indentation.  I also make Emacs add final newlines and to prompt me for only single characters (why is that default?).
+
+#+BEGIN_SRC emacs-lisp
+(setf make-backup-files nil)
+(setq-default indent-tabs-mode nil)
+(setf require-final-newline t)
 #+END_SRC
 
-Other modes I use are Markdown (it's the standard) and $\LaTeX$ (for class):
+Also, I often have multiple buffers open with the same name.  Emacs
+usually deals with this by appending the buffer number to the buffer
+name.  This is hard to keep track of.  Instead, the =uniquify= library
+uses the parent directory name, which I usually know.
 
 #+BEGIN_SRC emacs-lisp
-(add-hook 'latex-mode-hook 'auto-fill-mode)
-(add-hook 'bibtex-mode-hook 'auto-fill-mode)
-(add-hook 'markdown-mode-hook 'visual-line-mode)
-(add-hook 'org-mode-hook   'visual-line-mode)
-
-(add-hook 'latex-mode-hook 'flyspell-mode)
-(add-hook 'bibtex-mode-hook 'variable-pitch-mode)
-(add-hook 'markdown-mode-hook 'flyspell-mode)
-(add-hook 'org-mode-hook 'flyspell-mode)
-
-(add-hook 'latex-mode-hook 'variable-pitch-mode)
-(add-hook 'bibtex-mode-hook 'variable-pitch-mode)
-(add-hook 'markdown-mode-hook 'variable-pitch-mode)
-(add-hook 'org-mode-hook 'variable-pitch-mode)
+(require 'uniquify)
+(setf uniquify-buffer-name-style 'post-forward-angle-brackets)
 #+END_SRC
 
-* Org Mode
-
-First things first!  We should set up the file structure.
+For searching, I enable highlighting as-I-search for both searches and search/replaces.  Also, searches are made case-insensitive.
 
 #+BEGIN_SRC emacs-lisp
-(setq org-directory "~/notes/")
-(setq org-default-notes-file (concat org-directory "pavel.txt"))
+(setf search-highlight t)
+(setf query-replace-highlight t)
+(setf case-fold-search t)
+#+END_SRC emacs-lisp
+
+For scrolling, I ask Emacs to scroll at most five lines at a time and to keep 5 lines between the cursor and the top/bottom of the page.
+
+#+BEGIN_SRC emacs-lisp
+(setf scroll-conservatively 5)
+(setf scroll-margin 5)
 #+END_SRC
 
-Let's throw in a very minor editing thing (hitting =M-RET= shouldn't
-split a bullet point in two).
+When I write emacs-lisp I am often in the debugger. To turn it on, I use this function:
 
 #+BEGIN_SRC emacs-lisp
-(setq org-M-RET-may-split-line '((default)))
+  (defun debug-mode ()
+    "Turn on various Emacs debugging features"
+    (interactive)
+
+    (setf debug-on-error t message-log-max 10000))
 #+END_SRC
 
-Finally, Org-mode has this odd love of indenting the entries in description lists so that there is a consistent left edge.  I don't like it, and luckily I can turn it off.
+I'm also often "tending to" my Emacs configuration (this file). It's helpful to jump to it and reload it quickly.,
 
 #+BEGIN_SRC emacs-lisp
-(setq org-description-max-indent 0)
+(defun reconfigure () (interactive)
+  (load-file "~/.emacs.d/init.el"))
+
+(defun edconfigure () (interactive)
+  (find-file "~/.emacs.d/emacs.org"))
 #+END_SRC
 
-** Entities
-Since I use things like \RR so often, I made them into entities, so that
-Org can typeset them nicely.
+* Haskell programming tools
+
+[[https://github.com/haskell/haskell-mode][Haskell Mode]] provides syntax highlighting and similar utilities for programming in Haskell.
 
 #+BEGIN_SRC emacs-lisp
-  (setq org-pretty-entities t
-        org-entities-user '(; Double-struck letters for various fields
-                            ("CC" "\\CC" t "&#8450;" "C" "C" "ℂ")
-                            ("FF" "\\FF" t "&#120125;" "F" "F" "𝔽")
-                            ("HH" "\\HH" t "&#8461;" "H" "H" "ℍ")
-                            ("NN" "\\NN" t "&#8469;" "N" "N" "ℕ")
-                            ("PP" "\\PP" t "&#8473;" "P" "P" "ℙ")
-                            ("QQ" "\\QQ" t "&#8474;" "Q" "Q" "ℚ")
-                            ("RR" "\\RR" t "&#8477;" "R" "R" "ℝ")
-                            ("ZZ" "\\ZZ" t "&#8484;" "Z" "Z" "ℤ")
-
-                            ; Fraktur letters for ideals
-                            ("ga" "\\ga" t "&#120094;" "a" "a" "𝔞")
-                            ("gb" "\\gb" t "&#120095;" "b" "b" "𝔟")
-                            ("gc" "\\gc" t "&#120096;" "c" "c" "𝔠")
-                            ("gd" "\\gd" t "&#120097;" "d" "d" "𝔡")
-                            ("gm" "\\gm" t "&#120106;" "m" "m" "𝔪")
-                            ("gn" "\\gn" t "&#120107;" "n" "n" "𝔫")
-                            ("go" "\\go" t "&#120108;" "o" "o" "𝔬")
-                            ("gp" "\\gp" t "&#120109;" "p" "p" "𝔭")
-                            ("gq" "\\gq" t "&#120110;" "q" "q" "𝔮")
-
-                            ; Miscellaneous mathematical
-                            ("setminus" "\\setminus" t "&#8726;" "\" "\" "∖")
-                            ("mapsto"   "\\mapsto" t "&#8614;" "|->" "|->" "↦")
-                            ))
+  (package-safe-install 'haskell-mode)
 #+END_SRC
 
-I also would rather hide the stars and such that org-mode uses for
-inline markup:
+Multiple methods of indenting Haskell code come with Haskell Mode. They don't differ much, but I prefer =haskell-indent=.
 
 #+BEGIN_SRC emacs-lisp
-(setq org-hide-emphasis-markers t)
+  (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
 #+END_SRC
 
-** LaTeX Export
+* Scheme programming tools
 
-Org-mode requires you to define things to use other classes for LaTeX files.  I put this in a separate file so I can avoid loading it when I'm just exporting.
+Several modes come together to make programming in Scheme enjoyable. I usually use the Racket dialect of Scheme, but I've used MIT-Scheme heavily in the past. Sadly, no package seems to support both these dialects. For now I use [[http://www.neilvandyke.org/quack/][Quack]] and [[http://www.nongnu.org/geiser/][Geiser]], which together make Racket a breeze.
+
+#+BEGIN_SRC
+  (package-safe-install 'quack 'geiser)
+#+END_SRC
+
+Since I never use Guile, I configure Geiser to always start up in Racket mode.
 
 #+BEGIN_SRC emacs-lisp
-(load "~/.emacs.d/export.el")
+  (setf geiser-active-implementations '(racket))
+#+END_SRC
+
+It is customary in Racket to use a proper Unicode λ instead of the symbol =lambda=. I hack the abbreviation tools in Emacs to make this happen: I set =lambda= to be an abbreviation for =λ=.
+
+#+BEGIN_SRC emacs-lisp
+  (define-abbrev scheme-mode-abbrev-table "lambda" "λ")
+#+END_SRC
+
+Geiser provides auto-completion with =M-TAB=; I prefer =TAB= do double-duty as indentation or completion.
+
+#+BEGIN_SRC emacs-lisp
+  (setf geiser-mode-smart-tab-p t)
+#+END_SRC
+
+Gesier stores history information; I'd prefer it not clutter my home directory.
+
+#+BEGIN_SRC emacs-lisp
+  (setf geiser-repl-history-filename "~/.emacs.d/gesier-history")
+#+END_SRC
+
+* Printing Buffers to PDF
+
+I needed to print an Emacs buffer to PDF.  The standard printing commands rely on =lpr= and assume an actual printer. Instead I use the Emacs =printing= package to export buffers to Postscript, and then call =ps2pdf= to produce a PDF from the Postscript.
+
+#+BEGIN_SRC emacs-lisp
+(require 'printing)
+#+END_SRC
+
+We want to use the function =pr-ps-buffer-print= from the =printing= package.  We give it a temporary file to print to, and later we'll run =ps2pdf= on that file.
+
+#+BEGIN_SRC emacs-lisp
+  (defun print-to-pdf () (interactive)
+    (let* ((outfile (make-temp-file pr-ps-temp-file))
+           (pdffile (concat outfile ".pdf")))
+      (pr-ps-buffer-print 1 outfile)
+      (shell-command (concat "ps2pdf "
+                             (shell-quote-argument outfile)
+                             " "
+                             (shell-quote-argument pdffile)))
+      (find-file pdffile)))
+#+END_SRC
+
+The default print settings are silly for printing to PDF. I prefer syntax highlighting but no headers.
+
+#+BEGIN_SRC emacs-lisp
+  (setf pr-faces-p t)
+  (setf ps-print-header nil)
+  (setf ps-print-header-frame)
+#+END_SRC
+* The =run= Command
+
+I have command called =run=, which compiles and runs some program or file in a temporary directory.  I use it for compiling LaTeX or testing C code.
+
+#+BEGIN_SRC emacs-lisp
+  (defun run-command (file)
+    (interactive (list (buffer-file-name)))
+    (save-window-excursion
+     (shell-command (concat "run " file " &"))))
+
+  (defun compile-command (file)
+    (interactive (list (buffer-file-name)))
+    (save-window-excursion
+     (shell-command (concat "run -c " file " &"))))
+#+END_SRC
+
+Then we attach them to =[f5]= and =[C-f5]=.
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "<f5>") 'run-command)
+(global-set-key (kbd "C-<f5>") 'compile-command)
 #+END_SRC
 
 * Shells
 
-The Emacs shell mode is great, but barfs on ANSI escape sequence.  There's a fix:
+The Emacs shell mode is great, but barfs on ANSI escape sequence.  There's a quick fix:
 
 #+BEGIN_SRC emacs-lisp
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
-#+END_SRC
-
-** Eshell
-
-Eshell doesn't actually require that much prodding.  The only thing I do is change its directory.
-
-#+BEGIN_SRC emacs-lisp
-  (setq eshell-directory-name "~/.emacs.d/eshell/")
-#+END_SRC
-
-Eshell has an awesome "smart mode" where it emulates Plan 9 by allowing you to edit command lines instead of re-executing them.  Here I tell Eshell to not review commands that successfully exit, since those are normally easy to re-execute anyways.
-
-#+BEGIN_SRC emacs-lisp
-  (require 'eshell)
-  (require 'em-smart)
-  (setq eshell-where-to-jump 'begin)
-  (setq eshell-review-quick-commands nil)
-  (setq eshell-smart-space-goes-to-end t)
-#+END_SRC
-
-Eshell lets you redirect to a buffer with the syntax
-
-: cmd >> #<buffer *scratch*>
-
-or to Elisp variables with
-
-: cmd > #'adsf
-
-Since I don't expect to use the second feature at all, I'd prefer its syntax be used for buffer redirections instead.
-
-#+BEGIN_SRC emacs-lisp
-  (setq eshell-buffer-shorthand t)
-#+END_SRC
-
-** Multi-term
-
-Multiterm requires a bit more setup.
-
-#+BEGIN_SRC emacs-lisp
-(require 'multi-term)
-(setq multi-term-program "/bin/bash")
-#+END_SRC
-
-For simplicity, I also add the =mterm= command to just call =multi-term=.
-
-#+BEGIN_SRC emacs-lisp
-(defun mterm ()
-  (interactive)
-  (multi-term))
-#+END_SRC
-
-One annoyance is that the screen bounces in multi-term due to my =scroll-margin=.  But there's a solution: file-local variables.  We attach a handler to =term-mode-hook= that makes =scroll-margin= local and then sets it to =0=.  Because =make-local-variable= returns the variable (as a symbol), we can call =set= (that's right: not =setq=, but =set=, since we already have the variable quoted for us) to set it.
-
-#+BEGIN_SRC emacs-lisp
-(add-to-list 'term-mode-hook (lambda ()
-  (set (make-local-variable 'scroll-margin) 0)))
 #+END_SRC
 
 * Dropbox
@@ -598,15 +464,15 @@ One annoyance is that the screen bounces in multi-term due to my =scroll-margin=
 [[http://github.com/pavpanchekha/dropbox.el/][dropbox.el]] is a Dropbox client I wrote -- it accesses files from Dropbox through the [[http://developers.dropbox.com][Dropbox API]].  It needs a bit of setup, mostly to set the API secret and key.  The actual values are in the [[file:passwords.org][passwords file]], but I unpack them here to remind myself that the entry in the passwords file exists.
 
 #+BEGIN_SRC emacs-lisp
-(load "~/Dropbox/Work/dropbox.el/dropbox.el")
-(setf dropbox-consumer-key    (car  my-dropbox-key))
-(setf dropbox-consumer-secret (cadr my-dropbox-key))
+  (load "~/Dropbox/Work/dropbox.el/dropbox.el")
+  (setf dropbox-consumer-key    (car  my-dropbox-key))
+  (setf dropbox-consumer-secret (cadr my-dropbox-key))
 #+END_SRC
 
 Since I don't have many concurrent clients and rarely use shared folders, a longer cache time makes a lot of sense.
 
 #+BEGIN_SRC emacs-lisp
-(setf dropbox-cache-timeout 300)
+  (setf dropbox-cache-timeout 300)
 #+END_SRC
 
 * Inter-Key Timings
@@ -614,11 +480,35 @@ Since I don't have many concurrent clients and rarely use shared folders, a long
 One interesting characteristic of a person's typing is their inter-key timings -- the time between typing two letters in succession.  For example, it usually takes more time to type "cr" than ";l", since one involves moving the left index finger a large distance and the other uses the really natural rolling chord on the right hand.  By recording all key character pairs, we can actually track timings for this.  And since I do a lot of my work in Emacs, it is easiest to do this as an Emacs extension.  I've written such a thing: [[http://git.pavpanchekha.com/?p=keylogger.el.git;a=summary][keylogger.el]].  It has an Emacs Lisp extension and an analyzer written in Javascript.  Anyway, I'd like to turn it on when Emacs starts:
 
 #+BEGIN_SRC emacs-lisp
-(load "~/Dropbox/Work/keylogger.el/keylogger.el")
-(setf keylogger-filename (concat "~/Dropbox/Data/keys." hostname ".el"))
-(keylogger-load)
-(keylogger-start)
-(keylogger-autosave)
+  (load "~/Dropbox/Work/keylogger.el/keylogger.el")
+  (setf keylogger-filename (concat "~/Dropbox/Data/keys." hostname ".el"))
+  (keylogger-load)
+  (keylogger-start)
+  (keylogger-autosave)
 #+END_SRC
 
 Note that each startup, I load the file, load my previously-saved data, tell it to record new key presses, and to autosave them every fifteen minutes.
+
+* Doc View
+
+I generally use doc-vew for long PDFs, so I find it best to have continuous scrolling.
+
+#+BEGIN_SRC emacs-lisp
+  (setf doc-view-continuous t)
+#+END_SRC
+
+144 is a decent resolution, since it makes a page of text about as wide as half my screen (and I generally use Emacs with two vertical panes.
+
+#+BEGIN_SRC emacs-lisp
+  (setf doc-view-resolution 144)
+#+END_SRC
+
+Doc-view is in sore need of Vim-style h/j/k/l movement keys.
+
+#+BEGIN_SRC emacs-lisp
+  (require 'doc-view)
+  (define-key doc-view-mode-map (kbd "j") 'doc-view-next-line-or-next-page)
+  (define-key doc-view-mode-map (kbd "k") 'doc-view-previous-line-or-previous-page)
+  (define-key doc-view-mode-map (kbd "h") 'image-backward-hscroll)
+  (define-key doc-view-mode-map (kbd "l") 'image-forward-hscroll)
+#+END_SRC
