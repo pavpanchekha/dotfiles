@@ -164,26 +164,26 @@ Auto Complete Mode automatically enables itself in all buffers, so little config
 I also use Markdown and BibTeX for some files. Markdown has become a standard format for many in the open-source community. My BibTeX files contain commentaries and so are also text files.
 
 #+BEGIN_SRC emacs-lisp
-  (package-safe-install 'markdown)
+  (package-safe-install 'markdown-mode)
 #+END_SRC
 
 For all of these I enable the variable-pitch and fly-spell modes. The first switches to a proportional font; the second spell-checks as I type (more below).
 
 #+BEGIN_SRC emacs-lisp
-  (dolist (hook '(bibtex-mode-hook markdown-mode-hook org-mode-hook))
+  (dolist (hook '(markdown-mode-hook org-mode-hook))
     (add-hook hook 'variable-pitch-mode)
     (add-hook hook 'flyspell-mode))
 #+END_SRC
 
-The visual-line mode implements proper line wrapping. I prefer to use this, but traditionally BibTeX and Markdown files do not use it. If a window's width is very large, visual lines can become nigh-unreadable. My [[https://github.com/pavpanchekha/center-text.el][center-text mode]] narrows the width of buffer contents to account for this.
+The visual-line mode implements proper line wrapping. I prefer to use this, but traditionally Markdown files are hard-wrapped. But when a window is very wide, wrapped text becomes unreadable. My [[https://github.com/pavpanchekha/center-text.el][center-text mode]] narrows the content to account for this.
 
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'load-path "~/Dropbox/Work/center-text.el/")
   (setf center-text-default-width 58)
   (require 'center-text)
 
+  (add-hook 'org-mode-hook 'visual-line-mode)
   (add-hook 'org-mode-hook 'center-text-mode)
-  (add-hook 'bibtex-mode-hook 'auto-fill-mode)
   (add-hook 'markdown-mode-hook 'auto-fill-mode)
 #+END_SRC
 
@@ -192,6 +192,15 @@ I give Org-mode files a =txt= extension because this allows editing them on othe
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'auto-mode-alist '("\\.txt$" . org-mode))
 (add-to-list 'auto-mode-alist '("\\.bib$" . org-mode))
+#+END_SRC
+
+In text documents I prefer matched punctuation. The =typopunct= package provides this.
+
+#+BEGIN_SRC emacs-lisp
+  (package-safe-install 'typopunct)
+  (typopunct-change-language 'english t)
+  (add-hook 'org-mode-hook 'typopunct-mode)
+  (add-hook 'markdown-mode-hook 'typopunct-mode)
 #+END_SRC
 
 * For LaTeX documents
@@ -384,7 +393,9 @@ Since I never use Guile, I configure Geiser to always start up in Racket mode.
 It is customary in Racket to use a proper Unicode λ instead of the symbol =lambda=. I hack the abbreviation tools in Emacs to make this happen: I set =lambda= to be an abbreviation for =λ=.
 
 #+BEGIN_SRC emacs-lisp
-  (define-abbrev scheme-mode-abbrev-table "lambda" "λ")
+  (require 'abbrev)
+  (add-hook 'scheme-mode-hook
+    (lambda () (define-abbrev scheme-mode-abbrev-table "lambda" "λ")))
 #+END_SRC
 
 Geiser provides auto-completion with =M-TAB=; I prefer =TAB= do double-duty as indentation or completion.
