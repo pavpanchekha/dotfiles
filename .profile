@@ -26,9 +26,6 @@ shopt -s extglob # Crazy globbing tricks: [?*+@!]\(xxxx\)
 # Completion
 . /usr/share/bash-completion/bash_completion &
 
-# Explain commands that weren't found
-source /usr/share/doc/pkgfile/command-not-found.bash
-
 # Some actual environment variables
 PATH="$HOME/bin:$PATH"
 GPGKEY="180C02EB09D0BE15"
