@@ -49,10 +49,12 @@
 .gtk-bookmarks
 .viminfo
 .lesshst
+.ccache
 
 # System files
 .ICEauthority
 .Xauthority
+.esd_auth
 
 # Synchronizing it all behind the scenes
 Dropbox
