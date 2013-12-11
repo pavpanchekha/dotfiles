@@ -51,6 +51,7 @@
 .viminfo
 .lesshst
 .ccache
+.fehbg
 
 # System files
 .ICEauthority
@@ -63,6 +64,8 @@ Dropbox
 priv
 # A backup of all my email (sometimes)
 mail
+# The wallpaper
+wallpaper.jpg
 
 # These are never useful to sync
 *.lock
