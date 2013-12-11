@@ -10,7 +10,8 @@ xsetroot -solid '#dddddd' -cursor_name left_ptr
 
 # Applications
 dropbox start &
-conky -d
+conky -c ~/.config/conky/bottom_left.cfg -d
+conky -c ~/.config/conky/bottom_right.cfg -d
 redshift -l 37.8:-122.4 &
 [ `hostname` == "desktop" ] && tracker-control --start &
 
