@@ -5,7 +5,7 @@ xset +fp /usr/share/fonts/local
 
 # X server stuff
 [ `hostname` == "desktop" ] && xbindkeys
-setxkbmap -option caps:escape
+setxkbmap -option ctrl:swapcaps -option compose:lctrl
 xsetroot -solid '#dddddd' -cursor_name left_ptr
 
 # Applications
