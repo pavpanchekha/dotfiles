@@ -22,8 +22,8 @@ I'll be littering the rest of this file with package names, and I'll use this fu
   (defun package-safe-install (&rest packages)
     (dolist (package packages)
       (unless (package-installed-p package)
-        (package-install package)
-        (require package))))
+        (package-install package))
+      (require package)))
 #+END_SRC
 
 * Personal Information
