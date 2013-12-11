@@ -79,17 +79,17 @@ Emacs also has an unnecessary startup screen which I inhibit.
         inhibit-startup-echo-area-message t)
 #+END_SRC
 
+Instead, I would rather Emacs visit the =~= directory, in which I store current projects.
+
+#+BEGIN_SRC emacs-lisp
+  (setf initial-buffer-choice "~/")
+#+END_SRC
+
 The mode-line is made more useful by showing the column number and progress through the file.
 
 #+BEGIN_SRC emacs-lisp
-(setq column-number-mode t)
-(setq size-indication-mode t)
-#+END_SRC
-
-Emacs's default =yes or no= prompts annoy. I ask Emacs to accept =y= and =n=.
-
-#+BEGIN_SRC emacs-lisp
-(fset 'yes-or-no-p 'y-or-n-p)
+  (setf column-number-mode t)
+  (setf size-indication-mode t)
 #+END_SRC
 
 I hate my computer beeping when I err. I ask Emacs to express its discontent visually.
@@ -173,6 +173,12 @@ For all of these I enable the variable-pitch and fly-spell modes. The first swit
   (dolist (hook '(markdown-mode-hook org-mode-hook))
     (add-hook hook 'variable-pitch-mode)
     (add-hook hook 'flyspell-mode))
+#+END_SRC
+
+I’ve gone back and forth on single- and double-spaced sentences, but for now I’m in the single-spacing camp.
+
+#+BEGIN_SRC emacs-lisp
+(setf sentence-end-double-space nil)
 #+END_SRC
 
 The visual-line mode implements proper line wrapping. I prefer to use this, but traditionally Markdown files are hard-wrapped. But when a window is very wide, wrapped text becomes unreadable. My [[https://github.com/pavpanchekha/center-text.el][center-text mode]] narrows the content to account for this.
@@ -362,6 +368,20 @@ I'm also often "tending to" my Emacs configuration (this file). It's helpful to 
   (find-file "~/.emacs.d/emacs.org"))
 #+END_SRC
 
+* Navigating
+
+[[https://github.com/bbatsov/projectile][Projectile]] is a project management suite for Emacs.
+
+#+BEGIN_SRC emacs-lisp
+  (package-safe-install 'projectile)
+#+END_SRC
+
+I enable it everywhere. It only does anything when I’m in a version-controlled directory, so there’s little harm in this.
+
+#+BEGIN_SRC emacs-lisp
+  (projectile-global-mode)
+#+END_SRC
+
 * Haskell programming tools
 
 [[https://github.com/haskell/haskell-mode][Haskell Mode]] provides syntax highlighting and similar utilities for programming in Haskell.
@@ -393,9 +413,18 @@ Since I never use Guile, I configure Geiser to always start up in Racket mode.
 It is customary in Racket to use a proper Unicode λ instead of the symbol =lambda=. I hack the abbreviation tools in Emacs to make this happen: I set =lambda= to be an abbreviation for =λ=.
 
 #+BEGIN_SRC emacs-lisp
-  (require 'abbrev)
-  (add-hook 'scheme-mode-hook
-    (lambda () (define-abbrev scheme-mode-abbrev-table "lambda" "λ")))
+   (require 'abbrev)
+   (add-hook 'scheme-mode-hook
+     (lambda ()
+       (abbrev-mode 1)
+       (define-abbrev scheme-mode-abbrev-table "lambda" "λ")))
+#+END_SRC
+
+Perfectly matching parentheses is annoying; =electric-pair-mode= automatically inserts closing parentheses when I type the open parenthesis. I pair this with =show-paren-mode=, which automatically highlights the matching parenthesis.
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'scheme-mode-hook 'electric-pair-mode)
+  (add-hook 'scheme-mode-hook 'show-paren-mode)
 #+END_SRC
 
 Geiser provides auto-completion with =M-TAB=; I prefer =TAB= do double-duty as indentation or completion.

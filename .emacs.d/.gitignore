@@ -13,5 +13,7 @@ keys
 .org-id-locations
 dropbox-token
 ac-comphist.dat
+geiser-history.*
+projectile-bookmarks.eld
 
 pavpanchekha@*
