@@ -1,7 +1,0 @@
-#!/bin/sh
-
-if [ -z $DISPLAY ]; then
-    (dumpkeys | grep keymaps; echo "keycode 58 = Escape") | loadkeys
-else
-    setxkbmap -option caps:escape
-fi

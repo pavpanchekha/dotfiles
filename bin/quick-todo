@@ -1,3 +1,0 @@
-#!/bin/sh
-
-cat notes/pavel.txt | grep "^*" | grep -v DONE | sed -n '0,/^* Someday/p' | grep -v "^* Someday"

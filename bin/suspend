@@ -1,9 +1,0 @@
-#!/bin/bash
-
-slock &
-
-if [[ "$1" == "-h" ]]; then
-    systemctl hibernate
-else
-    systemctl suspend
-fi
