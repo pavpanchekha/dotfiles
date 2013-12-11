@@ -35,6 +35,7 @@ GPGKEY="180C02EB09D0BE15"
 LESSHISTFILE="/dev/null"
 export PATH TEXINPUTS GPGKEY LESSHISTFILE
 umask 077
+eval `dircolors -b`
 
 # Some definitions of programs
  EDITOR="vim"
@@ -86,5 +87,7 @@ alias edconfigure="$EDITOR ~/.profile"
 alias reconfigure=". ~/.profile"
 alias py="ipython"
 
-alias ls="ls -F --color"
+# Switch to using non-destructive trashing when possible.
+alias rm="rm -i"
+alias tm="trash"
 

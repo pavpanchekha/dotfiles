@@ -2,6 +2,7 @@
 .local
 .cache
 .thumbnails
+.trash
 
 # Things that should really go into ~/.config
 .Skype
