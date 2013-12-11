@@ -3,9 +3,9 @@
 I use Org's [[http://orgmode.org/worg/org-contrib/babel/intro.html#sec-8_2][Babel system]] for this configuration file. My =.emacs.d/init.el= file contains only:
 
 #+BEGIN_SRC emacs-lisp :tangle "init.el"
-(package-initialize)
-(require 'ob-tangle)
-(org-babel-load-file "~/.emacs.d/emacs.org")
+  (package-initialize)
+  (require 'ob-tangle)
+  (org-babel-load-file "~/.emacs.d/emacs.org")
 #+END_SRC
 
 * Packages
@@ -74,7 +74,7 @@ Some things Emacs does by default just use up screen real estate and programmer 
 Emacs also has an unnecessary startup screen which I inhibit.
 
 #+BEGIN_SRC emacs-lisp
-  (setq inhibit-startup-screen t
+  (setf inhibit-startup-screen t
         inhibit-startup-message t
         inhibit-startup-echo-area-message t)
 #+END_SRC
@@ -161,7 +161,7 @@ Auto Complete Mode automatically enables itself in all buffers, so little config
 
 * For text documents
 
-I also use Markdown and BibTeX for some files. Markdown has become a standard format for many in the open-source community. My BibTeX files contain commentaries and so are also text files.
+I also use Markdown and BibTeX for some files. Markdown has become a standard format for many in the open-source community. My BibTeX files contain commentaries and so are also text files in Org mode.
 
 #+BEGIN_SRC emacs-lisp
   (package-safe-install 'markdown-mode)
@@ -178,9 +178,8 @@ For all of these I enable the variable-pitch and fly-spell modes. The first swit
 The visual-line mode implements proper line wrapping. I prefer to use this, but traditionally Markdown files are hard-wrapped. But when a window is very wide, wrapped text becomes unreadable. My [[https://github.com/pavpanchekha/center-text.el][center-text mode]] narrows the content to account for this.
 
 #+BEGIN_SRC emacs-lisp
-  (add-to-list 'load-path "~/Dropbox/Work/center-text.el/")
+  (package-safe-install 'center-text)
   (setf center-text-default-width 58)
-  (require 'center-text)
 
   (add-hook 'org-mode-hook 'visual-line-mode)
   (add-hook 'org-mode-hook 'center-text-mode)
@@ -307,6 +306,7 @@ Finally, we add key-bindings using Evil's =evil-normal-state-map=.
 #+BEGIN_SRC emacs-lisp
   (package-safe-install 'magit)
 #+END_SRC
+
 * Miscellaneous
 
 Emacs has some stupid defaults, such as making those =file~= files and using tabs for indentation.  I also make Emacs add final newlines and to prompt me for only single characters (why is that default?).
@@ -373,7 +373,7 @@ I'm also often "tending to" my Emacs configuration (this file). It's helpful to 
 Multiple methods of indenting Haskell code come with Haskell Mode. They don't differ much, but I prefer =haskell-indent=.
 
 #+BEGIN_SRC emacs-lisp
-  (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
+  (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
 #+END_SRC
 
 * Scheme programming tools
@@ -404,10 +404,10 @@ Geiser provides auto-completion with =M-TAB=; I prefer =TAB= do double-duty as i
   (setf geiser-mode-smart-tab-p t)
 #+END_SRC
 
-Gesier stores history information; I'd prefer it not clutter my home directory.
+Geiser stores history information; I'd prefer it not clutter my home directory.
 
 #+BEGIN_SRC emacs-lisp
-  (setf geiser-repl-history-filename "~/.emacs.d/gesier-history")
+  (setf geiser-repl-history-filename "~/.emacs.d/geiser-history")
 #+END_SRC
 
 * Printing Buffers to PDF
@@ -458,8 +458,8 @@ I have command called =run=, which compiles and runs some program or file in a t
 Then we attach them to =[f5]= and =[C-f5]=.
 
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "<f5>") 'run-command)
-(global-set-key (kbd "C-<f5>") 'compile-command)
+  (global-set-key (kbd "<f5>") 'run-command)
+  (global-set-key (kbd "C-<f5>") 'compile-command)
 #+END_SRC
 
 * Shells
@@ -467,7 +467,7 @@ Then we attach them to =[f5]= and =[C-f5]=.
 The Emacs shell mode is great, but barfs on ANSI escape sequence.  There's a quick fix:
 
 #+BEGIN_SRC emacs-lisp
-(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+  (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
 #+END_SRC
 
 * Dropbox
