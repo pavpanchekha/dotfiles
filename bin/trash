@@ -67,7 +67,7 @@ for file; do
     fi
 
     if [ -d "$file" ]; then
-        EMPTY="$(ls -A $file)"
+        EMPTY="$(ls -A "$file")"
 
         [ -z "$EMPTY" ] && [ -z "$RECURSIVE" ] && [ -z "$DIR" ] && \
             fail "\`$file\` is a directory; use -d or -r to delete"
