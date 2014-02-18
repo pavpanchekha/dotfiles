@@ -5,6 +5,7 @@ import XMonad.Core
 import XMonad.Util.NamedScratchpad
 import XMonad.Layout.NoBorders
 import XMonad.Hooks.ManageDocks
+import System.Directory
 import System.Exit
 import System.IO
  
@@ -39,7 +40,8 @@ nonScratchpadWS =
                 do cur <- (W.tag . W.workspace . W.current) `fmap` gets windowset
                    return $ (/= "NSP") . W.tag
 
-myApps = readFile "/home/pavpanchekha/.config/apps" >>= return . lines
+myApps = do home <- getHomeDirectory
+            readFile (home ++ "/.config/apps") >>= return . lines
 myCompletion s = myApps >>= flip mkComplFunFromList s
 
 execPrompt = inputPromptWithCompl myPrompt "$" myCompletion ?+ \c-> spawn ("exec " ++ c)
