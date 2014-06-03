@@ -294,3 +294,64 @@ One annoyance is that the screen bounces in multi-term due to my =scroll-margin=
 (add-to-list 'term-mode-hook (lambda ()
   (set (make-local-variable 'scroll-margin) 0)))
 #+END_SRC
+* Defining apps
+
+When I ran everything inside Emacs, I’d like separate windows for different “Emacs apps”. Here’s how I defined them:
+
+#+BEGIN_SRC emacs-lisp
+  (require 'cl)
+
+  (defmacro* defapp (keybinding &rest cmd)
+    (let ((name (gensym)))
+      `(progn
+         (defun ,name ()
+           (interactive)
+           (select-frame (new-frame))
+           ,@cmd)
+         (global-set-key (kbd ,keybinding) ',name))))
+#+END_SRC
+
+Some apps I had defined:
+
+: (defapp "s-X" (eshell))
+: (defapp "s-M" (rmail))
+: (defapp "s-L" (slime))
+: (defapp "s-J" (jabber-switch-to-roster-buffer))
+: (defapp "s-A" (org-agenda-list))
+: (defapp "s-Z" (w3m))
+: (defapp "s-G" (magit-status "~/"))
+
+* Jabber
+
+It’s nice to run chat inside Emacs, but the default configuration is awfully verbose. I’d prefer less textual output:
+
+#+BEGIN_SRC emacs-lisp
+(setq jabber-account-list '(("me@pavpanchekha.com" 
+                             (:network-server . "talk.google.com") 
+                             (:connection-type . ssl)))
+      jabber-avatar-cache-directory "/tmp/jabber-avatars"
+      jabber-backlog-days 3.0
+      jabber-chat-buffer-show-avatar nil
+      jabber-chat-foreign-prompt-format "> "
+      jabber-chat-local-prompt-format "> "
+      jabber-chat-system-prompt-format "*** "
+      jabber-chat-time-format "%H:%M"
+      jabber-default-show ""
+      jabber-groupchat-prompt-format "%n> "
+      jabber-muc-private-foreign-prompt-format "%g/%n> "
+      jabber-roster-line-format "%c %-25n %u %-8s  %S"
+      jabber-roster-show-title nil
+      jabber-show-offline-contacts nil)
+
+(custom-set-faces
+ '(jabber-chat-prompt-foreign ((t (:foreground "red"))))
+ '(jabber-chat-prompt-local ((t (:foreground "blue"))))
+ '(jabber-chat-prompt-system ((t (:foreground "dark green" :weight bold))))
+ '(jabber-roster-user-away ((t (:foreground "orange"))))
+ '(jabber-roster-user-chatty ((t (:foreground "green"))))
+ '(jabber-roster-user-online ((t (:foreground "dark green")))))
+
+; Auto-urlize urls
+(add-hook 'jabber-chat-mode-hook 'goto-address)
+(jabber-connect-all)
+#+END_SRC
