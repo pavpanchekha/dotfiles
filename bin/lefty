@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e nounset -e errexit
 
 if [[ "$1" == "-h" ]]; then
     echo "Switch to a left-hand-only keymap"
