@@ -118,7 +118,7 @@ class Extensions:
             yield [fname] + args
 
         def compile(cls, f, args, tempdir, target):
-            yield ["clang", "--std=c11", "-O3", f, "-o", target, "-lm", "-lc"]
+            yield ["clang", "--std=c11", "-O3", f, "-o", target, "-lm", "-lc", "-fsanitize=undefined"]
 
         def outfile(cls, f):
             return f.split("/")[-1].rsplit(".", 1)[0]
@@ -131,7 +131,7 @@ class Extensions:
             yield [fname] + args
 
         def compile(cls, f, args, tempdir, target):
-            yield ["clang++", "--std=c++11", "-O3", f, "-o", target, "-lm", "-lc"] + args
+            yield ["clang++", "--std=c++11", "-O3", f, "-o", target, "-lm", "-lc", "-fsanitize=undefined"] + args
 
         def outfile(cls, f):
             return f.split("/")[-1].rsplit(".", 1)[0]
