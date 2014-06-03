@@ -71,6 +71,13 @@ Some things Emacs does by default just use up screen real estate and programmer 
   (menu-bar-mode 0)
 #+END_SRC
 
+Instead of the menu bar, I put the mode line at the top of the document (a trick I took from [[http://bzg.fr/emacs-strip-tease.html][Bastien Guerry]]):
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default header-line-format mode-line-format)
+  (setq-default mode-line-format nil)
+#+END_SRC
+
 Emacs also has an unnecessary startup screen which I inhibit.
 
 #+BEGIN_SRC emacs-lisp
@@ -171,6 +178,7 @@ For all of these I enable the variable-pitch and fly-spell modes. The first swit
 
 #+BEGIN_SRC emacs-lisp
   (dolist (hook '(markdown-mode-hook org-mode-hook))
+    (add-hook 'org-mode-hook '(lambda () (setf cursor-type bar)))
     (add-hook hook 'variable-pitch-mode)
     (add-hook hook 'flyspell-mode))
 #+END_SRC
@@ -208,12 +216,14 @@ In text documents I prefer matched punctuation. The =typopunct= package provides
   (add-hook 'markdown-mode-hook 'typopunct-mode)
 #+END_SRC
 
-* For LaTeX documents
+
+LaTeX documents get a similar treatment.
 
 #+BEGIN_SRC emacs-lisp
   (add-hook 'latex-mode-hook 'flyspell-mode)
   (add-hook 'latex-mode-hook 'variable-pitch-mode)
   (add-hook 'latex-mode-hook 'auto-fill-mode)
+  (add-hook 'org-mode-hook '(lambda () (setf cursor-type bar)))
 #+END_SRC
 
 * Org-mode
@@ -311,6 +321,12 @@ Finally, we add key-bindings using Evil's =evil-normal-state-map=.
 
 #+BEGIN_SRC emacs-lisp
   (package-safe-install 'magit)
+#+END_SRC
+
+Sadly, the theme I use has a bug with Magit, which I need to fix.
+
+#+BEGIN_SRC emacs-lisp
+  (set-face-attribute 'magit-item-highlight nil :foreground "black")
 #+END_SRC
 
 * Miscellaneous
