@@ -158,6 +158,10 @@ The [[http://cx4a.org/software/auto-complete/][Auto Complete Mode]] provides sel
 
 #+BEGIN_SRC emacs-lisp
   (package-safe-install 'auto-complete)
+  (global-auto-complete-mode)
+
+  (eval-after-load "auto-complete"
+    '(add-to-list 'ac-modes '(geiser-repl-mode geiser-mode) t))
 #+END_SRC
 
 Auto Complete Mode automatically enables itself in all buffers, so little configuration is really needed. I ask it to use fuzzy matching, which accounts for typos.
@@ -443,10 +447,11 @@ Perfectly matching parentheses is annoying; =electric-pair-mode= automatically i
   (add-hook 'scheme-mode-hook 'show-paren-mode)
 #+END_SRC
 
-Geiser provides auto-completion with =M-TAB=; I prefer =TAB= do double-duty as indentation or completion.
+Geiser provides auto-completion with =M-TAB=. I instead set up auto-complete using the auto-complete package.
 
 #+BEGIN_SRC emacs-lisp
-  (setf geiser-mode-smart-tab-p t)
+  (add-hook 'geiser-mode-hook 'ac-geiser-setup)
+  (add-hook 'geiser-repl-mode-hook 'ac-geiser-setup)
 #+END_SRC
 
 Geiser stores history information; I'd prefer it not clutter my home directory.
