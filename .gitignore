@@ -29,12 +29,15 @@
 .thunderbird
 .node_libraries
 .dropbox-dist
+.dropbox-master
 .texmf-var
 .texlive
 .ghc
 .java
 .npm
 .mu
+.atom
+.node-gyp
 
 # System components that don't need their own directory
 .fontconfig
@@ -65,7 +68,9 @@ priv
 # A backup of all my email (sometimes)
 mail
 # The wallpaper
-wallpaper.jpg
+bg.jpg
+# Open-source code
+src
 
 # These are never useful to sync
 *.lock
