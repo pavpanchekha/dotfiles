@@ -6,9 +6,16 @@
  '(agda2-program-name "/home/.cabal/bin/agda")
  '(custom-enabled-themes (quote (zenburn)))
  '(custom-safe-themes (quote ("dd4db38519d2ad7eb9e2f30bc03fba61a7af49a185edfd44e020aa5345e3dca7" default)))
+ '(default-input-method "TeX")
+ '(dired-listing-switches "-agGh --group-directories-first")
+ '(erc-nick "p92")
+ '(erc-nick-uniquifier "'")
+ '(erc-server "pavpanchekha.com")
  '(evil-esc-delay 0)
  '(evil-want-C-w-in-emacs-state t)
- '(safe-local-variable-values (quote ((coq-prog-args "-emacs" "-I" "/home/pavpanchekha/Dropbox/Work/CPDT/src/")))))
+ '(proof-electric-terminator-enable t)
+ '(split-height-threshold nil)
+ '(split-width-threshold 145))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
