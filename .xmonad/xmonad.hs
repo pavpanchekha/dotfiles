@@ -127,12 +127,7 @@ myLog pipe = dynamicLogWithPP $ xmobarPP {
       ppOutput  = hPutStrLn pipe
     , ppCurrent = xmobarColor "black" "#dddddd" . pad
     , ppVisible = xmobarColor "black" "#aaaaaa" . pad
-    , ppHidden  = xmobarColor "white" "black" . (\tag ->
-                              case tag of
-                                   "NSP"         -> ""
-                                   "1"           -> "1" -- Left edge padding
-                                   _             -> tag
-                              )
+    , ppHidden  = xmobarColor "white" "black" . (\tag -> if tag == "NSP" then "" else tag)
     , ppLayout  = xmobarColor "white" "black" . (\layout ->
                               case layout of
                                    "Tall"        -> "Vt"
@@ -154,7 +149,7 @@ main = do
         focusFollowsMouse  = True,
         borderWidth        = 1,
         modMask            = mod4Mask,
-        workspaces         = ["1", "2", "3", "4", "5", "S"],
+        workspaces         = ["1", "2", "3", "4", "5", "*"],
         
         normalBorderColor  = "#000000",
         focusedBorderColor = "#8ae234",
