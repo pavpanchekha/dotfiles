@@ -33,7 +33,8 @@ source /usr/share/doc/pkgfile/command-not-found.bash
 PATH="$HOME/bin:$PATH"
 GPGKEY="180C02EB09D0BE15"
 LESSHISTFILE="/dev/null"
-export PATH TEXINPUTS GPGKEY LESSHISTFILE
+LANG=en_US.utf8
+export PATH TEXINPUTS GPGKEY LESSHISTFILE LANG
 umask 077
 eval `dircolors -b`
 
