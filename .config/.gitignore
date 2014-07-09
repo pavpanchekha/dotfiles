@@ -39,3 +39,5 @@ fontconfig
 font-manager
 fontgroups.xml
 monitors.xml
+icedtea-web
+evolution
