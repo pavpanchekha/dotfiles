@@ -130,7 +130,7 @@ myLog pipe = dynamicLogWithPP $ xmobarPP {
     , ppHidden  = xmobarColor "white" "black" . (\tag ->
                               case tag of
                                    "NSP"         -> ""
-                                   "1"           -> " 1" -- Left edge padding
+                                   "1"           -> "1" -- Left edge padding
                                    _             -> tag
                               )
     , ppLayout  = xmobarColor "white" "black" . (\layout ->

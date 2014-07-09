@@ -9,7 +9,9 @@ setxkbmap -option ctrl:swapcaps -option compose:lctrl
 xsetroot -solid '#dddddd' -cursor_name left_ptr
 
 # Applications
+stalonetray -bg black &
 dropbox start &
+nm-applet &
 feh --bg-fill ~/bg.jpg
 redshift -l 37.8:-122.4 &
 [ `hostname` == "desktop" ] && tracker-control --start &
