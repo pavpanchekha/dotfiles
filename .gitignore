@@ -19,6 +19,8 @@
 .gimp-*
 .icedtea
 .cgobanrc
+.xchat2
+.gnome
 
 # Things that should really go into ~/.local
 .cabal
