@@ -59,16 +59,14 @@ I store some collected data in Dropbox. To avoid one computer overwriting anothe
               (setq hostname* (replace-match "" t t hostname*)))
             hostname*)))
 #+END_SRC
+
 * Graphical Interface Quirks
 
-I'm believe in maximizing screen real estate, so I turn off the scroll bar and the tool bar.
-
-Some things Emacs does by default just use up screen real estate and programmer patience.  Note that =tool-bar-mode= requires a *nonzero* parameter, not a truthy parameter, to display the toolbar.  This is absolutely absurd, but what can one do?
+I now use the =better-defaults= package to turn off the scroll bar, tool bar, and menu bar.
 
 #+BEGIN_SRC emacs-lisp
-  (set-scroll-bar-mode nil)
-  (tool-bar-mode 0)
-  (menu-bar-mode 0)
+  (package-safe-install 'better-defaults)
+  (require 'better-defaults)
 #+END_SRC
 
 Instead of the menu bar, I put the mode line at the top of the document (a trick I took from [[http://bzg.fr/emacs-strip-tease.html][Bastien Guerry]]):
@@ -119,6 +117,20 @@ I use a [[https://github.com/cathywu/TimeTracker][time tracker]] that records wi
         '((:eval (if (buffer-file-name)
                      (concat "Emacs: " (abbreviate-file-name (buffer-file-name)))
                    "Emacs: %b"))))
+#+END_SRC
+
+The default =M-x= behavior is vastly improved by =smex=:
+
+#+BEGIN_SRC emacs-lisp
+(package-safe-install 'smex)
+(require 'smex)
+(global-set-key [(meta x)] 'smex)
+#+END_SRC
+
+I use =dired= a lot, and =ido= makes that less usable in its default setup.
+
+#+BEGIN_SRC emacs-lisp
+(setf ido-show-dot-for-dired t)
 #+END_SRC
 
 * Evil: key commands à la Vim
@@ -329,32 +341,6 @@ Finally, we add key-bindings using Evil's =evil-normal-state-map=.
 
 * Miscellaneous
 
-Emacs has some stupid defaults, such as making those =file~= files and using tabs for indentation.  I also make Emacs add final newlines and to prompt me for only single characters (why is that default?).
-
-#+BEGIN_SRC emacs-lisp
-(setf make-backup-files nil)
-(setq-default indent-tabs-mode nil)
-(setf require-final-newline t)
-#+END_SRC
-
-Also, I often have multiple buffers open with the same name.  Emacs
-usually deals with this by appending the buffer number to the buffer
-name.  This is hard to keep track of.  Instead, the =uniquify= library
-uses the parent directory name, which I usually know.
-
-#+BEGIN_SRC emacs-lisp
-(require 'uniquify)
-(setf uniquify-buffer-name-style 'post-forward-angle-brackets)
-#+END_SRC
-
-For searching, I enable highlighting as-I-search for both searches and search/replaces.  Also, searches are made case-insensitive.
-
-#+BEGIN_SRC emacs-lisp
-(setf search-highlight t)
-(setf query-replace-highlight t)
-(setf case-fold-search t)
-#+END_SRC emacs-lisp
-
 For scrolling, I ask Emacs to scroll at most five lines at a time and to keep 5 lines between the cursor and the top/bottom of the page.
 
 #+BEGIN_SRC emacs-lisp
@@ -372,7 +358,7 @@ When I write emacs-lisp I am often in the debugger. To turn it on, I use this fu
     (setf debug-on-error t message-log-max 10000))
 #+END_SRC
 
-I'm also often "tending to" my Emacs configuration (this file). It's helpful to jump to it and reload it quickly.,
+I'm also often "cultivating" my Emacs configuration (this file). It's helpful to jump to it and reload it quickly.,
 
 #+BEGIN_SRC emacs-lisp
 (defun reconfigure () (interactive)
@@ -434,11 +420,10 @@ It is customary in Racket to use a proper Unicode λ instead of the symbol =lamb
        (define-abbrev scheme-mode-abbrev-table "lambda" "λ")))
 #+END_SRC
 
-Perfectly matching parentheses is annoying; =electric-pair-mode= automatically inserts closing parentheses when I type the open parenthesis. I pair this with =show-paren-mode=, which automatically highlights the matching parenthesis.
+Perfectly matching parentheses is annoying; =electric-pair-mode= automatically inserts closing parentheses when I type the open parenthesis. This works great =show-paren-mode=, which automatically highlights the matching parenthesis (=show-paren-mode= is provided by =better-defaults=).
 
 #+BEGIN_SRC emacs-lisp
   (add-hook 'scheme-mode-hook 'electric-pair-mode)
-  (add-hook 'scheme-mode-hook 'show-paren-mode)
 #+END_SRC
 
 Geiser provides auto-completion with =M-TAB=. I instead set up auto-complete using the auto-complete package.
@@ -453,6 +438,14 @@ Geiser stores history information; I'd prefer it not clutter my home directory.
 #+BEGIN_SRC emacs-lisp
   (setf geiser-repl-history-filename "~/.emacs.d/geiser-history")
 #+END_SRC
+
+* Coq programming tools
+
+  Proof General is, of course, central to using Coq.
+
+  #+BEGIN_SRC emacs-lisp
+    (require 'proof)
+  #+END_SRC
 
 * Printing Buffers to PDF
 
