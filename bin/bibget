@@ -1,0 +1,10 @@
+#!/bin/sh
+
+DOI="$1"
+
+if [[ -z $DOI ]]; then
+    echo "USAGE: bibget <doi> -- download a bibtex citation for <doi>"
+    exit 1
+else
+    curl -LH "Accept: text/bibliography; style=bibtex" "http://dx.doi.org/$DOI" 
+fi
