@@ -12,7 +12,10 @@
  '(erc-nick "p92")
  '(erc-nick-uniquifier "'")
  '(erc-server "pavpanchekha.com")
+<<<<<<< Updated upstream
  '(evil-auto-indent t)
+=======
+>>>>>>> Stashed changes
  '(evil-esc-delay 0)
  '(evil-want-C-w-in-emacs-state t)
  '(fci-rule-color "#073642")
