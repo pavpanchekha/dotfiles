@@ -10,7 +10,7 @@ setxkbmap -option ctrl:swapcaps -option compose:lctrl
 xsetroot -solid '#dddddd' -cursor_name left_ptr
 
 # Applications
-stalonetray -bg black &
+stalonetray -c .config/stalonetray &
 dropbox start &
 nm-applet &
 feh --bg-fill ~/bg.jpg

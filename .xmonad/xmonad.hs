@@ -125,17 +125,17 @@ myLayout = smartBorders $ avoidStruts $ (tiled ||| Mirror tiled ||| Full)
 
 myLog pipe = dynamicLogWithPP $ xmobarPP {
       ppOutput  = hPutStrLn pipe
-    , ppCurrent = xmobarColor "black" "#dddddd" . pad
-    , ppVisible = xmobarColor "black" "#aaaaaa" . pad
-    , ppHidden  = xmobarColor "white" "black" . (\tag -> if tag == "NSP" then "" else tag)
-    , ppLayout  = xmobarColor "white" "black" . (\layout ->
+    , ppCurrent = xmobarColor "#444444" "#cccccc" . pad
+    , ppVisible = xmobarColor "#444444" "#bbbbbb" . pad
+    , ppHidden  = xmobarColor "#444444" "#eeeeee" . (\tag -> if tag == "NSP" then "" else tag)
+    , ppLayout  = xmobarColor "#444444" "#eeeeee" . (\layout ->
                               case layout of
                                    "Tall"        -> "Vt"
                                    "Mirror Tall" -> "Hz"
                                    "Full"        -> "Fl"
                                    _             -> layout
                               )
-    , ppTitle   = xmobarColor "white" "black" -- . xmobarEscape
+    , ppTitle   = xmobarColor "#444444" "#eeeeee"
     }
     
 fontTerminus = "-*-terminus-medium-*-*-*-*-140-*-*-*-*-*-*"
