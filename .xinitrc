@@ -1,6 +1,7 @@
 #!/bin/bash
 
 export PATH="$PATH:$HOME/bin"
+export GTK_IM_MODULE=xim
 xset +fp /usr/share/fonts/local
 
 # X server stuff
@@ -15,6 +16,7 @@ nm-applet &
 feh --bg-fill ~/bg.jpg
 redshift -l 37.8:-122.4 &
 [ `hostname` == "desktop" ] && tracker-control --start &
+which start-pulseaudio-x11 && start-pulseaudio-x11
 
 # Time tracker
 python ~/bin/timetracker -I 300 -b 60 -f ~/Dropbox/Data/timetrack.`hostname`.log &
