@@ -547,6 +547,6 @@ Doc-view is in sore need of Vim-style h/j/k/l movement keys.
 * Agda
 
 #+BEGIN_SRC emacs-lisp
-(load-file (let ((coding-system-for-read 'utf-8))
-                (shell-command-to-string "/home/.cabal/bin/agda-mode locate")))
+;(load-file (let ((coding-system-for-read 'utf-8))
+;                (shell-command-to-string "/home/.cabal/bin/agda-mode locate")))
 #+END_SRC
