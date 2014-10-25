@@ -30,7 +30,7 @@ shopt -s extglob # Crazy globbing tricks: [?*+@!]\(xxxx\)
 PATH="$HOME/bin:$PATH"
 GPGKEY="180C02EB09D0BE15"
 LESSHISTFILE="/dev/null"
-LANG=en_US.utf8
+LANG=en_US.UTF-8
 export PATH TEXINPUTS GPGKEY LESSHISTFILE LANG
 umask 077
 eval `dircolors -b`

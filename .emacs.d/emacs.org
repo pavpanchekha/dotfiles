@@ -544,9 +544,3 @@ Doc-view is in sore need of Vim-style h/j/k/l movement keys.
   (define-key doc-view-mode-map (kbd "h") 'image-backward-hscroll)
   (define-key doc-view-mode-map (kbd "l") 'image-forward-hscroll)
 #+END_SRC
-* Agda
-
-#+BEGIN_SRC emacs-lisp
-;(load-file (let ((coding-system-for-read 'utf-8))
-;                (shell-command-to-string "/home/.cabal/bin/agda-mode locate")))
-#+END_SRC

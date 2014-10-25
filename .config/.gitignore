@@ -43,3 +43,6 @@ icedtea-web
 evolution
 menus
 xchat2
+gconf
+pavucontrol.ini
+stalonetray
