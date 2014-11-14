@@ -40,6 +40,7 @@
 .mu
 .atom
 .node-gyp
+.gem
 
 # System components that don't need their own directory
 .fontconfig
