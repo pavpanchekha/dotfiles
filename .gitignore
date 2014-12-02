@@ -44,6 +44,7 @@
 .node-gyp
 .python_history
 .gnuplot_history
+.gem
 
 # System components that don't need their own directory
 .fontconfig
