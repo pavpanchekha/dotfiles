@@ -23,6 +23,7 @@
 .gnome
 .toprc
 .hugin
+.wireshark
 
 # Things that should really go into ~/.local
 .cabal

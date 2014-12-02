@@ -80,9 +80,9 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask, xK_q     ), io (exitWith ExitSuccess))
     , ((modm .|. shiftMask, xK_r     ), spawn "xmonad --recompile; xmonad --restart")
     , ((modm              , xK_space ), spawn "emacsclient -c --alternate-editor=")
+    , ((modm .|. shiftMask, xK_j     ), spawn "emacsclient -c -e '(org-journal-new-entry)'")
     , ((modm .|. shiftMask, xK_f     ), spawn "firefox")
     , ((modm .|. shiftMask, xK_t     ), spawn "thunar")
-    , ((modm .|. shiftMask, xK_n     ), spawn "notepaster")
     , ((modm .|. shiftMask, xK_space ), execPrompt)
     
     -- Cycle workspaces
