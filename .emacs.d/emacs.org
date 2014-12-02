@@ -10,10 +10,10 @@ I use Org's [[http://orgmode.org/worg/org-contrib/babel/intro.html#sec-8_2][Babe
 
 * Packages
 
-I use Emacs's package manager to install others' Emacs scripts and helpers. I install most packages from [[http://marmalade-repo.org/][Marmalade]], so I need to enable that repository.
+I use Emacs's package manager to install others' Emacs scripts and helpers. I just switched from Marmalade to MELPA for packages, so I need to add MELPA.
 
 #+BEGIN_SRC emacs-lisp
-  (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
+  (add-to-list 'package-archives '("melpa-stable" . "http://stable.melpa.org/packages/") t)
 #+END_SRC
 
 I'll be littering the rest of this file with package names, and I'll use this function to avoid re-installing packages.
