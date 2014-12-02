@@ -17,5 +17,7 @@ geiser-history.*
 backups
 projectile-bookmarks.eld
 places
+smex-items
+ido.last
 
 pavpanchekha@*

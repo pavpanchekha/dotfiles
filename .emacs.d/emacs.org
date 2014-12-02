@@ -294,7 +294,7 @@ But Markdown is standard in the open-source community, so I load support.
 
 I used to use [[https://github.com/pavpanchekha/center-text.el][center-text mode]], which increases the fringe to keep the content narrow, but to be honest that was quite a pain in a lot of ways. I should improve that mode, but until now I’m keeping =center-text-mode= off.
 
-#+BEGIN_SRC emacs-lisp :tangle nil
+#+BEGIN_SRC emacs-lisp :tangle no
   (package-require 'center-text-mode)
   (add-hook 'org-mode-hook 'center-text-mode)
 #+END_SRC
