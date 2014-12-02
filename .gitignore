@@ -21,6 +21,8 @@
 .cgobanrc
 .xchat2
 .gnome
+.toprc
+.hugin
 
 # Things that should really go into ~/.local
 .cabal
@@ -40,6 +42,8 @@
 .mu
 .atom
 .node-gyp
+.python_history
+.gnuplot_history
 
 # System components that don't need their own directory
 .fontconfig
