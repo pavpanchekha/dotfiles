@@ -77,13 +77,10 @@ function to-emacs () {
     kill $$
 }
 
-alias math="rlwrap math"
-alias sbcl="rlwrap sbcl"
-alias scheme="rlwrap scheme"
-alias zephyr="tmux -L zephyr attach"
 alias edconfigure="$EDITOR ~/.profile"
 alias reconfigure=". ~/.profile"
 alias py="ipython"
+alias ed="emacsclient -t-a"
 
 # Switch to using non-destructive trashing when possible.
 alias rm="rm -i"

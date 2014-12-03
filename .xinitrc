@@ -19,7 +19,7 @@ redshift -l 37.8:-122.4 &
 which start-pulseaudio-x11 && start-pulseaudio-x11
 
 # Time tracker
-python ~/bin/timetracker -I 300 -b 60 -f ~/Dropbox/Data/timetrack.`hostname`.log &
+python3 ~/bin/timetracker -I 300 -b 60 -f ~/Dropbox/Data/timetrack.`hostname`.log &
 
 eval $(gpg-agent --daemon)
 exec ssh-agent xmonad
