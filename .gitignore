@@ -46,6 +46,8 @@
 .python_history
 .gnuplot_history
 .gem
+.fonts
+.passwd-s3fs
 
 # System components that don't need their own directory
 .fontconfig
