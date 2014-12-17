@@ -245,7 +245,7 @@ I use org-journal for journaling.
 
 #+BEGIN_SRC emacs-lisp
   (setf org-journal-dir "~/Dropbox/Journal/")
-  (setf org-journal-file-format "%Y-%m-%d")
+  (setf org-journal-file-format "%Y-%m-%d.txt")
   (setf org-journal-date-prefix "#+TITLE: ")
   (setf org-journal-time-prefix "* ")
 #+END_SRC
