@@ -9,7 +9,7 @@ function fish_prompt -d "The interactive shell prompt"
 
     set branch (git rev-parse --abbrev-ref HEAD 2> /dev/null)
 
-    if [ $status -gt 0 -o $branch = "master" ]
+    if [ $status -gt 0 -o "$branch" = "master" ]
         set branch ""
     else
         set branch (printf "@%s" $branch)
