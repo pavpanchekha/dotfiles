@@ -1,4 +1,0 @@
-#!/bin/sh
-set -e nounset -e errexit
-
-amixer set Master toggle
