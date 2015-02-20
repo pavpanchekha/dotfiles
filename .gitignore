@@ -48,6 +48,9 @@
 .gem
 .fonts
 .passwd-s3fs
+.pylint.d
+.dockercfg
+.wine
 
 # System components that don't need their own directory
 .fontconfig
