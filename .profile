@@ -6,6 +6,12 @@ HISTIGNORE="&:bg:fg:exit: *" # Ignore duplicate commands, bg, fg, exit
 HISTFILE=".cache/history.bash"
 export PS1 CDPATH HISTIGNORE HISTFILE
 
+export XDG_CONFIG_HOME="$HOME/.config"
+export VIMPERATOR_RUNTIME="$XDG_CONFIG_HOME/vimperator"
+export VIMPERATOR_INIT=":source $VIMPERATOR_RUNTIME/vimperatorrc"
+export VIMINIT='let $MYVIMRC="$XDG_CONFIG_HOME/vim/vimrc" | source $MYVIMRC'
+export VIMDOTDIR="$XDG_CONFIG_HOME/vim"
+
 if [ "x$EUID" = "x0" ]; then
     export TMOUT=60
     PS1="\[\033[1;31m\]\w\[\033[0m\]:\$> "

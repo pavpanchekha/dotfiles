@@ -11,9 +11,11 @@ xsetroot -solid '#dddddd' -cursor_name left_ptr
 
 # Applications
 stalonetray -c .config/stalonetray &
-dropbox start &
+sleep 1
 nm-applet &
-feh --bg-fill ~/bg.jpg
+dropbox start &
+
+feh --bg-fill ~/Dropbox/bg.jpg
 redshift -l 37.8:-122.4 &
 [ `hostname` == "desktop" ] && tracker-control --start &
 which start-pulseaudio-x11 && start-pulseaudio-x11

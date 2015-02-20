@@ -1,0 +1,14 @@
+﻿<tasqueprefs>
+  <InactivateTimeout>5</InactivateTimeout>
+  <TodayTaskTextColor>#181AB7</TodayTaskTextColor>
+  <OverdueTaskTextColor>#EB3320</OverdueTaskTextColor>
+  <CompletedTasksRange>All</CompletedTasksRange>
+  <SelectedCategory>All</SelectedCategory>
+  <CurrentBackend>Tasque.Backends.Sqlite.SqliteBackend</CurrentBackend>
+  <ShowCompletedTasks>True</ShowCompletedTasks>
+  <ParseDateEnabled>True</ParseDateEnabled>
+  <MainWindowLastXPos>0</MainWindowLastXPos>
+  <MainWindowLastYPos>24</MainWindowLastYPos>
+  <MainWindowWidth>1366</MainWindowWidth>
+  <MainWindowHeight>744</MainWindowHeight>
+</tasqueprefs>
