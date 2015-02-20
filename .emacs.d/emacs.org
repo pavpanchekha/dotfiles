@@ -10,20 +10,45 @@ I use Org's [[http://orgmode.org/worg/org-contrib/babel/intro.html#sec-8_2][Babe
 
 * Packages
 
-I use Emacs's package manager to install others' Emacs scripts and helpers. I just switched from Marmalade to MELPA for packages, so I need to add MELPA.
+I install packages mostly from MELPA.
 
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'package-archives '("melpa-stable" . "http://stable.melpa.org/packages/") t)
 #+END_SRC
 
-I'll be littering the rest of this file with package names, and I'll use this function to avoid re-installing packages.
+Here are the packages I use; this table is [[http://sachachua.com/blog/2015/01/getting-data-org-mode-tables/][used by org-mode]] to install the packages.
+
+#+NAME: packages
+| Package         | Use                                        |
+| better-defaults | Hide menus and fix some basic annoyances   |
+| monokai-theme   | A colorful theme which I really like       |
+| evil            | Vim key-bindings                           |
+| evil-leader     | Set =SPC= as a leader key                    |
+| helm            | A generic menu-driven Emacs plugin         |
+| projectile      | A light-weight project tool                |
+| paradox         | Better package management tools            |
+| magit           | A git mode                                 |
+| auto-complete   | Completions and suggestions                |
+| org             | An organization tool                       |
+| haskell-mode    | Editing haskell                            |
+| quack           | Some additional scheme utils               |
+| geiser          | A Scheme REPL                              |
+| markdown-mode   | Editing markdown                           |
+| typopunct       | Inserting proper punctuation automatically |
+
+#+BEGIN_SRC emacs-lisp :var packages=packages
+  (dolist (package (mapcar #'intern (mapcar #'first (rest packages))))
+    (unless (package-installed-p package)
+      (package-install package))
+    (require package))
+#+END_SRC
+
+I generally manage these packages through the =paradox= tool, which I configure to interface with Github:
 
 #+BEGIN_SRC emacs-lisp
-  (defun package-require (&rest packages)
-    (dolist (package packages)
-      (unless (package-installed-p package)
-        (package-install package))
-      (require package)))
+(setf paradox-github-token my-github-token)
+(setf paradox-star-automatically t)
+(setf paradox-execute-asynchronously t)
 #+END_SRC
 
 * Personal Information
@@ -65,7 +90,8 @@ I store some collected data in Dropbox. To avoid one computer overwriting anothe
 [[http://gitorious.org/evil/pages/Home][Evil]] is the Vim key-stroke language for Emacs.
 
 #+BEGIN_SRC emacs-lisp
-  (package-require 'evil)
+  (global-evil-leader-mode)
+  (evil-leader/set-leader "SPC")
   (evil-mode 1)
 #+END_SRC
 
@@ -85,21 +111,32 @@ Visual line mode is what Emacs calls “word wrap”. I use it in all text modes
 (define-key evil-motion-state-map "0" #'evil-beginning-of-visual-line)
 #+END_SRC
 
-Evil also binds =SPC= and =RET=, which have pretty useless bindings and are often used in other modes. This removes that binding:
+Evil binds =RET=, which is often used in other modes. This unbinds it:
 
 #+BEGIN_SRC emacs-lisp
 (define-key evil-motion-state-map (kbd "RET") nil)
 (define-key evil-motion-state-map (kbd " ") nil)
 #+END_SRC
 
+I have a few shortcuts using the =SPC= leader. They’re mostly bindings to Helm tools, but I plan to grow more one day.
+
+#+NAME: evil-leader-bindings
+| Key | Function            |
+| SPC | helm-M-x            |
+| f   | helm-find-files     |
+| b   | helm-mini           |
+| h   | help-for-help       |
+| p   | helm-projectile     |
+| g   | helm-google-suggest |
+
+#+BEGIN_SRC emacs-lisp :var bindings=evil-leader-bindings
+  (apply #'evil-leader/set-key
+         (apply #'append (mapcar (lambda (row) (list (first row) (intern (second row)))) (rest bindings))))
+#+END_SRC
+
 * Graphical Interface Quirks
 
 I now use the =better-defaults= package to turn off the scroll bar, tool bar, and menu bar.
-
-#+BEGIN_SRC emacs-lisp
-  (package-require 'better-defaults)
-  (require 'better-defaults)
-#+END_SRC
 
 Instead of the menu bar, I put the mode line at the top of the document (a trick I took from [[http://bzg.fr/emacs-strip-tease.html][Bastien Guerry]]):
 
@@ -160,36 +197,15 @@ I use a [[https://github.com/cathywu/TimeTracker][time tracker]] that records wi
                    "Emacs: %b"))))
 #+END_SRC
 
-The default =M-x= behavior is vastly improved by =smex=:
+Hide hidden files and directories by default in =dired=.
 
 #+BEGIN_SRC emacs-lisp
-(package-require 'smex)
-(global-set-key (kbd "M-x") 'smex)
 #+END_SRC
 
-I use =dired= a lot, but by default it’s hard to open a directory in =ido= mode. This setting adds =./= to the =ido= completion list.
+Turn on Flycheck everywhere
 
 #+BEGIN_SRC emacs-lisp
-(setf ido-show-dot-for-dired t)
-#+END_SRC
-
-* Writing Emacs Lisp
-
-When I write emacs-lisp I am often in the debugger. To turn it on, I use this function:
-
-#+BEGIN_SRC emacs-lisp
-  (defun debug-mode () "Turn on various Emacs debugging features" (interactive)
-    (setf debug-on-error t message-log-max 10000))
-#+END_SRC
-
-I'm also often shaving my Emacs configuration (this file). It's helpful to jump to it and reload it quickly.,
-
-#+BEGIN_SRC emacs-lisp
-(defun reconfigure () (interactive)
-  (load-file "~/.emacs.d/init.el"))
-
-(defun edconfigure () (interactive)
-  (find-file "~/.emacs.d/emacs.org"))
+(add-hook 'after-init-hook #'global-flycheck-mode)
 #+END_SRC
 
 * Auto-completion
@@ -197,7 +213,6 @@ I'm also often shaving my Emacs configuration (this file). It's helpful to jump 
 The [[http://cx4a.org/software/auto-complete/][Auto Complete Mode]] provides in-line auto-completion. I actually see a lot of competition right now between Auto Complete Mode and Company Mode. Here’s hoping one wins out; I understand Company to be the older mode, but also still under active development.
 
 #+BEGIN_SRC emacs-lisp
-  (package-require 'auto-complete)
   (global-auto-complete-mode)
 #+END_SRC
 
@@ -215,12 +230,6 @@ Auto Complete Mode automatically enables itself in all buffers, so I don’t nee
 #+END_SRC
 
 * Org-mode
-
-[[http://orgmode.org/][Org-mode]] is a suite of plain-text organization and authoring tools.
-
-#+BEGIN_SRC emacs-lisp
-  (package-require 'org)
-#+END_SRC
 
 Org-mode indents description lists so as to keep a consistent left edge. I don't like this behavior.
 
@@ -244,8 +253,8 @@ Org-mode needs more information to use alternate LaTeX document classes.  I put 
 I use org-journal for journaling.
 
 #+BEGIN_SRC emacs-lisp
-  (setf org-journal-dir "~/Dropbox/Journal/")
-  (setf org-journal-file-format "%Y-%m-%d.txt")
+  (setf org-journal-dir "~/Dropbox/")
+  (setf org-journal-file-format "journal.txt")
   (setf org-journal-date-prefix "#+TITLE: ")
   (setf org-journal-time-prefix "* ")
 #+END_SRC
@@ -253,9 +262,10 @@ I use org-journal for journaling.
 * Magit Git integration
 
 [[http://magit.github.io/magit/][Magit]] is an incredible Emacs interface to the [[https://git-scm.com][Git version-control system]].
+I have a Magit binding in my leader map:
 
 #+BEGIN_SRC emacs-lisp
-  (package-require 'magit)
+(evil-leader/set-key "m" 'magit-status)
 #+END_SRC
 
 * Editing text
@@ -274,12 +284,6 @@ My BibTeX files contain paper commentaries, marked up in Org mode. BibTeX has th
 (add-to-list 'auto-mode-alist '("\\.bib$" . org-mode))
 #+END_SRC
 
-But Markdown is standard in the open-source community, so I load support.
-
-#+BEGIN_SRC emacs-lisp
-  (package-require 'markdown-mode)
-#+END_SRC
-
 =visual-line-mode= implements proper line wrapping, which I prefer. For Org mode I also turn on proportional fonts. But traditionally Markdown files are hard-wrapped, and use ASCII fixed-text conventions more. LaTeX files get the same treatment.
 
 #+BEGIN_SRC emacs-lisp
@@ -292,13 +296,6 @@ But Markdown is standard in the open-source community, so I load support.
   (add-hook 'latex-mode-hook 'variable-pitch-mode)
 #+END_SRC
 
-I used to use [[https://github.com/pavpanchekha/center-text.el][center-text mode]], which increases the fringe to keep the content narrow, but to be honest that was quite a pain in a lot of ways. I should improve that mode, but until now I’m keeping =center-text-mode= off.
-
-#+BEGIN_SRC emacs-lisp :tangle no
-  (package-require 'center-text-mode)
-  (add-hook 'org-mode-hook 'center-text-mode)
-#+END_SRC
-
 I’ve gone back and forth on single- and double-spaced sentences, but for now I’m in the single-spacing camp.
 
 #+BEGIN_SRC emacs-lisp
@@ -308,7 +305,6 @@ I’ve gone back and forth on single- and double-spaced sentences, but for now I
 In text documents I prefer nice, Unicode punctuation. The =typopunct= package automatically inserts that, including em- and en-dashes, matching quotes, proper apostrophes, and so on.
 
 #+BEGIN_SRC emacs-lisp
-  (package-require 'typopunct)
   (typopunct-change-language 'english t)
   (add-hook 'org-mode-hook 'typopunct-mode)
   (add-hook 'markdown-mode-hook 'typopunct-mode)
@@ -338,11 +334,12 @@ Dired is great for exploring a file system and so on.
 #+BEGIN_SRC emacs-lisp
   (require 'dired-x)
 
+(setf dired-omit-files "^\\.?#\\|^\\.")
+
   (defun dired-hide-details-home ()
     "Hide details and hidden files,
      if the current buffer is the home directory."
-    (when (and buffer-file-name
-               (equal buffer-file-name (expand-file-name "~")))
+    (when (equal (expand-file-name default-directory) (expand-file-name "~/"))
       (dired-hide-details-mode)
       (dired-omit-mode)))
 
@@ -409,17 +406,12 @@ Finally, we add key-bindings using Evil's =evil-normal-state-map=.
 
 * Projectile
 
-[[https://github.com/bbatsov/projectile][Projectile]] is a project management suite for Emacs.
-
-#+BEGIN_SRC emacs-lisp
-  (package-require 'projectile)
-#+END_SRC
-
-I enable it everywhere. It only does anything when I’m in a version-controlled directory, so there’s little harm in this.
+[[https://github.com/bbatsov/projectile][Projectile]] is a project management suite for Emacs. I enable it everywhere. It only does anything when I’m in a version-controlled directory, so there’s little harm in this.
 
 #+BEGIN_SRC emacs-lisp
   (projectile-global-mode)
 #+END_SRC
+
 * The =run= Command
 
 I have command called =run=, which compiles and runs some program or file in a temporary directory.  I use it for compiling LaTeX or testing C code.
@@ -443,16 +435,8 @@ Then we attach them to =[f5]= and =[C-f5]=.
   (global-set-key (kbd "C-<f5>") 'compile-command)
 #+END_SRC
 
-* Shells
-
-The Emacs shell mode is great, but barfs on ANSI escape sequence.  There's a quick fix:
-
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
-#+END_SRC
-
 * Doc View
-
+  
 I sometimes use doc-view for long PDFs (though rarely now).
 
 For long PDFs, continuous scrolling is best.
@@ -479,13 +463,7 @@ Doc-view works much better with Vim-style h/j/k/l movement keys.
 
 * Haskell programming tools
 
-[[https://github.com/haskell/haskell-mode][Haskell Mode]] provides syntax highlighting and similar utilities for programming in Haskell.
-
-#+BEGIN_SRC emacs-lisp
-  (package-require 'haskell-mode)
-#+END_SRC
-
-Multiple methods of indenting Haskell code come with Haskell Mode. They don't differ much, but I prefer =haskell-indentation=. I used to use =haskell-indent= but it annoyed me somehow.
+[[https://github.com/haskell/haskell-mode][Haskell Mode]] provides syntax highlighting and similar utilities for programming in Haskell. Multiple methods of indenting Haskell code come with Haskell Mode. They don't differ much, but I prefer =haskell-indentation=. I used to use =haskell-indent= but it annoyed me somehow.
 
 #+BEGIN_SRC emacs-lisp
   (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
@@ -494,10 +472,6 @@ Multiple methods of indenting Haskell code come with Haskell Mode. They don't di
 * Scheme programming tools
 
 Several modes come together to make programming in Scheme enjoyable. I usually use the Racket dialect of Scheme, but I've used MIT-Scheme heavily in the past. Sadly, no package seems to support both. For now I use [[http://www.neilvandyke.org/quack/][Quack]] and [[http://www.nongnu.org/geiser/][Geiser]], which together make Racket a breeze.
-
-#+BEGIN_SRC
-  (package-require 'quack 'geiser)
-#+END_SRC
 
 Since I never use Guile, I configure Geiser to always start up in Racket mode.
 
@@ -532,6 +506,25 @@ Geiser stores history information; I'd prefer it not clutter my home directory.
 
 #+BEGIN_SRC emacs-lisp
   (setf geiser-repl-history-filename "~/.emacs.d/geiser-history")
+#+END_SRC
+
+* Emacs Lisp programming tools
+
+When I write emacs-lisp I am often in the debugger. To turn it on, I use this function:
+
+#+BEGIN_SRC emacs-lisp
+  (defun debug-mode () "Turn on various Emacs debugging features" (interactive)
+    (setf debug-on-error t message-log-max 10000))
+#+END_SRC
+
+I'm also often shaving my Emacs configuration (this file). It's helpful to jump to it and reload it quickly.,
+
+#+BEGIN_SRC emacs-lisp
+(defun reconfigure () (interactive)
+  (load-file "~/.emacs.d/init.el"))
+
+(defun edconfigure () (interactive)
+  (find-file "~/.emacs.d/emacs.org"))
 #+END_SRC
 
 * Coq programming tools
@@ -586,4 +579,22 @@ The default print settings are silly for printing to PDF. I prefer syntax highli
   (setf pr-faces-p t)
   (setf ps-print-header nil)
   (setf ps-print-header-frame)
+#+END_SRC
+* Helm
+  
+Helm is an incredible search interface. It’s hard to describe, but it somehow improves on many of Emacs’s built-in utilities. I turn on Helm in a couple of places (but sadly not too many of them).
+
+#+BEGIN_SRC emacs-lisp
+  (helm-mode 1)
+#+END_SRC
+
+I use Helm’s version of find-file, search, apropos
+
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-x C-f") 'helm-find-files)
+  (global-set-key (kbd "C-s") 'helm-occur)
+  (global-set-key (kbd "C-x b") 'helm-mini)
+  (global-set-key (kbd "C-h a") 'helm-apropos)
+  (global-set-key (kbd "C-c h g") 'helm-google-suggest)
+  (global-set-key (kbd "C-c h p") 'helm-projectile)
 #+END_SRC
