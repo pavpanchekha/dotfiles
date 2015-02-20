@@ -80,7 +80,6 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask, xK_q     ), io (exitWith ExitSuccess))
     , ((modm .|. shiftMask, xK_r     ), spawn "xmonad --recompile; xmonad --restart")
     , ((modm              , xK_space ), spawn "emacsclient -c --alternate-editor=")
-    , ((modm .|. shiftMask, xK_j     ), spawn "emacsclient -c -e '(org-journal-new-entry)'")
     , ((modm .|. shiftMask, xK_f     ), spawn "firefox")
     , ((modm .|. shiftMask, xK_t     ), spawn "thunar")
     , ((modm .|. shiftMask, xK_space ), execPrompt)
@@ -92,9 +91,9 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask, xK_Left),   shiftToPrev)
 
     -- Volume up and down
-    , ((0, 0x1008FF11), spawn "amixer set Master 5dB-")
-    , ((0, 0x1008FF13), spawn "amixer set Master 5dB+")
-    , ((0, 0x1008FFB2), spawn "amixer set Capture toggle")
+    , ((0, 0x1008FF11), spawn "pulseaudio-ctl down")
+    , ((0, 0x1008FF13), spawn "pulseaudio-ctl up")
+    , ((0, 0x1008FFB2), spawn "pulseaudio-ctl mute")
     ]
     ++ -- Switch to workspace
     [((m .|. modm, k), windows $ f i)
