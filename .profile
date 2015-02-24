@@ -33,7 +33,7 @@ shopt -s extglob # Crazy globbing tricks: [?*+@!]\(xxxx\)
 . /usr/share/bash-completion/bash_completion &
 
 # Some actual environment variables
-PATH="$HOME/bin:$PATH"
+PATH="/opt/racket-6.1/bin:/opt/z3/bin:$HOME/bin:$PATH"
 GPGKEY="180C02EB09D0BE15"
 LESSHISTFILE="/dev/null"
 LANG=en_US.UTF-8

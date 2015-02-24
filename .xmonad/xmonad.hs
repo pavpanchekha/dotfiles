@@ -8,6 +8,7 @@ import XMonad.Hooks.ManageDocks
 import System.Directory
 import System.Exit
 import System.IO
+import Data.Monoid
  
 import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
@@ -158,5 +159,6 @@ main = do
 
         manageHook = composeAll myManageHook,
         layoutHook = myLayout,
+        handleEventHook = (\_-> (return (All True))) <+> docksEventHook,
         logHook = myLog statusbar
     }
