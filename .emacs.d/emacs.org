@@ -23,7 +23,7 @@ Here are the packages I use; this table is [[http://sachachua.com/blog/2015/01/g
 | better-defaults | Hide menus and fix some basic annoyances   |
 | monokai-theme   | A colorful theme which I really like       |
 | evil            | Vim key-bindings                           |
-| evil-leader     | Set =SPC= as a leader key                    |
+| evil-leader     | Set =SPC= as a leader key                  |
 | helm            | A generic menu-driven Emacs plugin         |
 | projectile      | A light-weight project tool                |
 | paradox         | Better package management tools            |
@@ -85,6 +85,14 @@ I store some collected data in Dropbox. To avoid one computer overwriting anothe
             hostname*)))
 #+END_SRC
 
+I keep a journal.
+
+#+BEGIN_SRC emacs-lisp
+  (defun my-open-journal ()
+    (interactive)
+    (find-file-other-window "~/Dropbox/journal.org"))
+#+END_SRC
+
 * Evil: key commands à la Vim
 
 [[http://gitorious.org/evil/pages/Home][Evil]] is the Vim key-stroke language for Emacs.
@@ -124,14 +132,16 @@ I have a few shortcuts using the =SPC= leader. They’re mostly bindings to Helm
 | Key | Function            |
 | SPC | helm-M-x            |
 | f   | helm-find-files     |
+| s   | save-buffer |
 | b   | helm-mini           |
 | h   | help-for-help       |
 | p   | helm-projectile     |
 | g   | helm-google-suggest |
+| j   | my-open-journal     |
 
 #+BEGIN_SRC emacs-lisp :var bindings=evil-leader-bindings
   (apply #'evil-leader/set-key
-         (apply #'append (mapcar (lambda (row) (list (first row) (intern (second row)))) (rest bindings))))
+         (apply #'append (mapcar (lambda (row) (list (car row) (intern (cadr row)))) (cdr bindings))))
 #+END_SRC
 
 * Graphical Interface Quirks
@@ -598,3 +608,12 @@ I use Helm’s version of find-file, search, apropos
   (global-set-key (kbd "C-c h g") 'helm-google-suggest)
   (global-set-key (kbd "C-c h p") 'helm-projectile)
 #+END_SRC
+
+I don’t like the default use of =TAB= and =C-z=, so I switch them. Code from [[http://tuhdo.github.io/helm-intro.html][this Helm intro]].
+
+#+BEGIN_SRC emacs-lisp
+(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
+(define-key helm-map (kbd "C-i") 'helm-execute-persistent-action)
+(define-key helm-map (kbd "C-z")  'helm-select-action)
+#+END_SRC
+
