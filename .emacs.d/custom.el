@@ -7,6 +7,11 @@
  '(custom-safe-themes
    (quote
     ("4e262566c3d57706c70e403d440146a5440de056dfaeb3062f004da1711d83fc" "436ae3105bb26b7e3edbd624612ee3ba929fd568d3b3bd1f72e6aa2b0cab1bb7" default)))
+ '(magit-use-overlays nil)
+ '(paradox-automatically-star t)
+ '(tramp-default-method "ssh")
+ '(tramp-inline-compress-start-size nil)
+ '(tramp-verbose 2))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

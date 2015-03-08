@@ -8,6 +8,12 @@ I use Org's [[http://orgmode.org/worg/org-contrib/babel/intro.html#sec-8_2][Babe
   (org-babel-load-file "~/.emacs.d/emacs.org")
 #+END_SRC
 
+Since I publish this file on the Internet, I keep my passwords elsewhere:
+
+#+BEGIN_SRC emacs-lisp
+  (org-babel-load-file "~/.emacs.d/passwords.org")
+#+END_SRC
+
 * Packages
 
 I install packages mostly from MELPA.
@@ -65,12 +71,6 @@ I keep my custom-set variables separate from my true configuration file.
 #+BEGIN_SRC emacs-lisp
   (setf custom-file "~/.emacs.d/custom.el")
   (load custom-file)
-#+END_SRC
-
-Since I publish this file on the Internet, I keep my passwords elsewhere:
-
-#+BEGIN_SRC emacs-lisp
-  (org-babel-load-file "~/.emacs.d/passwords.org")
 #+END_SRC
 
 I store some collected data in Dropbox. To avoid one computer overwriting another's data, I include the hostname in the file name. This code extracts the hostname itself.
@@ -344,7 +344,7 @@ Dired is great for exploring a file system and so on.
 #+BEGIN_SRC emacs-lisp
   (require 'dired-x)
 
-(setf dired-omit-files "^\\.?#\\|^\\.")
+  (setf dired-omit-files "^\\.?#\\|^\\.")
 
   (defun dired-hide-details-home ()
     "Hide details and hidden files,
@@ -353,7 +353,7 @@ Dired is great for exploring a file system and so on.
       (dired-hide-details-mode)
       (dired-omit-mode)))
 
-  (add-hook 'dired-mode-hook 'dired-hide-details-mode)
+  (add-hook 'dired-mode-hook 'dired-hide-details-home)
 #+END_SRC
 
 * Spell checking
