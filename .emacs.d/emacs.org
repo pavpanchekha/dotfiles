@@ -617,3 +617,18 @@ I don’t like the default use of =TAB= and =C-z=, so I switch them. Code from [
 (define-key helm-map (kbd "C-z")  'helm-select-action)
 #+END_SRC
 
+* Quick scratchpads
+
+#+BEGIN_SRC emacs-lisp
+    (defun scratchpad ()
+      (interactive)
+      (let ((scratchpad-buffer (get-buffer "*scratchpad*")))
+        (if scratchpad-buffer
+            (progn
+              (switch-to-buffer scratchpad-buffer)
+              (set-window-dedicated-p (selected-window) t)
+              (setf header-line-format nil)
+              (modify-frame-parameters nil '((title . "scratchpad"))))
+          (eshell 0)
+          (rename-buffer "*scratchpad*"))))
+#+END_SRC

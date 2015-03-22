@@ -29,9 +29,9 @@ myPrompt = defaultXPConfig {
            }
 
 myScratchPads = [NS "terminal" spawnTerm findTerm manageTerm] where
-  spawnTerm  = "exec sakura --name scratchpad"
-  findTerm   = resource =? "scratchpad"
-  manageTerm = customFloating $ W.RationalRect l t w h where
+  spawnTerm  = "exec emacsclient -c -a '' -e '(scratchpad)'"
+  findTerm   = title =? "scratchpad" <&&> className =? "Emacs"
+  manageTerm = (customFloating $ W.RationalRect l t w h) where
     h = 0.5   -- Terminal height
     w = 1     -- Width
     t = 1 - h -- Distance from top
