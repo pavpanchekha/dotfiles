@@ -278,6 +278,13 @@ I have a Magit binding in my leader map:
 (evil-leader/set-key "m" 'magit-status)
 #+END_SRC
 
+Magit uses =SPC= for =magit-show-item-or-scroll-up=, which I don’t use.
+I bind it to use my leader key instead.
+
+#+BEGIN_SRC emacs-lisp
+  (define-key magit-mode-map (kbd "SPC") evil-leader--default-map)
+#+END_SRC
+
 * Editing text
   
 I’m writing text documents pretty often now—the life of a scientist involves a lot of papers, notes, meetings, websites. Normally these files use org-mode. I’d love to use Markdown for everything—Org-mode’s syntax is actually pretty ugly—but Markdown has problems of its own. That’s a rant for another day, but suffice it to say that I’m using org-mode for now.
@@ -523,7 +530,8 @@ Geiser stores history information; I'd prefer it not clutter my home directory.
 When I write emacs-lisp I am often in the debugger. To turn it on, I use this function:
 
 #+BEGIN_SRC emacs-lisp
-  (defun debug-mode () "Turn on various Emacs debugging features" (interactive)
+  (defun debug-mode () "Turn on various Emacs debugging features"
+    (interactive)
     (setf debug-on-error t message-log-max 10000))
 #+END_SRC
 
@@ -620,15 +628,15 @@ I don’t like the default use of =TAB= and =C-z=, so I switch them. Code from [
 * Quick scratchpads
 
 #+BEGIN_SRC emacs-lisp
-    (defun scratchpad ()
-      (interactive)
-      (let ((scratchpad-buffer (get-buffer "*scratchpad*")))
-        (if scratchpad-buffer
-            (progn
-              (switch-to-buffer scratchpad-buffer)
-              (set-window-dedicated-p (selected-window) t)
-              (setf header-line-format nil)
-              (modify-frame-parameters nil '((title . "scratchpad"))))
-          (eshell 0)
-          (rename-buffer "*scratchpad*"))))
+  (defun scratchpad ()
+    (interactive)
+    (let ((scratchpad-buffer (get-buffer "*scratchpad*")))
+      (unless scratchpad-buffer
+        (eshell 0)
+        (rename-buffer "*scratchpad*")
+        (setf scratchpad-buffer (current-buffer)))
+      (switch-to-buffer scratchpad-buffer)
+      (set-window-dedicated-p (selected-window) t)
+      (setf header-line-format nil)
+      (modify-frame-parameters nil '((title . "scratchpad")))))
 #+END_SRC
