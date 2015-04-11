@@ -13,7 +13,6 @@ xsetroot -solid '#dddddd' -cursor_name left_ptr
 stalonetray -c .config/stalonetray &
 sleep 1
 nm-applet &
-dropbox start &
 
 feh --bg-fill ~/Dropbox/bg.png
 redshift -l 37.8:-122.4 &
