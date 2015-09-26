@@ -24,6 +24,7 @@
 .toprc
 .hugin
 .wireshark
+.spacemacs
 
 # Things that should really go into ~/.local
 .cabal
@@ -51,6 +52,14 @@
 .pylint.d
 .dockercfg
 .wine
+.hugindata
+.wine32
+.zotero
+.org-timestamps
+.cmake
+.aspell.en.prepl
+.aspell.en.pws
+.spacemacs.d
 
 # System components that don't need their own directory
 .fontconfig
