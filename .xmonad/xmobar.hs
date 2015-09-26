@@ -11,7 +11,7 @@ Config { font = "xft:Terminus-15"
                     , Run Battery ["-L", "10", "-H", "95", "-l", "#cc0000",
                                    "-h", "#729fcf", "-t", "<acstatus>",
                                    "--", "-o", "Batt: <left>% (<timeleft>)",
-                                   "-O", "AC: <left>%+ (<timeleft>)", "-i", "AC"] 10
-                    , Run Date "%H:%M" "date" 10
+                                   "-O", "AC: <left>%+ (<timeleft>)", "-i", "AC"] 60
+                    , Run Date "%H:%M" "date" 60
                     ]
        }
