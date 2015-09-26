@@ -53,7 +53,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm,               xK_q     ), kill)
     , ((modm,               xK_r     ), sendMessage NextLayout)
     , ((modm,               xK_b     ), sendMessage ToggleStruts)
-    
+
     -- Resize viewed windows to the correct size
     , ((modm,               xK_n     ), refresh)
 
@@ -69,11 +69,11 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 
     , ((modm,               xK_h     ), sendMessage Shrink)
     , ((modm,               xK_l     ), sendMessage Expand)
-    
+
     -- Number of windows in the master area
     , ((modm              , xK_comma ), sendMessage (IncMasterN 1))
     , ((modm              , xK_period), sendMessage (IncMasterN (-1)))
-    
+
     -- Push window back into tiling
     , ((modm,               xK_d     ), withFocused $ windows . W.sink)
 
@@ -84,7 +84,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask, xK_f     ), spawn "firefox")
     , ((modm .|. shiftMask, xK_t     ), spawn "thunar")
     , ((modm .|. shiftMask, xK_space ), execPrompt)
-    
+
     -- Cycle workspaces
     , ((modm,               xK_Right),  moveTo Next $ WSIs nonScratchpadWS)
     , ((modm,               xK_Left),   moveTo Prev $ WSIs nonScratchpadWS)
@@ -137,12 +137,12 @@ myLog pipe = dynamicLogWithPP $ xmobarPP {
                               )
     , ppTitle   = xmobarColor "#444444" "#eeeeee"
     }
-    
+
 fontTerminus = "-*-terminus-medium-*-*-*-*-140-*-*-*-*-*-*"
 
 main = do
     statusbar <- spawnPipe ("xmobar ~/.xmonad/xmobar.hs")
-    
+
     xmonad $ defaultConfig {
       -- simple stuff
         terminal           = "sakura",
@@ -150,10 +150,10 @@ main = do
         borderWidth        = 1,
         modMask            = mod4Mask,
         workspaces         = ["1", "2", "3", "4", "5", "*"],
-        
+
         normalBorderColor  = "#000000",
         focusedBorderColor = "#8ae234",
- 
+
         keys               = myKeys,
         mouseBindings      = myMouseBindings,
 
