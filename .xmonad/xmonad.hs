@@ -8,8 +8,10 @@ import XMonad.Hooks.ManageDocks
 import System.Directory
 import System.Exit
 import System.IO
+import XMonad.Util.Run
 import Data.Monoid
- 
+import Data.List
+
 import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
 
@@ -92,16 +94,63 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask, xK_Left),   shiftToPrev)
 
     -- Volume up and down
-    , ((0, 0x1008FF11), spawn "pulseaudio-ctl down")
-    , ((0, 0x1008FF13), spawn "pulseaudio-ctl up")
-    , ((0, 0x1008FFB2), spawn "pulseaudio-ctl mute")
+    , ((0, 0x1008FF11), spawn "pactl set-sink-volume 0 -10%")
+    , ((0, 0x1008FF13), spawn "pactl set-sink-volume 0 +10%")
+    , ((0, 0x1008FF12), spawn "pactl set-sink-mute 0 toggle")
+    , ((shiftMask, 0x1008FF11), currentWindowPACtl "set-sink-input-volume" "-10%")
+    , ((shiftMask, 0x1008FF13), currentWindowPACtl "set-sink-input-volume" "+10%")
+    , ((shiftMask, 0x1008FF12), currentWindowPACtl "set-sink-input-mute" "toggle")
+    , ((0, 0x1008ff16), spawn "tomahawk --prev")
+    , ((0, 0x1008ff14), spawn "tomahawk --playpause")
+    , ((0, 0x1008ff17), spawn "tomahawk --next")
     ]
     ++ -- Switch to workspace
     [((m .|. modm, k), windows $ f i)
         | (i, k) <- zip (XMonad.workspaces conf) [xK_1 .. xK_9]
         , (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]]
- 
- 
+
+getPID :: Display -> Window -> X (Maybe Int)
+getPID display window =
+  do pid_str <- getAtom "_NET_WM_PID"
+     xs <- io $ (fmap . fmap . fmap) fromIntegral $ getWindowProperty32 display pid_str window
+     case xs of
+      Just (x:_) -> return $ Just $ fromIntegral x
+      Just [] -> return Nothing
+      Nothing -> return Nothing
+
+getSinkInputNumber :: Int -> IO (Maybe Int)
+getSinkInputNumber pid =
+  do out <- runProcessWithInput "/usr/bin/pactl" ["list", "sink-inputs"] ""
+     return $ parseSIDFromPID pid out
+
+parseSIDFromPID :: Int -> String -> Maybe Int
+parseSIDFromPID pid out = go pid (lines out) Nothing where
+  _sinkinput = "Sink Input #"
+  _app_pid = "\t\tapplication.process.id = \""
+  go :: Int -> [String] -> Maybe Int -> Maybe Int
+  go p (l : ls) Nothing
+    | isPrefixOf _sinkinput l =
+      go p ls $ Just $ read $ drop (length _sinkinput) l
+    | otherwise = go p ls Nothing
+  go p (l : ls) (Just sid)
+    | l == (_app_pid ++ show pid ++ "\"") = return sid
+    | l == "" = go p ls Nothing
+    | otherwise = go p ls (Just sid)
+  go p [] _ = Nothing
+
+currentWindowPACtl :: String -> String -> X ()
+currentWindowPACtl cmd delta =
+  withDisplay (\d-> withFocused (changeVolume d)) where
+  changeVolume d w =
+    do pid' <- getPID d w
+       case pid' of
+        Nothing -> return ()
+        Just pid ->
+          do sid' <- io $ getSinkInputNumber pid
+             case sid' of
+              Nothing -> return ()
+              Just sid -> spawn $ "pactl " ++ cmd ++ " " ++ show sid ++ " " ++ delta
+
 ------------------------------------------------------------------------
 -- Mouse bindings: default actions bound to mouse events
 --
