@@ -14,7 +14,7 @@ stalonetray -c .config/stalonetray &
 sleep 1
 nm-applet &
 
-feh --bg-fill ~/Dropbox/bg.png
+sh ~/.fehbg &
 redshift -l 37.8:-122.4 &
 [ `hostname` == "desktop" ] && tracker-control --start &
 which start-pulseaudio-x11 && start-pulseaudio-x11
