@@ -24,15 +24,17 @@ import XMonad.Util.Run(spawnPipe)
 myPrompt = defaultXPConfig {
              bgColor = "black"
            , fgColor = "white"
-           , font = "xft:Terminus-12"
+           , font = "xft:Terminus-15"
            , height = 24
            , position = Top
            , promptBorderWidth = 0
            }
 
 myScratchPads = [NS "terminal" spawnTerm findTerm manageTerm] where
-  spawnTerm  = "exec emacsclient -c -a '' -e '(scratchpad)'"
-  findTerm   = title =? "scratchpad" <&&> className =? "Emacs"
+  --spawnTerm  = "exec emacsclient -c -a '' -e '(scratchpad)'"
+  spawnTerm  = "sakura --class scratchpad"
+  --findTerm   = title =? "scratchpad" <&&> className =? "Emacs"
+  findTerm   = className =? "scratchpad"
   manageTerm = (customFloating $ W.RationalRect l t w h) where
     h = 0.5   -- Terminal height
     w = 1     -- Width
