@@ -87,6 +87,7 @@ alias edconfigure="$EDITOR ~/.profile"
 alias reconfigure=". ~/.profile"
 alias py="ipython"
 alias ed="emacsclient -t-a"
+alias project="xrandr --output HDMI1 --mode 1920x1080"
 
 # Switch to using non-destructive trashing when possible.
 alias rm="rm -i"

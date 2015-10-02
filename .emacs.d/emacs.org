@@ -128,10 +128,19 @@ I have a few shortcuts using the =SPC= leader. They’re mostly bindings to Helm
 | g   | helm-google-suggest |
 | j   | my-open-journal     |
 | e   | eshell              |
+| TAB | switch-other-buffer |
 
 #+BEGIN_SRC emacs-lisp :var bindings=evil-leader-bindings
   (apply #'evil-leader/set-key
          (apply #'append (mapcar (lambda (row) (list (car row) (intern (cadr row)))) (cdr bindings))))
+#+END_SRC
+
+Here, =switch-other-buffer= is the following function, from [[http://emacswiki.org/emacs/SwitchingBuffers][EmacsWiki]], inspired by [[https://github.com/syl20bnr/spacemacs][spacemacs]]:
+
+#+BEGIN_SRC emacs-lisp
+  (defun switch-other-buffer ()
+    (interactive)
+    (switch-to-buffer (other-buffer (current-buffer) 1)))
 #+END_SRC
 
 * Graphical Interface Quirks

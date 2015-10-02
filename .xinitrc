@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e -x
 
 export PATH="$PATH:$HOME/bin"
 export GTK_IM_MODULE=xim
@@ -7,11 +8,10 @@ export GTK_IM_MODULE=xim
 # X server stuff
 [ `hostname` == "desktop" ] && xbindkeys
 setxkbmap -option ctrl:swapcaps -option compose:lctrl
-xsetroot -solid '#dddddd' -cursor_name left_ptr
+eval $(cat ~/.fehbg)
 
 # Applications
 stalonetray -c .config/stalonetray &
-sleep 1
 nm-applet &
 
 sh ~/.fehbg &
