@@ -25,6 +25,8 @@
 .hugin
 .wireshark
 .spacemacs
+.s3cfg
+.tumblr
 
 # Things that should really go into ~/.local
 .cabal
@@ -60,6 +62,8 @@
 .aspell.en.prepl
 .aspell.en.pws
 .spacemacs.d
+.openshot
+.pip
 
 # System components that don't need their own directory
 .fontconfig
@@ -85,15 +89,7 @@
 
 # Synchronizing it all behind the scenes
 Dropbox
-# Private data
-priv
-# A backup of all my email (sometimes)
-mail
 # Source code for open source projects
-src
-# The wallpaper
-bg.jpg
-# Open-source code
 src
 
 # These are never useful to sync
