@@ -559,3 +559,28 @@ I don’t like the default use of =TAB= and =C-z=, so I switch them. Code from [
 (define-key helm-map (kbd "C-z")  'helm-select-action)
 #+END_SRC
 
+* PLSE Sign
+
+#+BEGIN_SRC emacs-lisp
+  (require 'json)
+  (require 'url)
+
+  (defun send-to-sign ()
+    (interactive)
+    (let* ((mode
+            (cond
+             ((eq major-mode 'c++-mode) "c++")
+             ((eq major-mode 'c-mode) "c")
+             (t (error "Cannot send code from %s mode. Use C or C++ mode." major-mode))))
+           (data
+            (json-encode (list (cons 'language mode) (cons 'code (buffer-string)))))
+           (url-request-method "POST")
+           (url-request-extra-headers
+            '(("Content-Type" . "application/json")))
+           (url-request-data data))
+      (url-retrieve "http://plseaudio.cs.washington.edu:8001/evaluate.json" 'display-sign-results)))
+
+  (defun display-sign-results (status)
+    (message (buffer-string)))
+#+END_SRC
+
