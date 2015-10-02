@@ -292,7 +292,7 @@ Dired is great for exploring a file system and so on.
 Because Emacs shows the =~= directory when I open it up,
   I prefer this directory specifically not to show hidden files.
 
-#+BEGIN_SRC
+#+BEGIN_SRC emacs-lisp
   (defun dired-hide-details-home ()
     "Hide details and hidden files,
      if the current buffer is the home directory."
@@ -483,7 +483,7 @@ I'm also often shaving my Emacs configuration (this file). It's helpful to jump 
   Proof General is, of course, central to using Coq.
 
   #+BEGIN_SRC emacs-lisp
-    (require 'proof)
+    (load-file "/home/pavpan/src/ProofGeneral-4.2/generic/proof-site.el")
   #+END_SRC
 
 * Inter-Key Timings
@@ -584,3 +584,11 @@ I don’t like the default use of =TAB= and =C-z=, so I switch them. Code from [
     (message (buffer-string)))
 #+END_SRC
 
+* Random
+
+#+BEGIN_SRC emacs-lisp
+(defun z3-truncate-long-lines ()
+  (when (and (stringp buffer-file-name) (string-match "\\.(z3|log)\\'" buffer-file-name))
+    (toggle-truncate-lines)))
+(add-hook 'find-file-hook 'z3-truncate-long-lines)
+#+END_SRC
