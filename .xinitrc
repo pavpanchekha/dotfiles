@@ -23,4 +23,12 @@ which start-pulseaudio-x11 && start-pulseaudio-x11
 python3 ~/bin/timetracker -I 300 -b 60 -f ~/Dropbox/Data/timetrack.`hostname`.log &
 
 eval $(gpg-agent --daemon)
+
+if [ -d /etc/X11/xinit/xinitrc.d ] ; then
+    for f in /etc/X11/xinit/xinitrc.d/?*.sh ; do
+        [ -x "$f" ] && . "$f"
+    done
+    unset f
+fi
+
 exec ssh-agent xmonad
