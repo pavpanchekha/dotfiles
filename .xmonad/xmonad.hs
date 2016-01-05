@@ -89,6 +89,8 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask, xK_t     ), spawn "thunar")
     , ((modm .|. shiftMask, xK_space ), execPrompt)
 
+    , ((modm,               xK_p     ), spawn "xrandr --output HDMI1 --mode 1920x1080")
+
     -- Cycle workspaces
     , ((modm,               xK_Right),  moveTo Next $ WSIs nonScratchpadWS)
     , ((modm,               xK_Left),   moveTo Prev $ WSIs nonScratchpadWS)
