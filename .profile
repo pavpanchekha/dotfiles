@@ -44,7 +44,7 @@ eval `dircolors -b`
 # Some definitions of programs
  EDITOR="vim"
   PAGER="less"
-BROWSER="w3m"
+BROWSER="firefox"
 export EDITOR PAGER BROWSER
 
 # Over SSH, Mathematica fonts need setting

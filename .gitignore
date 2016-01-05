@@ -27,6 +27,7 @@
 .spacemacs
 .s3cfg
 .tumblr
+.travis
 
 # Things that should really go into ~/.local
 .cabal

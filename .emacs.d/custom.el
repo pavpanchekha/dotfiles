@@ -8,7 +8,14 @@
  '(custom-safe-themes
    (quote
     ("0c49a9e22e333f260126e4a48539a7ad6e8209ddda13c0310c8811094295b3a3" "4e262566c3d57706c70e403d440146a5440de056dfaeb3062f004da1711d83fc" "436ae3105bb26b7e3edbd624612ee3ba929fd568d3b3bd1f72e6aa2b0cab1bb7" default)))
+ '(electric-indent-mode nil)
+ '(magit-push-always-verify nil)
  '(magit-use-overlays nil)
+ '(org-entities-user
+   (quote
+    (("\\square" "\\square" t "&#x2610;" "[]" "[]" "☐"))))
+ '(org-pretty-entities t)
+ '(paradox-automatically-star t)
  '(tramp-default-method "ssh")
  '(tramp-inline-compress-start-size nil)
  '(tramp-verbose 2))
