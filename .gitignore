@@ -92,6 +92,8 @@
 Dropbox
 # Source code for open source projects
 src
+# Private data (mostly my passwords file)
+priv
 
 # These are never useful to sync
 *.lock
