@@ -55,8 +55,10 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     [ ((modm .|. shiftMask, xK_x     ), spawn $ XMonad.terminal conf)
 
     , ((modm,               xK_q     ), kill)
+    , ((modm .|. shiftMask, xK_q     ), withPID killPID)
     , ((modm,               xK_r     ), sendMessage NextLayout)
     , ((modm,               xK_b     ), sendMessage ToggleStruts)
+    , ((modm .|. shiftMask, xK_Delete), io (exitWith ExitSuccess))
 
     -- Resize viewed windows to the correct size
     , ((modm,               xK_n     ), refresh)
@@ -82,7 +84,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm,               xK_d     ), withFocused $ windows . W.sink)
 
     , ((modm              , xK_x     ), namedScratchpadAction myScratchPads "terminal")
-    , ((modm .|. shiftMask, xK_q     ), io (exitWith ExitSuccess))
+    , ((modm .|. shiftMask, xK_x     ), spawn "sakura")
     , ((modm .|. shiftMask, xK_r     ), spawn "xmonad --recompile; xmonad --restart")
     , ((modm              , xK_space ), spawn "emacsclient -c --alternate-editor=")
     , ((modm .|. shiftMask, xK_f     ), spawn "firefox")
@@ -101,9 +103,9 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((0, 0x1008FF11), spawn "pactl set-sink-volume 0 -10%")
     , ((0, 0x1008FF13), spawn "pactl set-sink-volume 0 +10%")
     , ((0, 0x1008FF12), spawn "pactl set-sink-mute 0 toggle")
-    , ((shiftMask, 0x1008FF11), currentWindowPACtl "set-sink-input-volume" "-10%")
-    , ((shiftMask, 0x1008FF13), currentWindowPACtl "set-sink-input-volume" "+10%")
-    , ((shiftMask, 0x1008FF12), currentWindowPACtl "set-sink-input-mute" "toggle")
+    , ((shiftMask, 0x1008FF11), withPID (pactl "set-sink-input-volume" "-10%"))
+    , ((shiftMask, 0x1008FF13), withPID (pactl "set-sink-input-volume" "+10%"))
+    , ((shiftMask, 0x1008FF12), withPID (pactl "set-sink-input-mute" "toggle"))
     , ((0, 0x1008ff16), spawn "tomahawk --prev")
     , ((0, 0x1008ff14), spawn "tomahawk --playpause")
     , ((0, 0x1008ff17), spawn "tomahawk --next")
@@ -121,6 +123,15 @@ getPID display window =
       Just (x:_) -> return $ Just $ fromIntegral x
       Just [] -> return Nothing
       Nothing -> return Nothing
+
+withPID :: (Int -> X ()) -> X ()
+withPID f =
+  withDisplay (\d-> withFocused (\w-> getPID' d w)) where
+  getPID' d w =
+    do pid' <- getPID d w
+       case pid' of
+         Nothing -> return ()
+         Just pid -> f pid
 
 getSinkInputNumber :: Int -> IO (Maybe Int)
 getSinkInputNumber pid =
@@ -142,18 +153,15 @@ parseSIDFromPID pid out = go pid (lines out) Nothing where
     | otherwise = go p ls (Just sid)
   go p [] _ = Nothing
 
-currentWindowPACtl :: String -> String -> X ()
-currentWindowPACtl cmd delta =
-  withDisplay (\d-> withFocused (changeVolume d)) where
-  changeVolume d w =
-    do pid' <- getPID d w
-       case pid' of
-        Nothing -> return ()
-        Just pid ->
-          do sid' <- io $ getSinkInputNumber pid
-             case sid' of
-              Nothing -> return ()
-              Just sid -> spawn $ "pactl " ++ cmd ++ " " ++ show sid ++ " " ++ delta
+pactl :: String -> String -> Int -> X ()
+pactl cmd delta pid =
+  do sid' <- io $ getSinkInputNumber pid
+     case sid' of
+       Nothing -> return ()
+       Just sid -> spawn $ "pactl " ++ cmd ++ " " ++ show sid ++ " " ++ delta
+
+killPID :: Int -> X ()
+killPID pid = spawn $ "kill -9 " ++ show pid
 
 ------------------------------------------------------------------------
 -- Mouse bindings: default actions bound to mouse events
