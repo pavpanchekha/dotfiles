@@ -8,6 +8,7 @@ export GTK_IM_MODULE=xim
 # X server stuff
 [ `hostname` == "desktop" ] && xbindkeys
 setxkbmap -option ctrl:swapcaps -option compose:lctrl
+xsetroot -cursor_name arrow
 eval $(cat ~/.fehbg)
 
 # Applications

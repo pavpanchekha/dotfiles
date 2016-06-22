@@ -3,6 +3,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(column-number-mode t)
  '(coq-server-user "p92")
  '(custom-enabled-themes (quote (monokai)))
  '(custom-safe-themes
@@ -16,6 +17,9 @@
     (("\\square" "\\square" t "&#x2610;" "[]" "[]" "☐"))))
  '(org-pretty-entities t)
  '(paradox-automatically-star t)
+ '(show-paren-mode t)
+ '(size-indication-mode t)
+ '(tool-bar-mode nil)
  '(tramp-default-method "ssh")
  '(tramp-inline-compress-start-size nil)
  '(tramp-verbose 2))
@@ -25,4 +29,5 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(default ((t (:family "Terminus" :foundry "xos4" :slant normal :weight normal :height 105 :width normal))))
  '(cursor ((t (:background "#F8F8F8" :foreground "#f8f8f8" :inverse-video t)))))

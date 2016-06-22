@@ -483,7 +483,9 @@ I'm also often shaving my Emacs configuration (this file). It's helpful to jump 
   Proof General is, of course, central to using Coq.
 
   #+BEGIN_SRC emacs-lisp
-    (load-file "/home/pavpan/src/ProofGeneral-4.2/generic/proof-site.el")
+    (let ((proof-general-path "/home/pavpan/src/ProofGeneral-4.2/generic/proof-site.el"))
+      (when (file-exists-p proof-general-path)
+        (load-file proof-general-path)))
   #+END_SRC
 
 * Inter-Key Timings
@@ -582,6 +584,15 @@ I don’t like the default use of =TAB= and =C-z=, so I switch them. Code from [
 
   (defun display-sign-results (status)
     (message (buffer-string)))
+#+END_SRC
+
+* FPCore
+
+FPCore and FPImp are the formats behind the [[http://fpbench.org][FPBench]] benchmark suite. They're vaguely Scheme-derived.
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'auto-mode-alist '("\\.fpcore" . scheme-mode))
+(add-to-list 'auto-mode-alist '("\\.fpimp" . scheme-mode))
 #+END_SRC
 
 * Random
