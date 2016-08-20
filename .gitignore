@@ -28,6 +28,7 @@
 .s3cfg
 .tumblr
 .travis
+.docker
 
 # Things that should really go into ~/.local
 .cabal
