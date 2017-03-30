@@ -4,6 +4,7 @@ import XMonad
 import XMonad.Core
 import XMonad.Util.NamedScratchpad
 import XMonad.Layout.NoBorders
+import XMonad.Layout.Column
 import XMonad.Hooks.ManageDocks
 import System.Directory
 import System.Exit
@@ -181,7 +182,7 @@ myManageHook = [ className =? "stalonetray"--> doIgnore
                , className =? "plugin-container" --> doIgnore
                , namedScratchpadManageHook myScratchPads]
 
-myLayout = smartBorders $ avoidStruts $ (tiled ||| Mirror tiled ||| Full)
+myLayout = smartBorders $ avoidStruts $ (tiled ||| Mirror (Column 1.0) ||| Full)
     where tiled = Tall 1 (3/100) (1/2)
 
 myLog pipe = dynamicLogWithPP $ xmobarPP {

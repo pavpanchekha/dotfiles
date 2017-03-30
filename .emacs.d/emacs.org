@@ -26,19 +26,19 @@ I install packages mostly from MELPA.
 Here are the packages I use; this table is [[http://sachachua.com/blog/2015/01/getting-data-org-mode-tables/][used by org-mode]] to install the packages.
 
 #+NAME: packages
-| Package         | Use                                      |
-| better-defaults | Hide menus and fix some basic annoyances |
-| monokai-theme   | A colorful theme which I really like     |
-| evil            | Vim key-bindings                         |
-| evil-leader     | Set =SPC= as a leader key                  |
-| helm            | A generic menu-driven Emacs plugin       |
-| projectile      | A light-weight project tool              |
-| magit           | A git mode                               |
-| company         | Completions and suggestions              |
-| org             | An organization tool                     |
-| haskell-mode    | Editing haskell                          |
-| geiser          | A Scheme REPL                            |
-| markdown-mode   | Editing markdown                         |
+| Package                | Use                                      |
+| better-defaults        | Hide menus and fix some basic annoyances |
+| monokai-theme          | A colorful theme which I really like     |
+| evil                   | Vim key-bindings                         |
+| evil-leader            | Set =SPC= as a leader key                  |
+| helm                   | A generic menu-driven Emacs plugin       |
+| projectile             | A light-weight project tool              |
+| magit                  | A git mode                               |
+| company                | Completions and suggestions              |
+| org                    | An organization tool                     |
+| haskell-mode           | Editing haskell                          |
+| geiser                 | A Scheme REPL                            |
+| markdown-mode          | Editing markdown                         |
 
 #+BEGIN_SRC emacs-lisp :var packages=packages
   (dolist (package (mapcar #'intern (mapcar #'car (cdr packages))))
@@ -80,7 +80,7 @@ I keep a journal.
 #+BEGIN_SRC emacs-lisp
   (defun my-open-journal ()
     (interactive)
-    (find-file "~/Dropbox/journal.org"))
+    (find-file "~/Dropbox/journal.txt"))
 #+END_SRC
 
 * Evil: key commands à la Vim
@@ -599,7 +599,17 @@ FPCore and FPImp are the formats behind the [[http://fpbench.org][FPBench]] benc
 
 #+BEGIN_SRC emacs-lisp
 (defun z3-truncate-long-lines ()
-  (when (and (stringp buffer-file-name) (string-match "\\.(z3|log)\\'" buffer-file-name))
+  (when (and (stringp buffer-file-name) (string-match-p "\\.\\(z3\\|log\\)$" buffer-file-name))
     (toggle-truncate-lines)))
 (add-hook 'find-file-hook 'z3-truncate-long-lines)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (defun triple-split ()
+    (interactive)
+    (delete-other-windows)
+    (split-window-right)
+    (split-window-right)
+    (balance-windows))
+  (evil-leader/set-key (kbd "3") 'triple-split)
 #+END_SRC
