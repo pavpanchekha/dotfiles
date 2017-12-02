@@ -32,7 +32,7 @@
 <Multi_key> <minus> <plus> 		: "±"   plusminus # PLUS-MINUS SIGN
 <Multi_key> <question> <question> 	: "¿"   questiondown # INVERTED QUESTION MARK
 
-<Multi_key> <o> <o>              	: "°"   degree # DEGREE SIGN
+<Multi_key> <o> <o>              	: "∘"   U2218 # RING OPERATOR
 <Multi_key> <asterisk> <0> 		: "°"   degree # DEGREE SIGN
 <Multi_key> <0> <asterisk> 		: "°"   degree # DEGREE SIGN
 
@@ -212,12 +212,11 @@
 <Multi_key> <v> <slash>                         : "√"   U221a   # v / SQUARE ROOT
 <Multi_key> <8> <8>                             : "∞"   U221e   # 8 8 INFINITY
 <Multi_key> <equal> <underscore>                : "≡"   U2261   # = _ IDENTICAL TO
+<Multi_key> <asciitilde> <equal>                     : "≈"   U2248   # ~ = ALMOST EQUAL TO
 <Multi_key> <underscore> <U2260>                : "≢"   U2262   # _ ≠ NOT IDENTICAL TO
 <Multi_key> <U2260> <underscore>                : "≢"   U2262   # ≠ _ NOT IDENTICAL TO
-<Multi_key> <less> <underscore>                 : "≤"   U2264   # < _ LESS-THAN OR EQUAL TO
-<Multi_key> <underscore> <less>                 : "≤"   U2264   # _ < LESS-THAN OR EQUAL TO
-<Multi_key> <greater> <underscore>              : "≥"   U2265   # > _ GREATER-THAN OR EQUAL TO
-<Multi_key> <underscore> <greater>              : "≥"   U2265   # _ > GREATER-THAN OR EQUAL TO
+<Multi_key> <less> <equal>                      : "≤"   U2264   # < _ LESS-THAN OR EQUAL TO
+<Multi_key> <greater> <equal>                   : "≥"   U2265   # > _ GREATER-THAN OR EQUAL TO
 <Multi_key> <underscore> <U2282>                : "⊆"   U2286   # _ ⊂ SUBSET OF OR EQUAL TO
 <Multi_key> <U2282> <underscore>                : "⊆"   U2286   # ⊂ _ SUBSET OF OR EQUAL TO
 <Multi_key> <underscore> <U2283>                : "⊇"   U2287   # _ ⊃ SUPERSET OF OR EQUAL TO
@@ -244,8 +243,10 @@
 <Multi_key> <circumflex> <1>                    : "¹" U00b9 # SUPERSCRIPT ONE
 <Multi_key> <circumflex> <2>                    : "²" U00b2 # SUPERSCRIPT TWO
 <Multi_key> <circumflex> <3>                    : "³" U00b3 # SUPERSCRIPT THREE
-<Multi_key> <asciitilde> <asciitilde>           : "¬"  U00ac # LOGICAL NEGATION
-<Multi_key> <i> <n>                             : "∈" U2209 # ELEMENT OF
+<Multi_key> <asciitilde> <asciitilde>           : "¬" U00ac # LOGICAL NEGATION
+<Multi_key> <i> <n>                             : "∈" U2208 # ELEMENT OF
+<Multi_key> <n> <i> <n>                         : "∉" U2209 # NOT AN ELEMENT OF
+<Multi_key> <x> <x>                             : "×" U00D7 # Multiplication sign
 
 # Greek letter
 
@@ -253,10 +254,16 @@
 <Multi_key> <g> <a>                             : "α"   U03b1      # GREEK SMALL LETTER ALPHA
 <Multi_key> <g> <b>                             : "β"   U03b2      # GREEK SMALL LETTER BETA
 <Multi_key> <g> <g>                             : "γ"   U03b3      # GREEK SMALL LETTER GAMMA
+<Multi_key> <g> <p>                             : "π"   U03c0      # GREEK SMALL LETTER PI
 <Multi_key> <g> <l>                             : "λ"   U03bb      # GREEK SMALL LETTER LAMBDA
 <Multi_key> <g> <G>                             : "Γ"   U0393      # GREEK CAPITAL LETTER GAMMA
 <Multi_key> <g> <D>                             : "Δ"   U0394      # GREEK CAPITAL LETTER DELTA
 
+# Blackboard bold
+
+<Multi_key> <R> <R>                             : "ℝ"   U211D      # DOUBLE-STRUCK R
+<Multi_key> <C> <C>                             : "ℂ"   U2102      # DOUBLE-STRUCK C
+<Multi_key> <N> <N>                             : "ℕ"   U2115      # DOUBLE-STRUCK N
 
 <Multi_key> <less> <minus> : "←" U2190 # LEFTWARDS ARROW
 <Multi_key> <minus> <greater> : "→" U2192 # RIGHTWARDS ARROW
