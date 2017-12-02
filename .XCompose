@@ -72,6 +72,19 @@
 <Multi_key> <I> <J>              	: "Ĳ"   U0132 # LATIN CAPITAL LIGATURE IJ
 <Multi_key> <I> <j>              	: "Ĳ"   U0132 # LATIN CAPITAL LIGATURE IJ
 <Multi_key> <i> <j>              	: "ĳ"   U0133 # LATIN SMALL LIGATURE IJ
+<Multi_key> <n> <asciitilde>           	: "ñ"   U00F1 # LATIN SMALL LETTER N WITH TILDE
+<Multi_key> <apostrophe> <a> 		: "á"   aacute # LATIN CAPITAL LETTER A WITH ACUTE
+<Multi_key> <apostrophe> <A> 		: "Á"   Aacute # LATIN CAPITAL LETTER A WITH ACUTE
+<Multi_key> <apostrophe> <e> 		: "é"   eacute # LATIN CAPITAL LETTER A WITH ACUTE
+<Multi_key> <apostrophe> <E> 		: "É"   Eacute # LATIN CAPITAL LETTER A WITH ACUTE
+<Multi_key> <apostrophe> <i> 		: "í"   iacute # LATIN CAPITAL LETTER A WITH ACUTE
+<Multi_key> <apostrophe> <I> 		: "Í"   Iacute # LATIN CAPITAL LETTER A WITH ACUTE
+<Multi_key> <apostrophe> <o> 		: "ó"   oacute # LATIN CAPITAL LETTER A WITH ACUTE
+<Multi_key> <apostrophe> <O> 		: "Ó"   Oacute # LATIN CAPITAL LETTER A WITH ACUTE
+<Multi_key> <apostrophe> <u> 		: "ú"   uacute # LATIN CAPITAL LETTER A WITH ACUTE
+<Multi_key> <apostrophe> <U> 		: "Ú"   Uacute # LATIN CAPITAL LETTER A WITH ACUTE
+<Multi_key> <colon> <u> 		: "ü"   udiaeresis # LATIN CAPITAL LETTER A WITH ACUTE
+<Multi_key> <colon> <U> 		: "Ü"   Udiaeresis # LATIN CAPITAL LETTER A WITH ACUTE
 
 <Multi_key> <s> <s>              	: "ß"   ssharp # LATIN SMALL LETTER SHARP S
 <Multi_key> <S> <S>              	: "ẞ"   U1e9e # LATIN CAPITAL LETTER SHARP S
