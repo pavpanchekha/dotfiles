@@ -30,6 +30,7 @@
 .travis
 .docker
 .ocamlinit
+.subversion
 
 # Things that should really go into ~/.local
 .cabal
