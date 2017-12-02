@@ -180,6 +180,7 @@ myMouseBindings (XConfig {XMonad.modMask = modm}) = M.fromList $
 
 myManageHook = [ className =? "stalonetray"--> doIgnore
                , className =? "plugin-container" --> doIgnore
+               , className =? "Pinentry" --> doFloat
                , namedScratchpadManageHook myScratchPads]
 
 myLayout = smartBorders $ avoidStruts $ (tiled ||| Mirror (Column 1.0) ||| Full)
