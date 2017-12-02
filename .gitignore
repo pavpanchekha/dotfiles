@@ -29,6 +29,7 @@
 .tumblr
 .travis
 .docker
+.ocamlinit
 
 # Things that should really go into ~/.local
 .cabal
@@ -76,6 +77,7 @@
 .racket_history
 .julia_history
 .vimperatorrc
+.opam
 
 # System components that don't need their own directory
 .fontconfig
