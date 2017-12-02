@@ -19,6 +19,9 @@
    (quote
     (("\\square" "\\square" t "&#x2610;" "[]" "[]" "☐"))))
  '(org-pretty-entities t)
+ '(package-selected-packages
+   (quote
+    (tuareg paredit org monokai-theme markdown-mode magit helm-projectile haskell-mode goto-last-change geiser evil-leader esqlite company better-defaults ag)))
  '(paradox-automatically-star t)
  '(show-paren-mode t)
  '(size-indication-mode t)
@@ -32,6 +35,5 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "DejaVu Sans Mono" :foundry "unknown" :slant normal :weight normal :height 98 :width normal))))
- '(auto-dim-other-buffers-face ((t (:foreground "dim gray"))))
+ '(default ((t (:family "DejaVu Sans Mono" :foundry "PfEd" :slant normal :weight normal :height 90 :width normal))))
  '(cursor ((t (:background "#F8F8F8" :foreground "#f8f8f8" :inverse-video t)))))

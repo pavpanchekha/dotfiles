@@ -25,8 +25,8 @@ import XMonad.Util.Run(spawnPipe)
 myPrompt = defaultXPConfig {
              bgColor = "black"
            , fgColor = "white"
-           , font = "xft:Terminus-15"
-           , height = 24
+           , font = "xft:Deja Vu Sans Mono-14"
+           , height = 28
            , position = Top
            , promptBorderWidth = 0
            }
@@ -88,7 +88,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask, xK_x     ), spawn "sakura")
     , ((modm .|. shiftMask, xK_r     ), spawn "xmonad --recompile; xmonad --restart")
     , ((modm              , xK_space ), spawn "emacsclient -c --alternate-editor=")
-    , ((modm .|. shiftMask, xK_f     ), spawn "firefox")
+    , ((modm .|. shiftMask, xK_f     ), spawn "$BROWSER")
     , ((modm .|. shiftMask, xK_t     ), spawn "thunar")
     , ((modm .|. shiftMask, xK_space ), execPrompt)
 

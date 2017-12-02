@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e -x
+set -e
 
 export PATH="$PATH:$HOME/bin"
 export GTK_IM_MODULE=xim

@@ -2,11 +2,11 @@
 set -e nounset -e errexit
 
 printcite () {
-    cat "$1" | awk '/^}/ { print; exit } { print }'
+    <"$1" awk '/^}/ { print; exit } { print }'
 }
 
-while read line; do
-    FILE=`find ~/Dropbox/Citations -name "$line.bib"`
+while read -r line; do
+    FILE=$(find ~/Dropbox/Citations -name "$line.bib")
     if [[ -z "$FILE" ]]; then
         echo "Missing citation: $line" 1>&2
     elif head -n1 "$FILE" | grep -c "($line," > /dev/null; then

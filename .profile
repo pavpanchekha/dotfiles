@@ -93,3 +93,5 @@ alias project="xrandr --output HDMI1 --mode 1920x1080"
 alias rm="rm -i"
 alias tm="trash"
 
+# OPAM configuration
+. /home/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true

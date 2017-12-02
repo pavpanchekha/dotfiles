@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e -f -u -C
 
-PROG=`basename "$0"`
+PROG=$(basename "$0")
 # May not contain "_" character
 TRASHDIR="$HOME/.trash"
 mkdir -p "$TRASHDIR"
@@ -55,7 +55,7 @@ shift $((OPTIND-1))
 
 [ "$#" = 0 ] && usage
 
-DIR="$TRASHDIR"/`date +%Y-%m-%d-%H-%M-%S`
+DIR="$TRASHDIR"/$(date +%Y-%m-%d-%H-%M-%S)
 mkdir -p "$DIR"
 
 for file; do
@@ -81,11 +81,11 @@ for file; do
         # Pass through if (EMPTY && DIR || RECURSIVE)
     fi
 
-    if ! [ -r "$file" -a -w "$file" ] && [ -z "$FORCE" ] || \
+    if ! [ -r "$file" ] && [ -w "$file" ] && [ -z "$FORCE" ] || \
         [ -n "$INTERACTIVE" ]; then
 
         echo -n "Remove protected file \`$file\`? "
-        read USER
+        read -r USER
         if ! [ "$USER" == "y" ]; then
             SKIP=true
         fi
