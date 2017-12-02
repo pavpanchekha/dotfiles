@@ -78,6 +78,8 @@
 .julia_history
 .vimperatorrc
 .opam
+.ivy2
+.sbt
 
 # System components that don't need their own directory
 .fontconfig
