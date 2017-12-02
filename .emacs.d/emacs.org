@@ -26,19 +26,18 @@ I install packages mostly from MELPA.
 Here are the packages I use; this table is [[http://sachachua.com/blog/2015/01/getting-data-org-mode-tables/][used by org-mode]] to install the packages.
 
 #+NAME: packages
-| Package                | Use                                      |
-| better-defaults        | Hide menus and fix some basic annoyances |
-| monokai-theme          | A colorful theme which I really like     |
-| evil                   | Vim key-bindings                         |
-| evil-leader            | Set =SPC= as a leader key                  |
-| helm                   | A generic menu-driven Emacs plugin       |
-| projectile             | A light-weight project tool              |
-| magit                  | A git mode                               |
-| company                | Completions and suggestions              |
-| org                    | An organization tool                     |
-| haskell-mode           | Editing haskell                          |
-| geiser                 | A Scheme REPL                            |
-| markdown-mode          | Editing markdown                         |
+| Package         | Use                                      |
+| better-defaults | Hide menus and fix some basic annoyances |
+| monokai-theme   | A colorful theme which I really like     |
+| evil            | Vim key-bindings                         |
+| evil-leader     | Set =SPC= as a leader key                  |
+| helm            | A generic menu-driven Emacs plugin       |
+| magit           | A git mode                               |
+| company         | Completions and suggestions              |
+| org             | An organization tool                     |
+| haskell-mode    | Editing haskell                          |
+| geiser          | A Scheme REPL                            |
+| markdown-mode   | Editing markdown                         |
 
 #+BEGIN_SRC emacs-lisp :var packages=packages
   (dolist (package (mapcar #'intern (mapcar #'car (cdr packages))))
@@ -124,9 +123,9 @@ I have a few shortcuts using the =SPC= leader. They’re mostly bindings to Helm
 | s   | save-buffer         |
 | b   | helm-mini           |
 | h   | help-for-help       |
-| p   | helm-projectile     |
 | g   | helm-google-suggest |
 | j   | my-open-journal     |
+| c   | org-capture         |
 | e   | eshell              |
 | TAB | switch-other-buffer |
 
@@ -223,6 +222,16 @@ Org-mode needs more information to use alternate LaTeX document classes.  I put 
 
 #+BEGIN_SRC emacs-lisp
   (load "~/.emacs.d/export.el")
+#+END_SRC
+
+I've got a few capture templates:
+
+#+BEGIN_SRC emacs-lisp
+  (setf org-capture-templates
+        '(("j" "Journal Entry" entry (file "~/Dropbox/journal.org")
+           "* %? %T" :prepent t)))
+
+  (add-hook 'org-capture-mode-hook 'evil-insert-state)
 #+END_SRC
 
 * Magit Git integration
@@ -359,14 +368,6 @@ Finally, we add key-bindings using Evil's =evil-normal-state-map=.
 #+BEGIN_SRC emacs-lisp
 (define-key evil-normal-state-map "z=" 'ispell-word)
 (define-key evil-normal-state-map "zg" 'ispell-save-word)
-#+END_SRC
-
-* Projectile
-
-[[https://github.com/bbatsov/projectile][Projectile]] is a project management suite for Emacs. I enable it everywhere. It only does anything when I’m in a version-controlled directory, so there’s little harm in this.
-
-#+BEGIN_SRC emacs-lisp
-  (projectile-global-mode)
 #+END_SRC
 
 * The =run= Command
@@ -531,7 +532,7 @@ The default print settings are silly for printing to PDF. I prefer syntax highli
 #+BEGIN_SRC emacs-lisp
   (setf pr-faces-p t)
   (setf ps-print-header nil)
-  (setf ps-print-header-frame)
+  (setf ps-print-header-frame nil)
 #+END_SRC
 
 * Helm
@@ -612,4 +613,9 @@ FPCore and FPImp are the formats behind the [[http://fpbench.org][FPBench]] benc
     (split-window-right)
     (balance-windows))
   (evil-leader/set-key (kbd "3") 'triple-split)
+#+END_SRC
+  
+#+BEGIN_SRC emacs-lisp
+(defun tuareg-abbrev-hook (&rest ignore)
+  nil)
 #+END_SRC
