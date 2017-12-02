@@ -98,6 +98,7 @@
 .lesshst
 .ccache
 .fehbg
+.python_history-*
 
 # System files
 .ICEauthority
@@ -122,3 +123,4 @@ priv
 .xmonad/xmonad.errors
 .xmonad/xmonad.hi
 .xmonad/xmonad.o
+.xmonad/prompt-history
