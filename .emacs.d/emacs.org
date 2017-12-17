@@ -252,10 +252,10 @@ I bind it to use my leader key instead.
 #+END_SRC
 
 * Editing text
-  
+
 I’m writing text documents pretty often now—the life of a scientist involves a lot of papers, notes, meetings, websites. Normally these files use org-mode. I’d love to use Markdown for everything—Org-mode’s syntax is actually pretty ugly—but Markdown has problems of its own. That’s a rant for another day, but suffice it to say that I’m using org-mode for now.
 
-I give Org-mode files a =txt= extension because this allows editing them on other devices. 
+I give Org-mode files a =txt= extension because this allows editing them on other devices.
 
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'auto-mode-alist '("\\.txt$" . org-mode))
@@ -394,7 +394,7 @@ Then we attach them to =[f5]= and =[C-f5]=.
 #+END_SRC
 
 * Doc View
-  
+
 I sometimes use doc-view for long PDFs (though rarely now).
 
 For long PDFs, continuous scrolling is best.
@@ -536,7 +536,7 @@ The default print settings are silly for printing to PDF. I prefer syntax highli
 #+END_SRC
 
 * Helm
-  
+
 Helm is an incredible search interface. It’s hard to describe, but it somehow improves on many of Emacs’s built-in utilities. I turn on Helm in a couple of places.
 
 #+BEGIN_SRC emacs-lisp
@@ -614,7 +614,7 @@ FPCore and FPImp are the formats behind the [[http://fpbench.org][FPBench]] benc
     (balance-windows))
   (evil-leader/set-key (kbd "3") 'triple-split)
 #+END_SRC
-  
+
 #+BEGIN_SRC emacs-lisp
 (defun tuareg-abbrev-hook (&rest ignore)
   nil)
