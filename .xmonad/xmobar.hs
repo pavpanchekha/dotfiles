@@ -1,6 +1,6 @@
 Config { font = "xft:Deja Vu Sans Mono-14"
        , position = Top
-       , bgColor = "#eeeeee"
+       , bgColor = "#e8e8e7"
        , fgColor = "#444444"
 
        , sepChar = "%"
