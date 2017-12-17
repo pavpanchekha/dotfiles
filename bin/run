@@ -192,7 +192,7 @@ class Extensions:
             yield EMACS_COMMAND(tempname)
             texfile = cls.outfile(f)[:-4] + ".tex" # Replace .pdf extension with .tex
             texname = os.path.join(tempdir, os.path.split(texfile)[1])
-            yield ["rubber", "-d", "--into", tempdir, texname] + args
+            yield ["rubber", "--pdf", "--into", tempdir, texname] + args
 
         def link_dir(cls, dir, f, tempdir):
             dir_path = os.path.join(os.path.dirname(f), dir)
@@ -217,12 +217,15 @@ class Extensions:
     @instantiate
     class tex:
         def run(cls, f, args, tempdir):
-            yield ["rubber", "-d", "--into", tempdir, f] + args
+            dir_path = os.path.abspath(os.path.dirname(f))
+            vars = { "bibtex.path": dir_path, "bibtex.stylepath": dir_path }
+
+            yield ["rubber", "-I", dir_path] + sum((["--command", "{} {}".format(key, value)] for key, value in vars.items()), []) + ["--pdf", "--into", tempdir, f] + args
             yield ["evince", os.path.join(tempdir,
                                           os.path.split(cls.outfile(f))[1])]
 
         def compile(cls, f, args, tempdir, target):
-            yield ["rubber", "-d", "--into", tempdir, f] + args
+            yield ["rubber", "--pdf", "--into", tempdir, f] + args
             yield ["mv", os.path.join(tempdir, os.path.split(cls.outfile(f))[1]), target]
 
         def outfile(cls, f):
