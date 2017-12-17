@@ -596,6 +596,36 @@ FPCore and FPImp are the formats behind the [[http://fpbench.org][FPBench]] benc
 (add-to-list 'auto-mode-alist '("\\.fpimp" . scheme-mode))
 #+END_SRC
 
+* Blog posts
+
+I maintain a [[https://pavpanchekha.com][blog]], and the blog is stored in =/home/www/=, which is maintained by =git=. To make it easier to keep track of draft posts I've written but not published, I wrote a Magit section that shows up right after "Untracked Files":
+
+#+BEGIN_SRC emacs-lisp
+  (defun my-magit-insert-blog-posts ()
+    "Insert section detailing my unpublished blog posts"
+    (when (equal default-directory "/home/www/")
+      (-when-let (unpublished-posts (split-string (shell-command-to-string "bash etc/drafts.sh") "\n" t))
+        (magit-insert-section (blog-posts)
+          (magit-insert-heading "Unpublished blog posts:")
+          (dolist (post unpublished-posts)
+            (magit-insert-section (file (concat "blog/" post))
+              (insert (propertize (concat "blog/" post) 'face 'magit-filename) ?\n)))
+           (insert ?\n)))))
+#+END_SRC
+
+The referenced =drafts.sh= file looks for all blog posts not named on the home page and outputs them in a list.
+
+I want this section to show up only in the blog post directory, so I add a hook whenever magit runs that both adds the section to the list of sections, *and* makes that variable buffer-local so it doesn't affect other directories.
+
+#+BEGIN_SRC emacs-lisp
+  (defun my-magit-setup-blog-posts ()
+    (when (equal default-directory "/home/www/")
+      (magit-add-section-hook 'magit-status-sections-hook 'my-magit-insert-blog-posts
+                              'magit-insert-untracked-files 'after t)))
+
+  (add-hook 'magit-mode-hook 'my-magit-setup-blog-posts)
+#+END_SRC
+
 * Random
 
 #+BEGIN_SRC emacs-lisp
