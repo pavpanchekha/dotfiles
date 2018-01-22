@@ -79,7 +79,7 @@ I keep a journal.
 #+BEGIN_SRC emacs-lisp
   (defun my-open-journal ()
     (interactive)
-    (find-file "~/Dropbox/journal.txt"))
+    (find-file "~/Dropbox/journal.org"))
 #+END_SRC
 
 * Evil: key commands à la Vim
