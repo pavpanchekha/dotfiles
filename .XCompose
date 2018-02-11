@@ -254,6 +254,8 @@
 <Multi_key> <g> <a>                             : "α"   U03b1      # GREEK SMALL LETTER ALPHA
 <Multi_key> <g> <b>                             : "β"   U03b2      # GREEK SMALL LETTER BETA
 <Multi_key> <g> <g>                             : "γ"   U03b3      # GREEK SMALL LETTER GAMMA
+<Multi_key> <g> <d>                             : "δ"   U03b4      # GREEK SMALL LETTER DELTA
+<Multi_key> <g> <e>                             : "ε"   U03b5      # GREEK SMALL LETTER EPSILON
 <Multi_key> <g> <p>                             : "π"   U03c0      # GREEK SMALL LETTER PI
 <Multi_key> <g> <l>                             : "λ"   U03bb      # GREEK SMALL LETTER LAMBDA
 <Multi_key> <g> <G>                             : "Γ"   U0393      # GREEK CAPITAL LETTER GAMMA
