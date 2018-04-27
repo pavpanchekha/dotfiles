@@ -20,7 +20,6 @@ I install packages mostly from MELPA.
 
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'package-archives '("melpa-stable" . "http://stable.melpa.org/packages/") t)
-  (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
 #+END_SRC
 
 Here are the packages I use; this table is [[http://sachachua.com/blog/2015/01/getting-data-org-mode-tables/][used by org-mode]] to install the packages.
@@ -37,7 +36,6 @@ Here are the packages I use; this table is [[http://sachachua.com/blog/2015/01/g
 | org             | An organization tool                     |
 | haskell-mode    | Editing haskell                          |
 | geiser          | A Scheme REPL                            |
-| markdown-mode   | Editing markdown                         |
 
 #+BEGIN_SRC emacs-lisp :var packages=packages
   (dolist (package (mapcar #'intern (mapcar #'car (cdr packages))))
@@ -484,9 +482,7 @@ I'm also often shaving my Emacs configuration (this file). It's helpful to jump 
   Proof General is, of course, central to using Coq.
 
   #+BEGIN_SRC emacs-lisp
-    (let ((proof-general-path "/home/pavpan/src/ProofGeneral-4.2/generic/proof-site.el"))
-      (when (file-exists-p proof-general-path)
-        (load-file proof-general-path)))
+  (setf coq-compile-parallel-in-background nil)
   #+END_SRC
 
 * Inter-Key Timings
