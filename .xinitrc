@@ -24,6 +24,14 @@ python3 ~/bin/timetracker -I 300 -b 60 -f ~/Dropbox/Data/timetrack.`hostname`.lo
 
 eval $(gpg-agent --daemon)
 
+# Start system stuff
+if [ -d /etc/X11/xinit/xinitrc.d ] ; then
+        for f in /etc/X11/xinit/xinitrc.d/?*.sh ; do
+                [ -x "$f" ] && . "$f"
+        done
+        unset f
+fi
+
 dropbox start &
 
 exec ssh-agent xmonad
