@@ -1,0 +1,34 @@
+#!/bin/python3
+
+import sys
+import threading
+import io
+import http.server
+
+INPUT = io.StringIO()
+
+def save_input():
+    while True:
+        c =  sys.stdin.read(1)
+        if len(c) == 0: break
+        INPUT.write(c)
+        sys.stdout.write(c)
+
+class HTTPHandler(http.server.BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-Type", "text/plain")
+        self.wfile.write(INPUT.getvalue().encode("utf-8"))
+
+if __name__ == "__main__":
+    reader = threading.Thread(target=save_input)
+    reader.daemon = True
+    reader.start()
+
+    server = http.server.HTTPServer(("", 0), HTTPHandler)
+    sys.stderr.write("Serving on http://{}:{}/\n".format(server.server_name, server.server_port))
+    sys.stderr.flush()
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        reader.join()
