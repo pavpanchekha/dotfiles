@@ -27,9 +27,8 @@ Here are the packages I use; this table is [[http://sachachua.com/blog/2015/01/g
 #+NAME: packages
 | Package         | Use                                      |
 | better-defaults | Hide menus and fix some basic annoyances |
-| monokai-theme   | A colorful theme which I really like     |
 | evil            | Vim key-bindings                         |
-| evil-leader     | Set =SPC= as a leader key                  |
+| evil-leader     | Set =SPC= as a leader key                |
 | helm            | A generic menu-driven Emacs plugin       |
 | magit           | A git mode                               |
 | company         | Completions and suggestions              |
@@ -477,14 +476,6 @@ I'm also often shaving my Emacs configuration (this file). It's helpful to jump 
   (find-file "~/.emacs.d/emacs.org"))
 #+END_SRC
 
-* Coq programming tools
-
-  Proof General is, of course, central to using Coq.
-
-  #+BEGIN_SRC emacs-lisp
-  (setf coq-compile-parallel-in-background nil)
-  #+END_SRC
-
 * Inter-Key Timings
 
 One interesting characteristic of a person's typing is their inter-key timings -- the time between typing two letters in succession.  For example, it usually takes more time to type "cr" than ";l", since one involves moving the left index finger a large distance and the other uses the really natural rolling chord on the right hand.  By recording all key character pairs, we can actually track timings for this.  And since I do a lot of my work in Emacs, it is easiest to do this as an Emacs extension.
@@ -644,4 +635,9 @@ I want this section to show up only in the blog post directory, so I add a hook 
 #+BEGIN_SRC emacs-lisp
 (defun tuareg-abbrev-hook (&rest ignore)
   nil)
+#+END_SRC
+* Proof General
+
+#+BEGIN_SRC emacs-lisp
+(load "/usr/share/emacs/site-lisp/ProofGeneral/generic/proof-site")
 #+END_SRC
