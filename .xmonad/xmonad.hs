@@ -212,7 +212,7 @@ main = do
         focusFollowsMouse  = True,
         borderWidth        = 1,
         modMask            = mod4Mask,
-        workspaces         = ["1", "2", "3", "4", "5", "*"],
+        workspaces         = ["1", "2", "3", "4", "5"],
 
         normalBorderColor  = "#000000",
         focusedBorderColor = "#8ae234",
