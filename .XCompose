@@ -8,8 +8,9 @@
 
 <Multi_key> <parenleft> <C> <parenright>        : "©"   copyright # COPYRIGHT SIGN
 <Multi_key> <parenleft> <R> <parenright>        : "®"   registered # REGISTERED SIGN
-<Multi_key> <s> <m>		 	: "℠"   U2120 # SERVICE MARK
-<Multi_key> <t> <m>		 	: "™"   U2122 # TRADE MARK SIGN
+<Multi_key> <s> <m>		 	        : "℠"   U2120 # SERVICE MARK
+<Multi_key> <t> <m>		 	        : "™"   U2122 # TRADE MARK SIGN
+<Multi_key> <asterisk> <asterisk>               : "★"   U2605 # BLACK STAR
 
 # Punctuation
 
@@ -217,6 +218,7 @@
 <Multi_key> <U2260> <underscore>                : "≢"   U2262   # ≠ _ NOT IDENTICAL TO
 <Multi_key> <less> <equal>                      : "≤"   U2264   # < _ LESS-THAN OR EQUAL TO
 <Multi_key> <greater> <equal>                   : "≥"   U2265   # > _ GREATER-THAN OR EQUAL TO
+<Multi_key> <parenleft> <equal>                 : "⊂"   U2282   # ⊂ SUBSET OF
 <Multi_key> <underscore> <U2282>                : "⊆"   U2286   # _ ⊂ SUBSET OF OR EQUAL TO
 <Multi_key> <U2282> <underscore>                : "⊆"   U2286   # ⊂ _ SUBSET OF OR EQUAL TO
 <Multi_key> <underscore> <U2283>                : "⊇"   U2287   # _ ⊃ SUPERSET OF OR EQUAL TO
@@ -282,3 +284,6 @@
 <Multi_key> <underscore> <bar> : "⊥" U22a5 # UP TACK
 <Multi_key> <bar> <equal> : "⊧" U22a7 # MODELS
 <Multi_key> <bar> <slash> <minus> : "⊬" U22ac # DOES NOT PROVE
+
+<Multi_key> <bracketleft> <bracketleft>         : "⟦" U27E6        # MATHEMATICAL LEFT WHITE SQUARE BRACKET
+<Multi_key> <bracketright> <bracketright>       : "⟧" U27E7        # MATHEMATICAL RIGHT WHITE SQUARE BRACKET
