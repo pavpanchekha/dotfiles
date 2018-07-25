@@ -31,6 +31,7 @@
 .docker
 .ocamlinit
 .subversion
+.parallel
 
 # Things that should really go into ~/.local
 .cabal
@@ -101,6 +102,11 @@
 .ccache
 .fehbg
 .python_history-*
+.scala_history
+.sqlite_history
+.node_repl_history
+.wget-hsts
+.xfce4-session.verbose-log
 
 # System files
 .ICEauthority
@@ -121,6 +127,7 @@ priv
 # Per-directory settings
 .ssh/known_hosts
 .xmonad/history
+.xmonad/xmonad.state
 .xmonad/xmonad-*
 .xmonad/xmonad.errors
 .xmonad/xmonad.hi
