@@ -33,7 +33,7 @@ shopt -s extglob # Crazy globbing tricks: [?*+@!]\(xxxx\)
 . /usr/share/bash-completion/bash_completion &
 
 # Some actual environment variables
-PATH="/opt/racket-6.3/bin:/opt/z3/bin:$HOME/bin:$PATH"
+PATH="/opt/zotero:/opt/z3/bin:/opt/opam:$HOME/bin:$PATH"
 GPGKEY="180C02EB09D0BE15"
 LESSHISTFILE="/dev/null"
 LANG=en_US.UTF-8
@@ -87,11 +87,11 @@ alias edconfigure="$EDITOR ~/.profile"
 alias reconfigure=". ~/.profile"
 alias py="ipython"
 alias ed="emacsclient -t-a"
-alias project="xrandr --output HDMI1 --mode 1920x1080"
+alias project="xrandr --output HDMI-1 --mode 1920x1080"
 
 # Switch to using non-destructive trashing when possible.
 alias rm="rm -i"
 alias tm="trash"
 
 # OPAM configuration
-. /home/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
+. $HOME/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
