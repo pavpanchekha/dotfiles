@@ -15,8 +15,7 @@ nm-applet &
 
 feh --bg-fill ~/Dropbox/bg-16x9.png &
 
-redshift -l 37.8:-122.4 &
-
+redshift -mrandr -l 37.8:-122.4 &
 which start-pulseaudio-x11 && start-pulseaudio-x11
 
 # Time tracker
