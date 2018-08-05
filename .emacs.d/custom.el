@@ -39,16 +39,16 @@
  '(org-pretty-entities t)
  '(package-selected-packages
    (quote
-    (color-theme-sanityinc-tomorrow tuareg magit helm-projectile haskell-mode goto-last-change geiser evil-leader esqlite company better-defaults ag)))
+    (tide color-theme-sanityinc-tomorrow tuareg magit helm-projectile haskell-mode goto-last-change geiser evil-leader esqlite company better-defaults ag)))
  '(paradox-automatically-star t)
  '(pos-tip-background-color "#FFFACE")
  '(pos-tip-foreground-color "#272822")
  '(show-paren-mode t)
  '(size-indication-mode t)
  '(tool-bar-mode nil)
- '(tramp-default-method "ssh")
- '(tramp-inline-compress-start-size nil)
- '(tramp-verbose 2)
+ '(tramp-default-method "ssh" nil (tramp))
+ '(tramp-inline-compress-start-size nil nil (tramp))
+ '(tramp-verbose 2 nil (tramp))
  '(vc-annotate-background nil)
  '(vc-annotate-color-map
    (quote
