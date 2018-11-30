@@ -30,7 +30,8 @@
      ("#A75B00" . 70)
      ("#F309DF" . 85)
      ("#3C3D37" . 100))))
- '(magit-diff-use-overlays nil)
+ '(magit-diff-options (quote ("--minimal" "--ignore-space-change")))
+ '(magit-diff-refine-hunk t)
  '(magit-push-always-verify nil)
  '(magit-use-overlays nil)
  '(org-entities-user
@@ -39,7 +40,7 @@
  '(org-pretty-entities t)
  '(package-selected-packages
    (quote
-    (evil-leader counsel ivy ivy-rich request ripgrep magit tide tuareg haskell-mode geiser company better-defaults evil org color-theme-sanityinc-tomorrow)))
+    (tide request ripgrep rg 0blayout ivy-rich counsel ivy color-theme-sanityinc-tomorrow tuareg magit haskell-mode goto-last-change geiser evil-leader esqlite company better-defaults ag)))
  '(paradox-automatically-star t)
  '(pos-tip-background-color "#FFFACE")
  '(pos-tip-foreground-color "#272822")
@@ -80,4 +81,5 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:family "DejaVu Sans Mono" :foundry "PfEd" :slant normal :weight normal :height 90 :width normal))))
- '(cursor ((t (:background "#F8F8F8" :foreground "#f8f8f8" :inverse-video t)))))
+ '(cursor ((t (:background "#F8F8F8" :foreground "#f8f8f8" :inverse-video t))))
+ '(region ((t (:inverse-video nil)))))

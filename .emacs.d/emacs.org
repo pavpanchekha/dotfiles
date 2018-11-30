@@ -29,8 +29,9 @@ Here are the packages I use; this table is [[http://sachachua.com/blog/2015/01/g
 | better-defaults | Hide menus and fix some basic annoyances |
 | evil            | Vim key-bindings                         |
 | evil-leader     | Set =SPC= as a leader key                  |
-| ivy             | A generic menu-driven Emacs plugin       |
-| counsel         | Various useful menus for =ivy=             |
+| ivy             | A generic tab completion Emacs plugin    |
+| ivy-rich        | More cool stuff in the Ivy completion    |
+| counsel         | Find-file for Ivy                        |
 | magit           | A git mode                               |
 | company         | Completions and suggestions              |
 | org             | An organization tool                     |
@@ -523,15 +524,16 @@ The default print settings are silly for printing to PDF. I prefer syntax highli
   (setf ps-print-header-frame nil)
 #+END_SRC
 
-* Counsel
+* Ivy / Counsel
 
-Ivy and Counsel provide a nice menu-driven interface to most of Emacs's built-in utilities. I used to use Helm, but found it slow; Ivy is nicer.
+Ivy is an incredible search interface. I used to use Helm, but it was too slow, and it seems that Ivy is getting popular.
 
 #+BEGIN_SRC emacs-lisp
+  (ivy-mode 1)
   (counsel-mode 1)
 #+END_SRC
 
-I configure Ivy to show recent buffers (=use-virtual-buffers=) and show 9 options.
+Some additional information in Ivy:
 
 #+BEGIN_SRC emacs-lisp
   (setq ivy-use-virtual-buffers t)

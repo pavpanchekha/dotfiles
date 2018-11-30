@@ -83,6 +83,12 @@ function to-emacs () {
     kill $$
 }
 
+function print () {
+    F="$1"
+    shift
+    <"$F" ssh recycle.cs.washington.edu lpr "$@"
+}
+
 alias edconfigure="$EDITOR ~/.profile"
 alias reconfigure=". ~/.profile"
 alias py="ipython"
