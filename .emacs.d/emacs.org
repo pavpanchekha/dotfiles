@@ -28,13 +28,13 @@ Here are the packages I use; this table is [[http://sachachua.com/blog/2015/01/g
 | Package         | Use                                      |
 | better-defaults | Hide menus and fix some basic annoyances |
 | evil            | Vim key-bindings                         |
-| evil-leader     | Set =SPC= as a leader key                |
-| helm            | A generic menu-driven Emacs plugin       |
+| evil-leader     | Set =SPC= as a leader key                  |
+| ivy             | A generic menu-driven Emacs plugin       |
+| counsel         | Various useful menus for =ivy=             |
 | magit           | A git mode                               |
 | company         | Completions and suggestions              |
 | org             | An organization tool                     |
 | haskell-mode    | Editing haskell                          |
-| geiser          | A Scheme REPL                            |
 
 #+BEGIN_SRC emacs-lisp :var packages=packages
   (dolist (package (mapcar #'intern (mapcar #'car (cdr packages))))
@@ -115,13 +115,13 @@ I have a few shortcuts using the =SPC= leader. They’re mostly bindings to Helm
 
 #+NAME: evil-leader-bindings
 | Key | Function            |
-| SPC | helm-M-x            |
-| f   | helm-find-files     |
+| SPC | counsel-M-x         |
+| f   | counsel-find-file   |
 | r   | revert-buffer       |
 | s   | save-buffer         |
-| b   | helm-mini           |
+| b   | ivy-switch-buffer   |
 | h   | help-for-help       |
-| g   | helm-google-suggest |
+| g   | ripgrep-regexp      |
 | j   | my-open-journal     |
 | c   | org-capture         |
 | e   | eshell              |
@@ -227,7 +227,7 @@ I've got a few capture templates:
 #+BEGIN_SRC emacs-lisp
   (setf org-capture-templates
         '(("j" "Journal Entry" entry (file "~/Dropbox/journal.org")
-           "* %? %T" :prepent t)))
+           "* %? %T" :prepend t)))
 
   (add-hook 'org-capture-mode-hook 'evil-insert-state)
 #+END_SRC
@@ -523,56 +523,19 @@ The default print settings are silly for printing to PDF. I prefer syntax highli
   (setf ps-print-header-frame nil)
 #+END_SRC
 
-* Helm
+* Counsel
 
-Helm is an incredible search interface. It’s hard to describe, but it somehow improves on many of Emacs’s built-in utilities. I turn on Helm in a couple of places.
+Ivy and Counsel provide a nice menu-driven interface to most of Emacs's built-in utilities. I used to use Helm, but found it slow; Ivy is nicer.
 
 #+BEGIN_SRC emacs-lisp
-  (helm-mode 1)
+  (counsel-mode 1)
 #+END_SRC
 
-I use Helm’s version of find-file, search, apropos
+I configure Ivy to show recent buffers (=use-virtual-buffers=) and show 9 options.
 
 #+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "C-x C-f") 'helm-find-files)
-  (global-set-key (kbd "C-s") 'helm-occur)
-  (global-set-key (kbd "C-x b") 'helm-mini)
-  (global-set-key (kbd "C-h a") 'helm-apropos)
-  (global-set-key (kbd "C-c h g") 'helm-google-suggest)
-  (global-set-key (kbd "C-c h p") 'helm-projectile)
-#+END_SRC
-
-I don’t like the default use of =TAB= and =C-z=, so I switch them. Code from [[http://tuhdo.github.io/helm-intro.html][this Helm intro]].
-
-#+BEGIN_SRC emacs-lisp
-(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
-(define-key helm-map (kbd "C-i") 'helm-execute-persistent-action)
-(define-key helm-map (kbd "C-z")  'helm-select-action)
-#+END_SRC
-
-* PLSE Sign
-
-#+BEGIN_SRC emacs-lisp
-  (require 'json)
-  (require 'url)
-
-  (defun send-to-sign ()
-    (interactive)
-    (let* ((mode
-            (cond
-             ((eq major-mode 'c++-mode) "c++")
-             ((eq major-mode 'c-mode) "c")
-             (t (error "Cannot send code from %s mode. Use C or C++ mode." major-mode))))
-           (data
-            (json-encode (list (cons 'language mode) (cons 'code (buffer-string)))))
-           (url-request-method "POST")
-           (url-request-extra-headers
-            '(("Content-Type" . "application/json")))
-           (url-request-data data))
-      (url-retrieve "http://plseaudio.cs.washington.edu:8001/evaluate.json" 'display-sign-results)))
-
-  (defun display-sign-results (status)
-    (message (buffer-string)))
+  (setq ivy-use-virtual-buffers t)
+  (setq ivy-height 10)
 #+END_SRC
 
 * FPCore
@@ -638,9 +601,4 @@ I want this section to show up only in the blog post directory, so I add a hook 
   nil)
   
 (add-to-list 'exec-path "/home/pavpan/.opam/4.06/bin")
-#+END_SRC
-* Proof General
-
-#+BEGIN_SRC emacs-lisp
-(load "/usr/share/emacs/site-lisp/ProofGeneral/generic/proof-site")
 #+END_SRC

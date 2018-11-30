@@ -39,7 +39,7 @@
  '(org-pretty-entities t)
  '(package-selected-packages
    (quote
-    (tide color-theme-sanityinc-tomorrow tuareg magit helm-projectile haskell-mode goto-last-change geiser evil-leader esqlite company better-defaults ag)))
+    (evil-leader counsel ivy ivy-rich request ripgrep magit tide tuareg haskell-mode geiser company better-defaults evil org color-theme-sanityinc-tomorrow)))
  '(paradox-automatically-star t)
  '(pos-tip-background-color "#FFFACE")
  '(pos-tip-foreground-color "#272822")
