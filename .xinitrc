@@ -6,7 +6,7 @@ export GTK_IM_MODULE=xim
 [ -d /usr/share/fonts/local ] && xset +fp /usr/share/fonts/local
 
 # X server stuff
-setxkbmap -option ctrl:swapcaps -option compose:lctrl
+xkbcomp ~/.config/xkeyboard $DISPLAY
 xsetroot -cursor_name arrow
 
 # Applications
