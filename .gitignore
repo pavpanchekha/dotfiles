@@ -83,6 +83,8 @@
 .ivy2
 .sbt
 .parallel
+.vpython-root
+.vpython_cipd_cache
 
 # System components that don't need their own directory
 .fontconfig
