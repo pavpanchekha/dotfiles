@@ -4,5 +4,6 @@ set -e
 
 SERVER=${1:-server}
 FILE=/tmp/visitors.html
-ssh "$SERVER" ./visitors.sh > "$FILE"
+ssh "$SERVER" ./visitors.sh
+scp "$SERVER":"$FILE" "$FILE"
 xdg-open "$FILE"

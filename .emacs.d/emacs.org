@@ -138,7 +138,7 @@ Here, =switch-other-buffer= is the following function, from [[http://emacswiki.o
 #+BEGIN_SRC emacs-lisp
   (defun switch-other-buffer ()
     (interactive)
-    (switch-to-buffer (other-buffer (current-buffer) 1)))
+    (switch-to-buffer (other-buffer)))
 #+END_SRC
 
 * Graphical Interface Quirks
@@ -557,13 +557,14 @@ I maintain a [[https://pavpanchekha.com][blog]], and the blog is stored in =/hom
   (defun my-magit-insert-blog-posts ()
     "Insert section detailing my unpublished blog posts"
     (when (equal default-directory "/home/www/")
-      (-when-let (unpublished-posts (split-string (shell-command-to-string "bash etc/drafts.sh") "\n" t))
-        (magit-insert-section (blog-posts)
-          (magit-insert-heading "Unpublished blog posts:")
-          (dolist (post unpublished-posts)
-            (magit-insert-section (file (concat "blog/" post))
-              (insert (propertize (concat "blog/" post) 'face 'magit-filename) ?\n)))
-           (insert ?\n)))))
+      (let ((unpublished-posts (split-string (shell-command-to-string "bash etc/drafts.sh") "\n" t)))
+        (when unpublished-posts
+          (magit-insert-section (blog-posts)
+            (magit-insert-heading "Unpublished blog posts:")
+            (dolist (post unpublished-posts)
+              (magit-insert-section (file (concat "blog/" post))
+                (insert (propertize (concat "blog/" post) 'face 'magit-filename) ?\n)))
+            (insert ?\n))))))
 #+END_SRC
 
 The referenced =drafts.sh= file looks for all blog posts not named on the home page and outputs them in a list.

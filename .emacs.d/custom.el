@@ -30,7 +30,9 @@
      ("#A75B00" . 70)
      ("#F309DF" . 85)
      ("#3C3D37" . 100))))
+ '(magit-diff-hide-trailing-cr-characters t)
  '(magit-diff-options (quote ("--minimal" "--ignore-space-change")))
+ '(magit-diff-paint-whitespace nil)
  '(magit-diff-refine-hunk t)
  '(magit-push-always-verify nil)
  '(magit-use-overlays nil)
@@ -40,7 +42,7 @@
  '(org-pretty-entities t)
  '(package-selected-packages
    (quote
-    (tide request ripgrep rg 0blayout ivy-rich counsel ivy color-theme-sanityinc-tomorrow tuareg magit haskell-mode goto-last-change geiser evil-leader esqlite company better-defaults ag)))
+    (org tide request ripgrep rg 0blayout ivy-rich counsel ivy color-theme-sanityinc-tomorrow tuareg magit haskell-mode goto-last-change geiser evil-leader esqlite company better-defaults ag)))
  '(paradox-automatically-star t)
  '(pos-tip-background-color "#FFFACE")
  '(pos-tip-foreground-color "#272822")
@@ -82,4 +84,5 @@
  ;; If there is more than one, they won't work right.
  '(default ((t (:family "DejaVu Sans Mono" :foundry "PfEd" :slant normal :weight normal :height 90 :width normal))))
  '(cursor ((t (:background "#F8F8F8" :foreground "#f8f8f8" :inverse-video t))))
- '(region ((t (:inverse-video nil)))))
+ '(region ((t (:inverse-video nil))))
+ '(tex-verbatim ((t (:inherit fixed-width-serif)))))

@@ -190,15 +190,15 @@ myLog pipe = dynamicLogWithPP $ xmobarPP {
       ppOutput  = hPutStrLn pipe
     , ppCurrent = xmobarColor "#444444" "#cccccc" . pad
     , ppVisible = xmobarColor "#444444" "#bbbbbb" . pad
-    , ppHidden  = xmobarColor "#444444" "#e8e8e7" . (\tag -> if tag == "NSP" then "" else tag)
-    , ppLayout  = xmobarColor "#444444" "#e8e8e7" . (\layout ->
+    , ppHidden  = xmobarColor "#444444" "#f6f5f4" . (\tag -> if tag == "NSP" then "" else tag)
+    , ppLayout  = xmobarColor "#444444" "#f6f5f4" . (\layout ->
                               case layout of
                                    "Tall"        -> "Vt"
                                    "Mirror Tall" -> "Hz"
                                    "Full"        -> "Fl"
                                    _             -> layout
                               )
-    , ppTitle   = xmobarColor "#444444" "#e8e8e7"
+    , ppTitle   = xmobarColor "#444444" "#f6f5f4"
     }
 
 fontTerminus = "-*-terminus-medium-*-*-*-*-140-*-*-*-*-*-*"

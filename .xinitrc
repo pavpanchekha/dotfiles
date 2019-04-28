@@ -33,4 +33,5 @@ fi
 
 dropbox start &
 
+xmonad --recompile
 exec ssh-agent xmonad
