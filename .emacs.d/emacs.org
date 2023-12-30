@@ -19,23 +19,25 @@ Since I publish this file on the Internet, I keep my passwords elsewhere:
 I install packages mostly from MELPA.
 
 #+BEGIN_SRC emacs-lisp
-  (add-to-list 'package-archives '("melpa-stable" . "http://stable.melpa.org/packages/") t)
+  (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
 #+END_SRC
 
 Here are the packages I use; this table is [[http://sachachua.com/blog/2015/01/getting-data-org-mode-tables/][used by org-mode]] to install the packages.
 
 #+NAME: packages
-| Package         | Use                                      |
-| better-defaults | Hide menus and fix some basic annoyances |
-| evil            | Vim key-bindings                         |
-| evil-leader     | Set =SPC= as a leader key                  |
-| ivy             | A generic tab completion Emacs plugin    |
-| ivy-rich        | More cool stuff in the Ivy completion    |
-| counsel         | Find-file for Ivy                        |
-| magit           | A git mode                               |
-| company         | Completions and suggestions              |
-| org             | An organization tool                     |
-| haskell-mode    | Editing haskell                          |
+| Package            | Use                                      |
+|--------------------+------------------------------------------|
+| better-defaults    | Hide menus and fix some basic annoyances |
+| evil               | Vim key-bindings                         |
+| evil-leader        | Set =SPC= as a leader key                  |
+| ivy                | A generic tab completion Emacs plugin    |
+| counsel            | Find-file for Ivy                        |
+| magit              | A git mode                               |
+| company            | Completions and suggestions              |
+| org                | An organization tool                     |
+| haskell-mode       | Editing haskell                          |
+| projectile         | Project management                       |
+| racket-mode        | Editing Racket code                      |
 
 #+BEGIN_SRC emacs-lisp :var packages=packages
   (dolist (package (mapcar #'intern (mapcar #'car (cdr packages))))
@@ -72,78 +74,13 @@ I store some collected data in Dropbox. To avoid one computer overwriting anothe
             hostname*)))
 #+END_SRC
 
-I keep a journal.
-
-#+BEGIN_SRC emacs-lisp
-  (defun my-open-journal ()
-    (interactive)
-    (find-file "~/Dropbox/journal.org"))
-#+END_SRC
-
-* Evil: key commands à la Vim
-
-[[http://gitorious.org/evil/pages/Home][Evil]] is the Vim key-stroke language for Emacs. I also use =evil-leader= to get extra shortcuts.
-
-#+BEGIN_SRC emacs-lisp
-  (global-evil-leader-mode)
-  (evil-leader/set-leader "SPC")
-  (evil-mode 1)
-#+END_SRC
-
-By default Evil uses [[http://www.dr-qubit.org/undo-tree/undo-tree-0.6.4.el][undo-tree]], which arranges edits in a tree. I prefer the more confusing but simpler linear undo that comes with vanilla Emacs.
-
-#+BEGIN_SRC emacs-lisp
-  (global-undo-tree-mode -1)
-#+END_SRC
-
-Visual line mode is what Emacs calls “word wrap”. I use it in all text modes, so I ask Evil to execute commands on visual lines; otherwise these commands all need to be prefixed with =g=. The commands =I= and =A= should act similarly, but they do not yet have associated =-visual-line= versions.
-
-#+BEGIN_SRC emacs-lisp
-(define-key evil-motion-state-map "j" #'evil-next-visual-line)
-(define-key evil-motion-state-map "k" #'evil-previous-visual-line)
-(define-key evil-motion-state-map "$" #'evil-end-of-visual-line)
-(define-key evil-motion-state-map "^" #'evil-first-non-blank-of-visual-line)
-(define-key evil-motion-state-map "0" #'evil-beginning-of-visual-line)
-#+END_SRC
-
-Evil binds =RET=, which is often used in other modes. This unbinds it:
-
-#+BEGIN_SRC emacs-lisp
-(define-key evil-motion-state-map (kbd "RET") nil)
-#+END_SRC
-
-I have a few shortcuts using the =SPC= leader. They’re mostly bindings to Helm tools, but I plan to grow more one day.
-
-#+NAME: evil-leader-bindings
-| Key | Function            |
-| SPC | counsel-M-x         |
-| f   | counsel-find-file   |
-| r   | revert-buffer       |
-| s   | save-buffer         |
-| b   | ivy-switch-buffer   |
-| h   | help-for-help       |
-| g   | ripgrep-regexp      |
-| j   | my-open-journal     |
-| c   | org-capture         |
-| e   | eshell              |
-| TAB | switch-other-buffer |
-
-#+BEGIN_SRC emacs-lisp :var bindings=evil-leader-bindings
-  (apply #'evil-leader/set-key
-         (apply #'append (mapcar (lambda (row) (list (car row) (intern (cadr row)))) (cdr bindings))))
-#+END_SRC
-
-Here, =switch-other-buffer= is the following function, from [[http://emacswiki.org/emacs/SwitchingBuffers][EmacsWiki]], inspired by [[https://github.com/syl20bnr/spacemacs][spacemacs]]:
-
-#+BEGIN_SRC emacs-lisp
-  (defun switch-other-buffer ()
-    (interactive)
-    (switch-to-buffer (other-buffer)))
-#+END_SRC
-
 * Graphical Interface Quirks
 
 I now use the =better-defaults= package to turn off the scroll bar, tool bar, and menu bar.
+
+#+BEGIN_SRC emacs-lisp
+(use-package better-defaults)
+#+END_SRC
 
 Instead of the menu bar, I put the mode line at the top of the document (a trick I took from [[http://bzg.fr/emacs-strip-tease.html][Bastien Guerry]]):
 
@@ -202,38 +139,91 @@ I use a [[https://github.com/cathywu/TimeTracker][time tracker]] that records wi
                    "Emacs: %b"))))
 #+END_SRC
 
-* Org-mode
+* Evil: key commands à la Vim
 
-Org-mode indents description lists so as to keep a consistent left edge. I don't like this behavior.
-
-#+BEGIN_SRC emacs-lisp
-  (setf org-description-max-indent 0)
-#+END_SRC
-
-I prefer to hide the inline markup used by Org-mode.
+[[http://gitorious.org/evil/pages/Home][Evil]] is the Vim key-stroke language for Emacs. I also use =evil-leader= to get extra shortcuts.
 
 #+BEGIN_SRC emacs-lisp
-  (setf org-hide-emphasis-markers t)
-  (setf org-hide-leading-stars t)
+  (global-evil-leader-mode)
+  (evil-leader/set-leader "SPC")
+  (evil-mode 1)
 #+END_SRC
 
-Org-mode needs more information to use alternate LaTeX document classes.  I put this information into a separate file so I can load it separately in Makefiles.
+Visual line mode is what Emacs calls “word wrap”. I use it in all text modes, so I ask Evil to execute commands on visual lines; otherwise these commands all need to be prefixed with =g=. The commands =I= and =A= should act similarly, but they do not yet have associated =-visual-line= versions.
 
 #+BEGIN_SRC emacs-lisp
-  (load "~/.emacs.d/export.el")
+(define-key evil-motion-state-map "j" #'evil-next-visual-line)
+(define-key evil-motion-state-map "k" #'evil-previous-visual-line)
+(define-key evil-motion-state-map "$" #'evil-end-of-visual-line)
+(define-key evil-motion-state-map "^" #'evil-first-non-blank-of-visual-line)
+(define-key evil-motion-state-map "0" #'evil-beginning-of-visual-line)
 #+END_SRC
 
-I've got a few capture templates:
+Evil binds =RET=, which is often used in other modes. This unbinds it:
 
 #+BEGIN_SRC emacs-lisp
-  (setf org-capture-templates
-        '(("j" "Journal Entry" entry (file "~/Dropbox/journal.org")
-           "* %? %T" :prepend t)))
-
-  (add-hook 'org-capture-mode-hook 'evil-insert-state)
+(define-key evil-motion-state-map (kbd "RET") nil)
 #+END_SRC
 
-* Magit Git integration
+I have a few shortcuts using the =SPC= leader. They’re mostly bindings to Helm tools, but I plan to grow more one day.
+
+#+NAME: evil-leader-bindings
+| Key | Function               |
+| SPC | counsel-M-x            |
+| f   | counsel-find-file      |
+| r   | revert-buffer          |
+| s   | save-buffer            |
+| b   | ivy-switch-buffer      |
+| h   | help-for-help          |
+| g   | ripgrep-regexp         |
+| j   | my-open-journal        |
+| c   | org-capture            |
+| e   | eshell                 |
+| p   | projectile-command-map |
+| TAB | switch-other-buffer    |
+
+#+BEGIN_SRC emacs-lisp :var bindings=evil-leader-bindings
+  (apply #'evil-leader/set-key
+         (apply #'append (mapcar (lambda (row) (list (car row) (intern (cadr row)))) (cdr bindings))))
+#+END_SRC
+
+Here, =switch-other-buffer= is the following function, from [[http://emacswiki.org/emacs/SwitchingBuffers][EmacsWiki]], inspired by [[https://github.com/syl20bnr/spacemacs][spacemacs]]:
+
+#+BEGIN_SRC emacs-lisp
+  (defun switch-other-buffer ()
+    (interactive)
+    (switch-to-buffer (other-buffer)))
+#+END_SRC
+
+Meanwhile =triple-split= splits the screen into three vertical columns, which I find handy because all three columns end up about 80 characters wide
+
+#+BEGIN_SRC emacs-lisp
+  (defun triple-split ()
+    (interactive)
+    (delete-other-windows)
+    (split-window-right)
+    (split-window-right)
+    (balance-windows))
+  (evil-leader/set-key "3" 'triple-split)
+#+END_SRC
+
+* Ivy / Counsel
+
+Ivy is an incredible search interface. I used to use Helm, but it was too slow, and it seems that Ivy is getting popular.
+
+#+BEGIN_SRC emacs-lisp
+  (ivy-mode 1)
+  (counsel-mode 1)
+#+END_SRC
+
+Some additional information in Ivy:
+
+#+BEGIN_SRC emacs-lisp
+  (setq ivy-use-virtual-buffers t)
+  (setq ivy-height 10)
+#+END_SRC
+
+* Git integration (Magit)
 
 [[http://magit.github.io/magit/][Magit]] is an incredible Emacs interface to the [[https://git-scm.com][Git version-control system]].
 I have a Magit binding in my leader map:
@@ -250,15 +240,39 @@ I bind it to use my leader key instead.
   (add-hook 'magit-mode-hook #'evil-leader-mode)
 #+END_SRC
 
-* Editing text
+* Writing
+** Blogging
 
-I’m writing text documents pretty often now—the life of a scientist involves a lot of papers, notes, meetings, websites. Normally these files use org-mode. I’d love to use Markdown for everything—Org-mode’s syntax is actually pretty ugly—but Markdown has problems of its own. That’s a rant for another day, but suffice it to say that I’m using org-mode for now.
-
-I give Org-mode files a =txt= extension because this allows editing them on other devices.
+I maintain a [[https://pavpanchekha.com][blog]], and the blog is stored in =/home/www/=, which is maintained by =git=. To make it easier to keep track of draft posts I've written but not published, I wrote a Magit section that shows up right after "Untracked Files":
 
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'auto-mode-alist '("\\.txt$" . org-mode))
+  (defun my-magit-insert-blog-posts ()
+    "Insert section detailing my unpublished blog posts"
+    (when (equal default-directory "/home/www/")
+      (let ((unpublished-posts (split-string (shell-command-to-string "bash etc/drafts.sh") "\n" t)))
+        (when unpublished-posts
+          (magit-insert-section (blog-posts)
+            (magit-insert-heading "Unpublished blog posts:")
+            (dolist (post unpublished-posts)
+              (magit-insert-section (file (concat "blog/" post))
+                (insert (propertize (concat "blog/" post) 'face 'magit-filename) ?\n)))
+            (insert ?\n))))))
 #+END_SRC
+
+The referenced =drafts.sh= file looks for all blog posts not named on the home page and outputs them in a list.
+
+I want this section to show up only in the blog post directory, so I add a hook whenever magit runs that both adds the section to the list of sections, *and* makes that variable buffer-local so it doesn't affect other directories.
+
+#+BEGIN_SRC emacs-lisp
+  (defun my-magit-setup-blog-posts ()
+    (when (equal default-directory "/home/www/")
+      (magit-add-section-hook 'magit-status-sections-hook 'my-magit-insert-blog-posts
+                              'magit-insert-untracked-files 'after t)))
+
+  (add-hook 'magit-mode-hook 'my-magit-setup-blog-posts)
+#+END_SRC
+
+** Editing text
 
 =visual-line-mode= implements proper line wrapping, which I prefer. For Org mode I also turn on proportional fonts. But traditionally Markdown files are hard-wrapped, and use ASCII fixed-text conventions more. LaTeX files get the same treatment; they also turn off automatic indentation, to help me with my peculiar LaTeX style where lines are broken at each phrase and all phrases except the first in a sentence are indented.
 
@@ -280,6 +294,8 @@ I’ve gone back and forth on single- and double-spaced sentences, but for now I
   (setf sentence-end-double-space nil)
 #+END_SRC
 
+** Spell checking
+
 In the text modes I use, I turn on spell checking.
 
 #+BEGIN_SRC emacs-lisp
@@ -287,31 +303,6 @@ In the text modes I use, I turn on spell checking.
   (add-hook 'markdown-mode-hook 'flyspell-mode)
   (add-hook 'latex-mode-hook 'flyspell-mode)
 #+END_SRC
-
-* Editing directories
-
-Dired is great for exploring a file system and so on.
-
-#+BEGIN_SRC emacs-lisp
-  (require 'dired-x)
-  (setf dired-omit-files "^\\.?#\\|^\\.")
-#+END_SRC
-
-Because Emacs shows the =~= directory when I open it up,
-  I prefer this directory specifically not to show hidden files.
-
-#+BEGIN_SRC emacs-lisp
-  (defun dired-hide-details-home ()
-    "Hide details and hidden files,
-     if the current buffer is the home directory."
-    (when (equal (expand-file-name default-directory) (expand-file-name "~/"))
-      (dired-hide-details-mode)
-      (dired-omit-mode)))
-
-  (add-hook 'dired-mode-hook 'dired-hide-details-home)
-#+END_SRC
-
-* Spell checking
 
 Fly-spell mode uses ISpell. I want to use the =ispell= program, to use American English, and to locate my personal dictionary within my =.emacs.d= directory.
 
@@ -369,30 +360,111 @@ Finally, we add key-bindings using Evil's =evil-normal-state-map=.
 (define-key evil-normal-state-map "zg" 'ispell-save-word)
 #+END_SRC
 
-* The =run= Command
+** Org-mode
 
-I have command called =run=, which compiles and runs some program or file in a temporary directory.  I use it for compiling LaTeX or testing C code.
-
-#+BEGIN_SRC emacs-lisp
-  (defun run-command (file)
-    (interactive (list (buffer-file-name)))
-    (save-window-excursion
-     (shell-command (concat "run " (shell-quote-argument file) " &"))))
-
-  (defun compile-command (file)
-    (interactive (list (buffer-file-name)))
-    (save-window-excursion
-     (shell-command (concat "run -c " (shell-quote-argument file) " &"))))
-#+END_SRC
-
-Then we attach them to =[f5]= and =[C-f5]=.
+I give Org-mode files a =txt= extension because this allows editing them on other devices.
 
 #+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "<f5>") 'run-command)
-  (global-set-key (kbd "C-<f5>") 'compile-command)
+(add-to-list 'auto-mode-alist '("\\.txt$" . org-mode))
 #+END_SRC
 
-* Doc View
+Org-mode indents description lists so as to keep a consistent left edge. I don't like this behavior.
+
+#+BEGIN_SRC emacs-lisp
+  (setf org-description-max-indent 0)
+#+END_SRC
+
+I prefer to hide the inline markup used by Org-mode.
+
+#+BEGIN_SRC emacs-lisp
+  (setf org-hide-emphasis-markers t)
+  (setf org-hide-leading-stars t)
+#+END_SRC
+
+** Notes and journal
+
+I keep a journal for random notes (not for journaling)
+
+#+BEGIN_SRC emacs-lisp
+  (defun my-open-journal ()
+    (interactive)
+    (find-file "~/Dropbox/journal.org"))
+#+END_SRC
+
+I've got a few capture templates:
+
+#+BEGIN_SRC emacs-lisp
+  (setf org-capture-templates
+        '(("j" "Journal Entry" entry (file "~/Dropbox/journal.org")
+           "* %? %T" :prepend t)))
+
+  (add-hook 'org-capture-mode-hook 'evil-insert-state)
+#+END_SRC
+
+* Programming Language and File Format Tweaks
+** Log files
+
+Log files and SMT-LIB files often have long lines (SMT-LIB because it's usually computer-generated), and Emacs doesn't deal particularly well with those, so I turn on truncate-long-lines mode for those files.
+
+#+BEGIN_SRC emacs-lisp
+(defun log-truncate-long-lines ()
+  (when (and (stringp buffer-file-name) (string-match-p "\\.\\(smt2\\|log\\)$" buffer-file-name))
+    (toggle-truncate-lines)))
+(add-hook 'find-file-hook 'log-truncate-long-lines)
+#+END_SRC
+
+** FPCore
+
+FPCore is the vaguely Scheme-derived format behind [[http://fpbench.org][FPBench]].
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'auto-mode-alist '("\\.fpcore" . scheme-mode))
+#+END_SRC
+
+** Racket
+
+I usually use the Racket dialect of Scheme, but I've used MIT-Scheme heavily in undergrad. For a while I used the [[http://www.neilvandyke.org/quack/][Quack]] and [[http://www.nongnu.org/geiser/][Geiser]] packages, which sort of supported multiple implementations, but now I use the =racket-mode= package, which has much deeper support for Racket but does not attempt to support other dialects at all. Which I think is OK, the other dialects are not used much.
+
+It is customary in Racket to use a proper Unicode λ instead of the symbol =lambda=. I hack the abbreviation tools in Emacs to make this happen: I set =lambda= to be an abbreviation for =λ=.
+
+#+BEGIN_SRC emacs-lisp
+   (require 'abbrev)
+   (add-hook 'scheme-mode-hook
+     (lambda ()
+       (abbrev-mode 1)
+       (define-abbrev scheme-mode-abbrev-table "lambda" "λ")))
+#+END_SRC
+
+Perfectly matching parentheses is annoying; =electric-pair-mode= automatically inserts closing parentheses when I type the open parenthesis. This works great with =show-paren-mode=, which automatically highlights the matching parenthesis (=show-paren-mode= is provided by =better-defaults=).
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'scheme-mode-hook 'electric-pair-mode)
+#+END_SRC
+
+** Directories (dired)
+
+Dired is great for exploring a file system and so on.
+
+#+BEGIN_SRC emacs-lisp
+  (require 'dired-x)
+  (setf dired-omit-files "^\\.?#\\|^\\.")
+#+END_SRC
+
+Because Emacs shows the =~= directory when I open it up,
+  I prefer this directory specifically not to show hidden files.
+
+#+BEGIN_SRC emacs-lisp
+  (defun dired-hide-details-home ()
+    "Hide details and hidden files,
+     if the current buffer is the home directory."
+    (when (equal (expand-file-name default-directory) (expand-file-name "~/"))
+      (dired-hide-details-mode)
+      (dired-omit-mode)))
+
+  (add-hook 'dired-mode-hook 'dired-hide-details-home)
+#+END_SRC
+
+** PDFs (doc-view)
 
 I sometimes use doc-view for long PDFs (though rarely now).
 
@@ -418,47 +490,7 @@ Doc-view works much better with Vim-style h/j/k/l movement keys.
   (define-key doc-view-mode-map (kbd "l") 'image-forward-hscroll)
 #+END_SRC
 
-* Haskell programming tools
-
-[[https://github.com/haskell/haskell-mode][Haskell Mode]] provides syntax highlighting and similar utilities for programming in Haskell. Multiple methods of indenting Haskell code come with Haskell Mode. They don't differ much, but I prefer =haskell-indentation=. I used to use =haskell-indent= but it annoyed me somehow.
-
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
-#+END_SRC
-
-* Scheme programming tools
-
-Several modes come together to make programming in Scheme enjoyable. I usually use the Racket dialect of Scheme, but I've used MIT-Scheme heavily in undergrad. Sadly, no package seems to support both. For now I use [[http://www.neilvandyke.org/quack/][Quack]] and [[http://www.nongnu.org/geiser/][Geiser]], which together make Racket a breeze.
-
-Since I never use Guile, I configure Geiser to always start up in Racket mode.
-
-#+BEGIN_SRC emacs-lisp
-  (setf geiser-active-implementations '(racket))
-#+END_SRC
-
-It is customary in Racket to use a proper Unicode λ instead of the symbol =lambda=. I hack the abbreviation tools in Emacs to make this happen: I set =lambda= to be an abbreviation for =λ=.
-
-#+BEGIN_SRC emacs-lisp
-   (require 'abbrev)
-   (add-hook 'scheme-mode-hook
-     (lambda ()
-       (abbrev-mode 1)
-       (define-abbrev scheme-mode-abbrev-table "lambda" "λ")))
-#+END_SRC
-
-Perfectly matching parentheses is annoying; =electric-pair-mode= automatically inserts closing parentheses when I type the open parenthesis. This works great =show-paren-mode=, which automatically highlights the matching parenthesis (=show-paren-mode= is provided by =better-defaults=).
-
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'scheme-mode-hook 'electric-pair-mode)
-#+END_SRC
-
-Geiser stores history information; I'd prefer it not clutter my home directory.
-
-#+BEGIN_SRC emacs-lisp
-  (setf geiser-repl-history-filename "~/.emacs.d/geiser-history")
-#+END_SRC
-
-* Emacs Lisp programming tools
+** Emacs Lisp programming tools
 
 When I write emacs-lisp I am often in the debugger. To turn it on, I use this function:
 
@@ -485,7 +517,7 @@ One interesting characteristic of a person's typing is their inter-key timings -
 I've written such a thing: [[http://git.pavpanchekha.com/?p=keylogger.el.git;a=summary][keylogger.el]].  It has an Emacs Lisp extension and an analyzer written in Javascript.  I turn it on when Emacs starts:
 
 #+BEGIN_SRC emacs-lisp
-  (load "~/Dropbox/Work/keylogger.el/keylogger.el")
+  (load "~/Dropbox/Archive/keylogger.el/keylogger.el")
   (setf keylogger-filename (concat "~/Dropbox/Data/keys." hostname ".el"))
   (keylogger-load)
   (keylogger-start)
@@ -494,114 +526,6 @@ I've written such a thing: [[http://git.pavpanchekha.com/?p=keylogger.el.git;a=s
 
 Note that each startup, I load the file, load my previously-saved data, tell it to record new key presses, and to autosave them every fifteen minutes.
 
-* Printing Buffers to PDF
-
-I once needed to print an Emacs buffer to PDF.  The standard printing commands rely on =lpr= and assume an actual printer. Instead I use the Emacs =printing= package to export buffers to Postscript, and then call =ps2pdf= to produce a PDF from the Postscript.
-
-#+BEGIN_SRC emacs-lisp
-(require 'printing)
-#+END_SRC
-
-We want to use the function =pr-ps-buffer-print= from the =printing= package.  We give it a temporary file to print to, and later we'll run =ps2pdf= on that file.
-
-#+BEGIN_SRC emacs-lisp
-  (defun print-to-pdf () (interactive)
-    (let* ((outfile (make-temp-file pr-ps-temp-file))
-           (pdffile (concat outfile ".pdf")))
-      (pr-ps-buffer-print 1 outfile)
-      (shell-command (concat "ps2pdf "
-                             (shell-quote-argument outfile)
-                             " "
-                             (shell-quote-argument pdffile)))
-      (find-file pdffile)))
-#+END_SRC
-
-The default print settings are silly for printing to PDF. I prefer syntax highlighting but no headers.
-
-#+BEGIN_SRC emacs-lisp
-  (setf pr-faces-p t)
-  (setf ps-print-header nil)
-  (setf ps-print-header-frame nil)
-#+END_SRC
-
-* Ivy / Counsel
-
-Ivy is an incredible search interface. I used to use Helm, but it was too slow, and it seems that Ivy is getting popular.
-
-#+BEGIN_SRC emacs-lisp
-  (ivy-mode 1)
-  (counsel-mode 1)
-#+END_SRC
-
-Some additional information in Ivy:
-
-#+BEGIN_SRC emacs-lisp
-  (setq ivy-use-virtual-buffers t)
-  (setq ivy-height 10)
-#+END_SRC
-
-* FPCore
-
-FPCore and FPImp are the formats behind the [[http://fpbench.org][FPBench]] benchmark suite. They're vaguely Scheme-derived.
-
-#+BEGIN_SRC emacs-lisp
-(add-to-list 'auto-mode-alist '("\\.fpcore" . scheme-mode))
-(add-to-list 'auto-mode-alist '("\\.fpimp" . scheme-mode))
-#+END_SRC
-
-* Blog posts
-
-I maintain a [[https://pavpanchekha.com][blog]], and the blog is stored in =/home/www/=, which is maintained by =git=. To make it easier to keep track of draft posts I've written but not published, I wrote a Magit section that shows up right after "Untracked Files":
-
-#+BEGIN_SRC emacs-lisp
-  (defun my-magit-insert-blog-posts ()
-    "Insert section detailing my unpublished blog posts"
-    (when (equal default-directory "/home/www/")
-      (let ((unpublished-posts (split-string (shell-command-to-string "bash etc/drafts.sh") "\n" t)))
-        (when unpublished-posts
-          (magit-insert-section (blog-posts)
-            (magit-insert-heading "Unpublished blog posts:")
-            (dolist (post unpublished-posts)
-              (magit-insert-section (file (concat "blog/" post))
-                (insert (propertize (concat "blog/" post) 'face 'magit-filename) ?\n)))
-            (insert ?\n))))))
-#+END_SRC
-
-The referenced =drafts.sh= file looks for all blog posts not named on the home page and outputs them in a list.
-
-I want this section to show up only in the blog post directory, so I add a hook whenever magit runs that both adds the section to the list of sections, *and* makes that variable buffer-local so it doesn't affect other directories.
-
-#+BEGIN_SRC emacs-lisp
-  (defun my-magit-setup-blog-posts ()
-    (when (equal default-directory "/home/www/")
-      (magit-add-section-hook 'magit-status-sections-hook 'my-magit-insert-blog-posts
-                              'magit-insert-untracked-files 'after t)))
-
-  (add-hook 'magit-mode-hook 'my-magit-setup-blog-posts)
-#+END_SRC
-
 * Random
 
-#+BEGIN_SRC emacs-lisp
-(defun z3-truncate-long-lines ()
-  (when (and (stringp buffer-file-name) (string-match-p "\\.\\(z3\\|log\\)$" buffer-file-name))
-    (toggle-truncate-lines)))
-(add-hook 'find-file-hook 'z3-truncate-long-lines)
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-  (defun triple-split ()
-    (interactive)
-    (delete-other-windows)
-    (split-window-right)
-    (split-window-right)
-    (balance-windows))
-  (evil-leader/set-key (kbd "3") 'triple-split)
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-(defun tuareg-abbrev-hook (&rest ignore)
-  nil)
-  
-(add-to-list 'exec-path "/home/pavpan/.opam/4.06/bin")
-#+END_SRC
+This section holds snippets that I haven't organized yet, and is emptied every now and then.
