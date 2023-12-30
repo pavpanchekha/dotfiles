@@ -32,6 +32,8 @@
 .ocamlinit
 .subversion
 .parallel
+.cups
+.zprofile
 
 # Things that should really go into ~/.local
 .cabal
@@ -85,6 +87,8 @@
 .parallel
 .vpython-root
 .vpython_cipd_cache
+.zsh_*
+.bash_*
 
 # System components that don't need their own directory
 .fontconfig
@@ -115,6 +119,17 @@
 .Xauthority
 .esd_auth
 
+# MacOS default directories
+Applications
+Desktop
+Documents
+Downloads
+Library
+Movies
+Music
+Pictures
+Public
+
 # Synchronizing it all behind the scenes
 Dropbox
 # Source code for open source projects
@@ -125,6 +140,8 @@ priv
 # These are never useful to sync
 *.lock
 .*.log
+.DS_Store
+*~
 
 # Per-directory settings
 .ssh/known_hosts
