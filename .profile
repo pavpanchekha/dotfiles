@@ -53,3 +53,13 @@ alias ed="emacsclient -t-a"
 # Switch to using non-destructive trashing when possible.
 alias rm="rm -i"
 
+function pclone () {
+    local cmd
+    cmd="ssh -i ~/.ssh/p92_rsa -F /dev/null"
+    GIT_SSH_COMMANd="$cmd" git clone "$@"
+}
+
+function pconfig () {
+    cmd="ssh -i ~/.ssh/p92_rsa -F /dev/null"
+    git config core.sshCommand "$cmd"
+}
