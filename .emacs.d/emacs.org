@@ -79,7 +79,7 @@ I store some collected data in Dropbox. To avoid one computer overwriting anothe
 I now use the =better-defaults= package to turn off the scroll bar, tool bar, and menu bar.
 
 #+BEGIN_SRC emacs-lisp
-(use-package better-defaults)
+  (set-scroll-bar-mode nil)
 #+END_SRC
 
 Instead of the menu bar, I put the mode line at the top of the document (a trick I took from [[http://bzg.fr/emacs-strip-tease.html][Bastien Guerry]]):
@@ -95,6 +95,17 @@ I no longer need the Emacs startup screen, so I turn it off. I usually start fro
   (setf inhibit-startup-screen t
         inhibit-startup-message t
         inhibit-startup-echo-area-message t)
+#+END_SRC
+
+Backups should go in the Emacs hidden directory, plus some more options [[https://stackoverflow.com/questions/151945/how-do-i-control-how-emacs-makes-backup-files][from SO]]:
+
+#+BEGIN_SRC emacs-lisp
+  (setq backup-directory-alist `(("." . "~/.emacs.d/backups/")))
+  (setq delete-old-versions t
+	backup-by-copying t
+	kept-new-versions 6
+	kept-old-versions 2
+	version-control t)
 #+END_SRC
 
 Instead, I would rather Emacs open up by visiting the =~= directory, in which I store current projects.
@@ -114,6 +125,12 @@ I hate my computer beeping when I err. I ask Emacs to express its discontent vis
 
 #+BEGIN_SRC emacs-lisp
   (setf visible-bell t)
+#+END_SRC
+
+Let's move toward obsoleting the ASCII TAB character.
+
+#+BEGIN_SRC emacs-lisp
+(setq-default indent-tabs-mode nil)
 #+END_SRC
 
 I rarely use the mouse, so tooltips are an annoyance.  This code causes them to appear in the echo area instead.
