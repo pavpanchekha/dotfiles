@@ -63,3 +63,7 @@ function pconfig () {
     cmd="ssh -i ~/.ssh/p92_rsa -F /dev/null"
     git config core.sshCommand "$cmd"
 }
+
+function total () {
+    awk 'BEGIN { s = 0 } { s += $1 } END { print s }'
+}
