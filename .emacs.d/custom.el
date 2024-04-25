@@ -12,7 +12,8 @@
  '(coq-server-user "p92")
  '(custom-enabled-themes '(sanityinc-tomorrow-eighties))
  '(custom-safe-themes
-   '("04aa1c3ccaee1cc2b93b246c6fbcd597f7e6832a97aaeac7e5891e6863236f9f" "d3a406c5905923546d8a3ad0164a266deaf451856eca5f21b36594ffcb08413a" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "0c49a9e22e333f260126e4a48539a7ad6e8209ddda13c0310c8811094295b3a3" "4e262566c3d57706c70e403d440146a5440de056dfaeb3062f004da1711d83fc" "436ae3105bb26b7e3edbd624612ee3ba929fd568d3b3bd1f72e6aa2b0cab1bb7" default))
+   '("b11edd2e0f97a0a7d5e66a9b82091b44431401ac394478beb44389cf54e6db28" "6bdc4e5f585bb4a500ea38f563ecf126570b9ab3be0598bdf607034bb07a8875" "04aa1c3ccaee1cc2b93b246c6fbcd597f7e6832a97aaeac7e5891e6863236f9f" "d3a406c5905923546d8a3ad0164a266deaf451856eca5f21b36594ffcb08413a" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58" "0c49a9e22e333f260126e4a48539a7ad6e8209ddda13c0310c8811094295b3a3" "4e262566c3d57706c70e403d440146a5440de056dfaeb3062f004da1711d83fc" "436ae3105bb26b7e3edbd624612ee3ba929fd568d3b3bd1f72e6aa2b0cab1bb7" default))
+ '(dired-use-ls-dired nil)
  '(electric-indent-mode nil)
  '(fci-rule-color "#515151")
  '(geiser-racket-extra-keywords
@@ -27,6 +28,7 @@
      ("#A75B00" . 70)
      ("#F309DF" . 85)
      ("#3C3D37" . 100)))
+ '(ispell-program-name "/opt/homebrew/bin/ispell")
  '(magit-diff-hide-trailing-cr-characters t)
  '(magit-diff-options '("--minimal" "--ignore-space-change"))
  '(magit-diff-paint-whitespace nil)
@@ -36,16 +38,16 @@
  '(org-entities-user '(("\\square" "\\square" t "&#x2610;" "[]" "[]" "☐")))
  '(org-pretty-entities t)
  '(package-selected-packages
-   (quote
-    (org tide request ripgrep rg 0blayout ivy-rich counsel ivy color-theme-sanityinc-tomorrow tuareg magit haskell-mode goto-last-change geiser evil-leader esqlite company better-defaults ag)))
+   '(0x0 yaml-mode rust-mode ace-window projectile racket-mode htmlize exec-path-from-shell markdown-mode org tide request ripgrep rg 0blayout ivy-rich counsel ivy color-theme-sanityinc-tomorrow tuareg magit haskell-mode goto-last-change geiser evil-leader esqlite company better-defaults ag))
  '(paradox-automatically-star t)
  '(pos-tip-background-color "#FFFACE")
  '(pos-tip-foreground-color "#272822")
+ '(safe-local-variable-values '((TeX-master . "main")))
  '(show-paren-mode t)
  '(size-indication-mode t)
  '(tool-bar-mode nil)
  '(tramp-default-method "ssh")
- '(tramp-inline-compress-start-size nil nil (tramp))
+ '(tramp-inline-compress-start-size nil)
  '(tramp-verbose 2 nil (tramp))
  '(vc-annotate-background nil)
  '(vc-annotate-color-map
