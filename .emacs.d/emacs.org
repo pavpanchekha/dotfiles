@@ -375,6 +375,7 @@ Finally, we add key-bindings using Evil's =evil-normal-state-map=.
 #+BEGIN_SRC emacs-lisp
 (define-key evil-normal-state-map "z=" 'ispell-word)
 (define-key evil-normal-state-map "zg" 'ispell-save-word)
+(define-key evil-normal-state-map "zn" 'flyspell-goto-next-error)
 #+END_SRC
 
 ** Org-mode
