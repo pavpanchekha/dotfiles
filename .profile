@@ -67,3 +67,4 @@ function pconfig () {
 function total () {
     awk 'BEGIN { s = 0 } { s += $1 } END { print s }'
 }
+

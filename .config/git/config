@@ -19,5 +19,26 @@
 
 [push]
 	default = simple
+        autoSetupRemote = true
+        followTags = true
 [init]
 	defaultBranch = main
+[column]
+	ui = auto
+[branch]
+	sort = -committerdate
+[tag]
+        sort = version:refname
+[diff]
+        algorithm = histogram
+        colorMoved = plain
+        mnemonicPrefix = true
+        renames = true
+[fetch]
+        prune = true
+        pruneTags = true
+        all = true
+[help]
+        autocorrect = prompt
+[cinnabar]
+	version-check = 1744144119
