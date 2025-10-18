@@ -743,3 +743,181 @@ You start it with space-V (for server).
       (evil-leader/set-key "v" #'start-python-http-server)
 #+END_SRC
 
+* Amp integration
+
+#+BEGIN_SRC emacs-lisp
+  (require 'magit)
+  (require 'subr-x)
+
+  (defun amp--git (repo &rest args)
+    "Run git ARGS in REPO, returning (exit-code . output-string)."
+    (let* ((default-directory repo)
+           (buf (generate-new-buffer " *amp-git*"))
+           (status (apply #'process-file "git" nil buf nil args))
+           (out (with-current-buffer buf (buffer-string))))
+      (kill-buffer buf)
+      (if (zerop status)
+          (string-trim out)
+        (error "git %s failed: %s" (string-join args " ") out))))
+
+  (defun amp--ensure-line-in-file (file line)
+    "Append LINE to FILE if not already present (match per line)."
+    (let ((existing (when (file-exists-p file)
+                      (with-temp-buffer
+                        (insert-file-contents file)
+                        (buffer-string)))))
+      ;; Use multiline regexp so ^/$ are per-line
+      (unless (and existing
+                   (string-match-p (concat "^" (regexp-quote line) "$") existing))
+        (make-directory (file-name-directory file) t)
+        (with-temp-buffer
+          (when existing
+            (insert existing)
+            (unless (or (string-empty-p existing)
+                        (string-suffix-p "\n" existing))
+              (insert "\n")))
+          (insert line "\n")
+          (write-region (point-min) (point-max) file nil 'silent)))))
+
+  (defun amp--parse-thread-id (s)
+    "Heuristically extract a thread id from S."
+    (let* ((lines (split-string (string-trim s) "\n" t "[ \t\r]+"))
+           ;; Try exact single-line first
+           (one (and (= (length lines) 1) (car lines))))
+      (cond
+       ((and one (> (length one) 0)) one)
+       ;; Else: look for something id-like in the last line
+       (t
+        (save-match-data
+          (let ((last (car (last lines))))
+            (if (and last (string-match "\\([A-Za-z0-9_-]+\\)\\s-*\\'" last))
+                (match-string 1 last)
+              (error "Could not parse thread id from: %S" s))))))))
+
+  (defun amp--base-for-new-branch (branches)
+    "Choose a reasonable base for a new branch.
+  Prefer local main/master; else origin/main|master; else current branch."
+    (or (and (member "main" branches) "main")
+        (and (member "master" branches) "master")
+        (and (magit-rev-verify "origin/main") "origin/main")
+        (and (magit-rev-verify "origin/master") "origin/master")
+        (magit-get-current-branch)
+        (user-error "Cannot find a suitable base branch (tried main/master)")))
+
+  (defun amp--get-amp-thread (file)
+    "Get the amp thread ID cached in the file, if it exists, or create one"
+    (if (file-exists-p thread-file)
+        (string-trim (with-temp-buffer
+                       (insert-file-contents thread-file)
+                       (buffer-string)))
+      (let* ((tid (with-temp-buffer
+                    (if (zerop (call-process "amp" nil t nil "threads" "new"))
+                        (amp--parse-thread-id (buffer-string))
+                      (error "Running `amp threads new` failed:\n%s" (buffer-string))))))
+        (with-temp-file thread-file
+          (insert tid "\n"))
+        tid)))
+
+  ;;;###autoload
+  (defun amp-magit-start-thread ()
+    "Create/continue an AMP thread tied to a Git branch.
+
+      Steps:
+      - Find repo from current buffer (Magit).
+      - Ensure .worktrees exists
+      - Add to .gitignore if missing.
+      - Prompt for branch (completes from local branches; new names allowed).
+      - Ensure .worktrees/<branch> dir exists; create branch if missing (from main/master/origin/main).
+      - Use/obtain .worktrees/<branch>.ampthread for thread id.
+      - Open buffer *amp:<branch>* running: amp thread continue <threadid>."
+    (interactive)
+    (unless (require 'vterm nil t)
+      (user-error "vterm is required to run amp; install it with M-x package-install RET vterm RET"))
+
+    ;; 1) Find repo root
+    (let* ((repo (or (magit-toplevel) (user-error "Not inside a Git repository"))))
+      (let* ((wt-root (expand-file-name ".worktrees" repo))
+             (gitignore (expand-file-name ".gitignore" repo)))
+        ;; 2) Create worktree directory
+        (make-directory wt-root t)
+        ;; 3) Ensure .worktrees in .gitignore
+        (amp--ensure-line-in-file gitignore ".worktrees/")
+        ;; 4) Prompt for branch with completion
+        (let* ((branches (magit-list-local-branch-names))
+               (prompt   "Branch (existing or new): ")
+               (branch (completing-read prompt branches nil nil nil nil
+                                        (magit-get-current-branch)))
+               (branch-exists (member branch branches))
+               (base (amp--base-for-new-branch branches)))
+          ;; 5) Ensure .worktrees/<branch> dir exists
+          (let* ((wt-dir (expand-file-name branch wt-root)))
+            (if branch-exists
+                (if (file-exists-p wt-dir)
+                    (message "Branch %s and its worktree exists" branch)
+                    (amp--git repo "worktree" "add" wt-dir branch))
+              (amp--git repo "worktree" "add" "-b" branch wt-dir base))
+            ;; 6) Get or create AMP thread id
+            (let* ((thread-file (expand-file-name (format "%s.ampthread" branch) wt-root))
+                   (default-directory wt-dir)
+                   (thread-id (amp--get-amp-thread thread-file))
+                   ;; 7) Open terminal buffer and run amp continue
+                   (bufname (format "*amp:%s*" branch)))
+              (message "Thread ID %s" thread-id)
+              ;; Create or reuse buffer
+              (when (get-buffer bufname)
+                (kill-buffer bufname))
+              ;; Launch AMP in the worktree, then split: [ Magit | AMP ]
+              (let* ((amp-buf (get-buffer-create bufname)))
+                ;; Start AMP in vterm without popping the buffer yet
+                (with-current-buffer amp-buf
+                  (evil-local-mode -1)
+                  (vterm-mode)
+                  (vterm-send-string (format "exec amp thread continue %s" thread-id))
+                  (vterm-send-return))
+                
+                ;; Two-column layout: left = Magit, right = AMP
+                (delete-other-windows)
+                (let* ((left  (selected-window))
+                       (right (split-window-right)))
+                  ;; Left: Magit for the worktree
+                  (select-window left)
+                  (let* ((magit-buf (magit-status wt-dir)))
+                    (with-current-buffer magit-buf
+                      (magit-auto-revert-mode 1))
+                    (set-window-buffer left magit-buf))
+
+                  ;; Right: the AMP terminal buffer (and leave focus here)
+                  (select-window right)
+                  (set-window-buffer right amp-buf)
+                  (balance-windows))))
+            (message "AMP thread ready for branch %s" branch))))))
+
+  (evil-leader/set-key "a" #'amp-magit-start-thread)
+#+END_SRC
+
+The annoying thing about this is that vterm is kinda slow. ChatGPT said this would help:
+
+#+BEGIN_SRC emacs-lisp
+(setq fast-but-imprecise-scrolling t
+      redisplay-skip-fontification-on-input t
+      inhibit-compacting-font-caches t)  ;; macOS CoreText can be slow
+#+END_SRC
+
+And maybe also this, also a ChatGPT suggestion:
+
+#+BEGIN_SRC emacs-lisp
+;; Bigger pipe for subprocess output (Emacs 27+)
+(setq read-process-output-max (* 1024 1024))  ; 1MiB
+
+;; vterm tuning
+(setq vterm-timer-delay 0.01)          ;; lower = more frequent updates (default is OK; try 0.01–0.02)
+(setq vterm-max-scrollback 1000)       ;; don’t keep huge scrollback
+(setq vterm-kill-buffer-on-exit t)
+
+;; Buffer-local UI trims for vterm
+(add-hook 'vterm-mode-hook
+          (lambda ()
+            (setq-local global-hl-line-mode nil)
+            (setq-local display-line-numbers nil)
+            (setq-local cursor-in-non-selected-windows nil)))
+#+END_SRC
