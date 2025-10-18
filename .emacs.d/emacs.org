@@ -25,19 +25,20 @@ I install packages mostly from MELPA.
 Here are the packages I use; this table is [[http://sachachua.com/blog/2015/01/getting-data-org-mode-tables/][used by org-mode]] to install the packages.
 
 #+NAME: packages
-| Package            | Use                                      |
-|--------------------+------------------------------------------|
-| better-defaults    | Hide menus and fix some basic annoyances |
-| evil               | Vim key-bindings                         |
-| evil-leader        | Set =SPC= as a leader key                  |
-| ivy                | A generic tab completion Emacs plugin    |
-| counsel            | Find-file for Ivy                        |
-| magit              | A git mode                               |
-| company            | Completions and suggestions              |
-| org                | An organization tool                     |
-| haskell-mode       | Editing haskell                          |
-| projectile         | Project management                       |
-| racket-mode        | Editing Racket code                      |
+| Package         | Use                                      |
+|-----------------+------------------------------------------|
+| better-defaults | Hide menus and fix some basic annoyances |
+| evil            | Vim key-bindings                         |
+| evil-leader     | Set =SPC= as a leader key                  |
+| ivy             | A generic tab completion Emacs plugin    |
+| counsel         | Find-file for Ivy                        |
+| magit           | A git mode                               |
+| company         | Completions and suggestions              |
+| org             | An organization tool                     |
+| haskell-mode    | Editing haskell                          |
+| projectile      | Project management                       |
+| racket-mode     | Editing Racket code                      |
+| eat             | Handle curses commands in eshell         |
 
 #+BEGIN_SRC emacs-lisp :var packages=packages
   (dolist (package (mapcar #'intern (mapcar #'car (cdr packages))))
@@ -633,6 +634,10 @@ I've written such a thing: [[http://git.pavpanchekha.com/?p=keylogger.el.git;a=s
 
 Note that each startup, I load the file, load my previously-saved data, tell it to record new key presses, and to autosave them every fifteen minutes.
 
-* Random
+* Emacs Shell
 
-This section holds snippets that I haven't organized yet, and is emptied every now and then.
+I use =eshell= as my shell, and set up =eat= to handle commands that need visual mode:
+
+#+BEGIN_SRC emacs-lisp
+(add-hook 'eshell-load-hook #'eat-eshell-visual-command-mode)
+#+END_SRC
