@@ -220,7 +220,6 @@ I have a few shortcuts using the =SPC= leader. They’re mostly bindings to Helm
 | j   | my-open-journal        |
 | c   | org-capture            |
 | e   | eshell                 |
-| p   | projectile-command-map |
 | TAB | switch-other-buffer    |
 
 #+BEGIN_SRC emacs-lisp :var bindings=evil-leader-bindings
