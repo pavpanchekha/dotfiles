@@ -156,6 +156,29 @@ I use a [[https://github.com/cathywu/TimeTracker][time tracker]] that records wi
                    "Emacs: %b"))))
 #+END_SRC
 
+When I teach or project it's good to have light mode, but I prefer to code in dark mode. "<leader>t" toggles between them
+
+#+BEGIN_SRC emacs-lisp
+  (defun toggle-tango-themes ()
+    "Toggle between `tango` and `tango-dark` themes."
+    (interactive)
+    (let ((light 'tango)
+          (dark 'tango-dark))
+      (cond
+       ((member light custom-enabled-themes)
+        (disable-theme light)
+        (load-theme dark t))
+       ((member dark custom-enabled-themes)
+        (disable-theme dark)
+        (load-theme light t))
+       (t
+        ;; If neither is active, default to tango
+        (load-theme light t)))))
+
+  (evil-leader/set-key "t" #'toggle-tango-themes)
+#+END_SRC
+
+
 * Evil: key commands à la Vim
 
 [[http://gitorious.org/evil/pages/Home][Evil]] is the Vim key-stroke language for Emacs. I also use =evil-leader= to get extra shortcuts.
