@@ -334,6 +334,72 @@ I’ve gone back and forth on single- and double-spaced sentences, but for now I
   (setf sentence-end-double-space nil)
 #+END_SRC
 
+I usually like to build LaTeX with =latexmk=, and this command starts =latexmk= in preview mode in the current directory---very handy.
+
+#+BEGIN_SRC emacs-lisp
+    ;; -*- lexical-binding: t; -*-
+    (require 'seq)
+
+    (defvar my/latexmk-buffer "*latexmk*"
+      "Buffer name for the latexmk -pvc process.")
+
+    (defun my/latexmk--choose-target ()
+      "Pick main .tex target: prefer main.tex or paper.tex in current dir, else prompt."
+      (let* ((dir (or (and (buffer-file-name)
+                           (file-name-directory (buffer-file-name)))
+                      default-directory))
+             (candidates (list (expand-file-name "main.tex" dir)
+                               (expand-file-name "paper.tex" dir)
+                               (expand-file-name "letter.tex" dir)))
+             (target (seq-find #'file-exists-p candidates)))
+        (unless target
+          (setq target
+                (read-file-name "Main TeX file: " dir nil t nil
+                                (lambda (f) (string-match-p "\\.tex\\'" f)))))
+        (expand-file-name target)))
+
+    (defun my/latexmk-running-p ()
+      "Is our latexmk watcher currently running?"
+      (let ((proc (get-buffer-process my/latexmk-buffer)))
+        (and proc (process-live-p proc))))
+
+    (defun my/latexmk-stop ()
+      "Stop the running latexmk watcher (if any) and kill its buffer."
+      (interactive)
+      (when (my/latexmk-running-p)
+        (let ((proc (get-buffer-process my/latexmk-buffer)))
+          (interrupt-process proc)
+          (sit-for 0.1)
+          (ignore-errors (kill-process proc))))
+      (when (get-buffer my/latexmk-buffer)
+        (kill-buffer my/latexmk-buffer))
+      (message "latexmk watcher stopped."))
+
+    (defun my/latexmk-start (&optional restart)
+      "Start latexmk with -pdf -pvc -interaction=nonstopmode.
+    With prefix arg RESTART (C-u), force-restart even if already running.
+    If a watcher is running, this will restart it so the PDF viewer reopens."
+      (interactive "P")
+      (let* ((target (my/latexmk--choose-target))
+             ;; latexmk prefers being run from the file's directory
+             (default-directory (file-name-directory target))
+             (args (list "latexmk" "-pdf" "-pvc" "-shell-escape" "-interaction=nonstopmode" target)))
+        (when (or restart (my/latexmk-running-p))
+          (my/latexmk-stop))
+        (apply #'start-process "latexmk" (get-buffer-create my/latexmk-buffer) args)
+        ;; Use compilation-mode for clickable errors, etc.
+        (with-current-buffer my/latexmk-buffer
+          (compilation-mode))
+        (message "latexmk watching %s" (file-name-nondirectory target))))
+
+    (defun my/latexmk-restart ()
+      "Restart the latexmk watcher (or start it if not running)."
+      (interactive)
+      (my/latexmk-start 'restart))
+
+    (evil-leader/set-key "l" #'my/latexmk-start)
+#+END_SRC
+
 ** Spell checking
 
 In the text modes I use, I turn on spell checking.
