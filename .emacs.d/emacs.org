@@ -641,3 +641,34 @@ I use =eshell= as my shell, and set up =eat= to handle commands that need visual
 #+BEGIN_SRC emacs-lisp
 (add-hook 'eshell-load-hook #'eat-eshell-visual-command-mode)
 #+END_SRC
+
+Here's something ChatGPT wrote to help with long-running eshell commands. If a command ends and Emacs isn't foregrounded (because it's a long command and I tabbed away) it raises a macOS notification. It needs the =terminal-notifier= Homebrew package installed, otherwise there is some annoying permissions thing I couldn't get working.
+
+#+BEGIN_SRC emacs-lisp
+  (defun pavel/emacs-frontmost-p ()
+    "Return non-nil if Emacs is the frontmost macOS app."
+    (let ((frontmost
+           (string-trim
+            (shell-command-to-string
+             "osascript -e 'tell application \"System Events\" to name of first application process whose frontmost is true'"))))
+      (string-prefix-p "Emacs" frontmost)))
+
+  (defun pavel/format-eshell-command ()
+    "Reconstruct the full eshell command as a string."
+    (string-join
+     (cons eshell-last-command-name
+           (mapcar #'eshell-escape-arg eshell-last-arguments))
+     " "))
+
+  (defun pavel/eshell-maybe-notify ()
+    (unless (pavel/emacs-frontmost-p)
+      (start-process "notify" nil "terminal-notifier"
+                     "-title" (if (= eshell-last-command-status 0)
+                                            "✅ Emacs Command Done"
+                                          "❌ Emacs Command Failed")
+                     "-message" (pavel/format-eshell-command)
+                     "-activate" "org.gnu.Emacs")))
+
+  (add-hook 'eshell-post-command-hook #'pavel/eshell-maybe-notify)
+#+END_SRC
+
