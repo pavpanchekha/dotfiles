@@ -672,3 +672,74 @@ Here's something ChatGPT wrote to help with long-running eshell commands. If a c
   (add-hook 'eshell-post-command-hook #'pavel/eshell-maybe-notify)
 #+END_SRC
 
+* Web Server
+
+I often want to start a basic web server to serve some local files. Browsers have locked down =file://= a lot (maybe too much?) and a lot of basic JS patterns don't work with local files any more.
+
+Here are some nice keybindings (that ChatGPT wrote for me) to start the Python web server pointed to a local directory. 
+
+#+BEGIN_SRC emacs-lisp
+  (defvar web-server--process nil
+    "The current Python HTTP server process.")
+
+  (defvar web-server--mode-line-string ""
+    "String to display in the mode line when web server is running.")
+  (put 'web-server--mode-line-string 'risky-local-variable t)
+
+  (defconst web-server--buffer-name "*web-server*")
+
+  (defconst web-server--port 8000)
+#+END_SRC
+
+You start it with space-V (for server).
+
+#+BEGIN_SRC emacs-lisp
+    (defun stop-python-http-server ()
+      "Stop the current web server"
+      (interactive)
+      (when (and web-server--process (process-live-p web-server--process))
+        (pop-to-buffer web-server--buffer-name)
+        (unless (yes-or-no-p "A web server is running—kill it? ")
+          (user-error "Aborted starting new server"))
+        (kill-process web-server--process)
+        (setq web-server--process nil)
+        (setq web-server--mode-line-string "")
+        (force-mode-line-update t)
+        (message "Previous web server killed.")))
+
+    (defun start-python-http-server ()
+      "Prompt for a directory and launch `python3 -m http.server -d DIR` in *web-server*.
+    If a server is already running, switch to its buffer so you can inspect the log,
+    prompt to kill it, then start a new one. Finally restore the buffer you were in,
+    even if you abort."
+      (interactive)
+      (let* ((orig-buf    (current-buffer))
+             (orig-win    (selected-window))
+             (dir         (read-directory-name "Directory for HTTP server: ")))
+        (unwind-protect
+            (progn
+              ;; If already running, show its log and ask to kill
+              (stop-python-http-server)
+              ;; Start new server
+              (let ((default-directory dir))
+                (setq web-server--process
+                      (start-process "web-server" web-server--buffer-name
+                                     "python3" "-m" "http.server" "-d" dir
+                                     (number-to-string web-server--port))))
+              (setq web-server--mode-line-string
+                    (format " [HTTP:%s %s]" port
+                            (abbreviate-file-name dir)))
+              (force-mode-line-update t))
+
+              ;; Prep log buffer
+              (with-current-buffer web-server--buffer-name
+                (read-only-mode 1)
+                (goto-char (point-max))))
+          ;; always restore original window & buffer
+          (when (window-live-p orig-win)
+            (select-window orig-win)
+            (switch-to-buffer orig-buf))))
+
+      (evil-leader/set-key "v" #'start-python-http-server)
+#+END_SRC
+
