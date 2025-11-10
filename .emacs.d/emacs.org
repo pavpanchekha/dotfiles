@@ -644,13 +644,10 @@ I use =eshell= as my shell, and set up =eat= to handle commands that need visual
 Here's something ChatGPT wrote to help with long-running eshell commands. If a command ends and Emacs isn't foregrounded (because it's a long command and I tabbed away) it raises a macOS notification. It needs the =terminal-notifier= Homebrew package installed, otherwise there is some annoying permissions thing I couldn't get working.
 
 #+BEGIN_SRC emacs-lisp
-  (defun pavel/emacs-frontmost-p ()
-    "Return non-nil if Emacs is the frontmost macOS app."
-    (let ((frontmost
-           (string-trim
-            (shell-command-to-string
-             "osascript -e 'tell application \"System Events\" to name of first application process whose frontmost is true'"))))
-      (string-prefix-p "Emacs" frontmost)))
+  (defvar pavel/emacs-frontmost-p t)
+
+  (add-hook 'focus-in-hook  (lambda () (setq pavel/emacs-frontmost-p t)))
+  (add-hook 'focus-out-hook (lambda () (setq pavel/emacs-frontmost-p nil)))
 
   (defun pavel/format-eshell-command ()
     "Reconstruct the full eshell command as a string."
@@ -660,11 +657,11 @@ Here's something ChatGPT wrote to help with long-running eshell commands. If a c
      " "))
 
   (defun pavel/eshell-maybe-notify ()
-    (unless (pavel/emacs-frontmost-p)
+    (unless pavel/emacs-frontmost-p
       (start-process "notify" nil "terminal-notifier"
                      "-title" (if (= eshell-last-command-status 0)
-                                            "✅ Emacs Command Done"
-                                          "❌ Emacs Command Failed")
+                                  "✅ Emacs Command Done"
+                                "❌ Emacs Command Failed")
                      "-message" (pavel/format-eshell-command)
                      "-activate" "org.gnu.Emacs")))
 
@@ -840,7 +837,7 @@ You start it with space-V (for server).
         ;; 2) Create worktree directory
         (make-directory wt-root t)
         ;; 3) Ensure .worktrees in .gitignore
-        (amp--ensure-line-in-file gitignore ".worktrees/")
+        (amp--ensure-line-in-file gitignore ".worktrees")
         ;; 4) Prompt for branch with completion
         (let* ((branches (magit-list-local-branch-names))
                (prompt   "Branch (existing or new): ")
