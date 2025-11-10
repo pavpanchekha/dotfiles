@@ -644,11 +644,6 @@ I use =eshell= as my shell, and set up =eat= to handle commands that need visual
 Here's something ChatGPT wrote to help with long-running eshell commands. If a command ends and Emacs isn't foregrounded (because it's a long command and I tabbed away) it raises a macOS notification. It needs the =terminal-notifier= Homebrew package installed, otherwise there is some annoying permissions thing I couldn't get working.
 
 #+BEGIN_SRC emacs-lisp
-  (defvar pavel/emacs-frontmost-p t)
-
-  (add-hook 'focus-in-hook  (lambda () (setq pavel/emacs-frontmost-p t)))
-  (add-hook 'focus-out-hook (lambda () (setq pavel/emacs-frontmost-p nil)))
-
   (defun pavel/format-eshell-command ()
     "Reconstruct the full eshell command as a string."
     (string-join
@@ -657,7 +652,7 @@ Here's something ChatGPT wrote to help with long-running eshell commands. If a c
      " "))
 
   (defun pavel/eshell-maybe-notify ()
-    (unless pavel/emacs-frontmost-p
+    (unless (frame-focus-state)
       (start-process "notify" nil "terminal-notifier"
                      "-title" (if (= eshell-last-command-status 0)
                                   "✅ Emacs Command Done"
