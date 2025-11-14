@@ -19,7 +19,7 @@ Since I publish this file on the Internet, I keep my passwords elsewhere:
 I install packages mostly from MELPA.
 
 #+BEGIN_SRC emacs-lisp
-  (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 #+END_SRC
 
 Here are the packages I use; this table is [[http://sachachua.com/blog/2015/01/getting-data-org-mode-tables/][used by org-mode]] to install the packages.
@@ -286,9 +286,11 @@ I bind it to use my leader key instead.
 I maintain a [[https://pavpanchekha.com][blog]], and the blog is stored in =/home/www/=, which is maintained by =git=. To make it easier to keep track of draft posts I've written but not published, I wrote a Magit section that shows up right after "Untracked Files":
 
 #+BEGIN_SRC emacs-lisp
+  (defvar my-blog-directory (expand-file-name "~/www/"))
+
   (defun my-magit-insert-blog-posts ()
     "Insert section detailing my unpublished blog posts"
-    (when (equal default-directory "/home/www/")
+    (when (equal default-directory my-blog-directory)
       (let ((unpublished-posts (split-string (shell-command-to-string "bash etc/drafts.sh") "\n" t)))
         (when unpublished-posts
           (magit-insert-section (blog-posts)
@@ -305,7 +307,7 @@ I want this section to show up only in the blog post directory, so I add a hook 
 
 #+BEGIN_SRC emacs-lisp
   (defun my-magit-setup-blog-posts ()
-    (when (equal default-directory "/home/www/")
+    (when my-blog-directory
       (magit-add-section-hook 'magit-status-sections-hook 'my-magit-insert-blog-posts
                               'magit-insert-untracked-files 'after t)))
 
@@ -413,8 +415,7 @@ In the text modes I use, I turn on spell checking.
 Fly-spell mode uses ISpell. I want to use the =ispell= program, to use American English, and to locate my personal dictionary within my =.emacs.d= directory.
 
 #+BEGIN_SRC emacs-lisp
-(setf ispell-program-name "/usr/bin/ispell")
-(setf ispell-dictionary "american")
+(setf ispell-program-name "/opt/homebrew/bin/aspell")
 (setf ispell-personal-dictionary "~/.emacs.d/dict")
 #+END_SRC
 
