@@ -99,6 +99,7 @@
 .nuget
 .matplotlib
 .lldb
+Zotero
 
 # System components that don't need their own directory
 .fontconfig
