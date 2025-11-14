@@ -191,7 +191,7 @@ I have a few shortcuts using the =SPC= leader. I usually stick tools I develop i
 | b   | ivy-switch-buffer        |
 | c   | org-capture              |
 | d   | toggle-debug-on-error    |
-| e   | eshell                   |
+| e   | vterm                    |
 | f   | counsel-find-file        |
 | g   | ripgrep-regexp           |
 | h   | help-for-help            |
@@ -203,7 +203,7 @@ I have a few shortcuts using the =SPC= leader. I usually stick tools I develop i
 | t   | toggle-tango-themes      |
 | v   | start-python-http-server |
 | TAB | mode-line-other-buffer   |
-| 3   | triple-split             |
+| "3" | triple-split             |
 
 #+BEGIN_SRC emacs-lisp :var bindings=evil-leader-bindings
   (dolist (row (cdr bindings))
@@ -545,34 +545,47 @@ I've written such a thing: [[http://git.pavpanchekha.com/?p=keylogger.el.git;a=s
 
 Note that each startup, I load the file, load my previously-saved data, tell it to record new key presses, and to autosave them every fifteen minutes.
 
-* Emacs Shell
+* Shells
 
-I use =eshell= as my shell, and set up =eat= to handle commands that need visual mode:
+I used to EShell as my shell. Eventually it became a pain; it can't activate Python venvs or anything like that. So I switched to vterm. Naturally the shell shouldn't be evil mode:
 
 #+BEGIN_SRC emacs-lisp
-(add-hook 'eshell-load-hook #'eat-eshell-visual-command-mode)
+  (add-hook 'vterm-mode-hook #'evil-emacs-state)
 #+END_SRC
 
-Here's something ChatGPT wrote to help with long-running eshell commands. If a command ends and Emacs isn't foregrounded (because it's a long command and I tabbed away) it raises a macOS notification. It needs the =terminal-notifier= Homebrew package installed, otherwise there is some annoying permissions thing I couldn't get working.
+One really useful customization is sending notifications when long-running commands complete. Specifically, I use shell hooks to notify Emacs when a command finish, in =~/.zshrc=:
+
+#+BEGIN_SRC shell
+_last_command=""
+
+preexec() { 
+  _last_command="$1" 
+}
+
+precmd() {
+  [[ -n "$_last_command" ]] || return
+  printf '\e]51;E(pavel/vterm-command-finished "%s" %d)\a' "$_last_command" "$?"
+  _last_command=""
+}
+#+END_SRC
+
+This sends an OSC escape sequence that vterm intercepts and calls =pavel/vterm-command-finished=, which then calls =terminal-notifier= (needs Homebrew package) to notify me if Emacs isn't focused.
 
 #+BEGIN_SRC emacs-lisp
-  (defun pavel/format-eshell-command ()
-    "Reconstruct the full eshell command as a string."
-    (string-join
-     (cons eshell-last-command-name
-           (mapcar #'eshell-escape-arg eshell-last-arguments))
-     " "))
-
-  (defun pavel/eshell-maybe-notify ()
+  (defun pavel/vterm-command-finished (cmd exit-status)
+    "Called by vterm when a shell command finishes.
+    Sends a macOS notification if Emacs isn't focused."
     (unless (frame-focus-state)
       (start-process "notify" nil "terminal-notifier"
-                     "-title" (if (= eshell-last-command-status 0)
-                                  "✅ Emacs Command Done"
-                                "❌ Emacs Command Failed")
-                     "-message" (pavel/format-eshell-command)
+                     "-title" (if (string= exit-status "0")
+                                  "✅ Command Done"
+                                "❌ Command Failed")
+                     "-message" cmd
                      "-activate" "org.gnu.Emacs")))
 
-  (add-hook 'eshell-post-command-hook #'pavel/eshell-maybe-notify)
+  (with-eval-after-load 'vterm
+    (add-to-list 'vterm-eval-cmds
+                 '("pavel/vterm-command-finished" pavel/vterm-command-finished)))
 #+END_SRC
 
 * Web Server
