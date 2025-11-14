@@ -63,18 +63,6 @@ I keep my custom-set variables separate from my true configuration file.
   (load custom-file)
 #+END_SRC
 
-I store some collected data in Dropbox. To avoid one computer overwriting another's data, I include the hostname in the file name. This code extracts the hostname itself.
-
-#+BEGIN_SRC emacs-lisp
-  (setf hostname
-        (with-temp-buffer
-          (call-process "hostname" nil t)
-          (let ((hostname* (buffer-string)))
-            (while (string-match "[\r\n\t ]+" hostname*)
-              (setq hostname* (replace-match "" t t hostname*)))
-            hostname*)))
-#+END_SRC
-
 * Graphical Interface Quirks
 
 I now use the =better-defaults= package to turn off the scroll bar, tool bar, and menu bar.
@@ -283,7 +271,7 @@ I bind it to use my leader key instead.
 * Writing
 ** Blogging
 
-I maintain a [[https://pavpanchekha.com][blog]], and the blog is stored in =/home/www/=, which is maintained by =git=. To make it easier to keep track of draft posts I've written but not published, I wrote a Magit section that shows up right after "Untracked Files":
+I maintain a [[https://pavpanchekha.com][blog]], and the blog is stored in =~/www/=, which is maintained by =git=. To make it easier to keep track of draft posts I've written but not published, I wrote a Magit section that shows up right after "Untracked Files":
 
 #+BEGIN_SRC emacs-lisp
   (defvar my-blog-directory (expand-file-name "~/www/"))
@@ -307,7 +295,7 @@ I want this section to show up only in the blog post directory, so I add a hook 
 
 #+BEGIN_SRC emacs-lisp
   (defun my-magit-setup-blog-posts ()
-    (when my-blog-directory
+    (when (equal default-directory my-blog-directory)
       (magit-add-section-hook 'magit-status-sections-hook 'my-magit-insert-blog-posts
                               'magit-insert-untracked-files 'after t)))
 
@@ -419,45 +407,16 @@ Fly-spell mode uses ISpell. I want to use the =ispell= program, to use American 
 (setf ispell-personal-dictionary "~/.emacs.d/dict")
 #+END_SRC
 
-A key binding I really miss from Vim is the spell checking keys =zg= and =z==.  Emacs has a great spell-check built-in: Ispell. All we need to do is add a few key-bindings.  But first we need a function to bind to, and for =zg= (save current word to dictionary) one does not exist.  So off we go to implement =ispell-save-word.=
+A key binding I really miss from Vim is the spell checking keys =zg= and
+=z==. Emacs has a great spell-check built-in: Ispell. All we need to do
+is add a few key-bindings, though annoyingly =ispell-save-word= is not
+built in.
 
 #+BEGIN_SRC emacs-lisp
-(defun ispell-save-word () (interactive)
-#+END_SRC
-
-First, we need to *get* the current word.  We don't need to explicitly use =ispell-following-word=, since =ispell-get-word= does this for us. =ispell-get-word= returns a list of =word=, =start=, =end= (though its documentation certainly doesn't hint at such), so we call =car= to extract the word itself.
-
-#+BEGIN_SRC emacs-lisp
-  (let ((word (car (ispell-get-word nil))))
-#+END_SRC
-
-Now we can call =ispell-send-string=.  Its documentation is pretty weak (and that's if I want to be nice), but from reading the code of =ispell-command-loop= (search for =?i=), it seems like we want to send =*word\n=, where =word= is the word in question.
-
-#+BEGIN_SRC emacs-lisp
-  (ispell-send-string (concat "*" word "\n"))
-#+END_SRC
-
-Finally, since we modified the dictionary, we want to save it.  To be nice, we're going to first mark the dictionary as modified.  We only want to force a save, though, if the dictionary was clean before-hand, so we save the old value.
-
-#+BEGIN_SRC emacs-lisp
-  (let ((old-ispell-pdict-modified-p ispell-pdict-modified-p))
-    (setq ispell-pdict-modified-p '(t))
-#+END_SRC
-
-And finally, we want force a save if necessary.  The "if necessary" part is actually annoyingly complicated...
-
-#+BEGIN_SRC emacs-lisp
-    (when (or (and old-ispell-pdict-modified-p
-                   (listp old-ispell-pdict-modified-p)
-                   (car ispell-pdict-modified-p))
-              (and ispell-pdict-modified-p
-                   (not (listp ispell-pdict-modified-p)))))
-#+END_SRC
-
-But once that's out of the way, we can just call =ispell-pdict-save= with =no-query=.
-
-#+BEGIN_SRC emacs-lisp
-      (ispell-pdict-save t))))
+  (defun ispell-save-word ()
+    (interactive)
+    (ispell-send-string (concat "*" (car (ispell-get-word nil)) "\n"))
+    (ispell-pdict-save t nil))
 #+END_SRC
 
 Finally, we add key-bindings using Evil's =evil-normal-state-map=.
@@ -626,7 +585,7 @@ I've written such a thing: [[http://git.pavpanchekha.com/?p=keylogger.el.git;a=s
 
 #+BEGIN_SRC emacs-lisp
   (load "~/Dropbox/Archive/keylogger.el/keylogger.el")
-  (setf keylogger-filename (concat "~/Dropbox/Data/keys." hostname ".el"))
+  (setf keylogger-filename (concat "~/Dropbox/Data/keys." (system-name) ".el"))
   (keylogger-load)
   (keylogger-start)
   (keylogger-autosave)
