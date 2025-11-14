@@ -295,15 +295,12 @@ I’ve gone back and forth on single- and double-spaced sentences, but for now I
   (setf sentence-end-double-space nil)
 #+END_SRC
 
-I usually like to build LaTeX with =latexmk=, and this command starts =latexmk= in preview mode in the current directory---very handy.
+I usually like to build LaTeX with =latexmk=, and this command starts
+=latexmk= in preview mode in the current directory---very handy.
+Basically, it first identifies the main file, among =main.tex=,
+=paper.tex=, and =letter.tex= (for recommendation letters):
 
 #+BEGIN_SRC emacs-lisp
-    ;; -*- lexical-binding: t; -*-
-    (require 'seq)
-
-    (defvar my/latexmk-buffer "*latexmk*"
-      "Buffer name for the latexmk -pvc process.")
-
     (defun my/latexmk--choose-target ()
       "Pick main .tex target: prefer main.tex or paper.tex in current dir, else prompt."
       (let* ((dir (or (and (buffer-file-name)
@@ -312,51 +309,55 @@ I usually like to build LaTeX with =latexmk=, and this command starts =latexmk= 
              (candidates (list (expand-file-name "main.tex" dir)
                                (expand-file-name "paper.tex" dir)
                                (expand-file-name "letter.tex" dir)))
-             (target (seq-find #'file-exists-p candidates)))
+             (target (cl-find-if #'file-exists-p candidates)))
         (unless target
           (setq target
                 (read-file-name "Main TeX file: " dir nil t nil
                                 (lambda (f) (string-match-p "\\.tex\\'" f)))))
         (expand-file-name target)))
+#+END_SRC
 
-    (defun my/latexmk-running-p ()
-      "Is our latexmk watcher currently running?"
-      (let ((proc (get-buffer-process my/latexmk-buffer)))
-        (and proc (process-live-p proc))))
+Then there's a function to start a =latexmk= process in a special
+buffer, in =pvc= mode so it pops open Preview, which auto-refreshes when
+the underlying PDF file changes. I have a bad habit of closing the
+Preview window, so it'll also auto-restart it.
 
-    (defun my/latexmk-stop ()
-      "Stop the running latexmk watcher (if any) and kill its buffer."
-      (interactive)
+#+BEGIN_SRC emacs-lisp
+  (defvar my/latexmk-buffer "*latexmk*"
+    "Buffer name for the latexmk -pvc process.")
+
+  (defun my/latexmk-start ()
+    "Start latexmk with -pdf -pvc -interaction=nonstopmode.
+  If already running, restarts it so the PDF viewer reopens."
+    (interactive)
+    (let* ((target (my/latexmk--choose-target))
+           ;; latexmk prefers being run from the file's directory
+           (default-directory (file-name-directory target))
+           (args (list "latexmk" "-pdf" "-pvc" "-shell-escape" "-interaction=nonstopmode" target)))
       (when (my/latexmk-running-p)
-        (let ((proc (get-buffer-process my/latexmk-buffer)))
-          (interrupt-process proc)
-          (sit-for 0.1)
-          (ignore-errors (kill-process proc))))
-      (when (get-buffer my/latexmk-buffer)
-        (kill-buffer my/latexmk-buffer))
-      (message "latexmk watcher stopped."))
+        (my/latexmk-stop))
+      (apply #'start-process "latexmk" (get-buffer-create my/latexmk-buffer) args)
+      ;; Use compilation-mode for clickable errors, etc.
+      (with-current-buffer my/latexmk-buffer
+        (compilation-mode))
+      (message "latexmk watching %s" (file-name-nondirectory target))))
 
-    (defun my/latexmk-start (&optional restart)
-      "Start latexmk with -pdf -pvc -interaction=nonstopmode.
-    With prefix arg RESTART (C-u), force-restart even if already running.
-    If a watcher is running, this will restart it so the PDF viewer reopens."
-      (interactive "P")
-      (let* ((target (my/latexmk--choose-target))
-             ;; latexmk prefers being run from the file's directory
-             (default-directory (file-name-directory target))
-             (args (list "latexmk" "-pdf" "-pvc" "-shell-escape" "-interaction=nonstopmode" target)))
-        (when (or restart (my/latexmk-running-p))
-          (my/latexmk-stop))
-        (apply #'start-process "latexmk" (get-buffer-create my/latexmk-buffer) args)
-        ;; Use compilation-mode for clickable errors, etc.
-        (with-current-buffer my/latexmk-buffer
-          (compilation-mode))
-        (message "latexmk watching %s" (file-name-nondirectory target))))
+  (defun my/latexmk-running-p ()
+    "Is our latexmk watcher currently running?"
+    (let ((proc (get-buffer-process my/latexmk-buffer)))
+      (and proc (process-live-p proc))))
 
-    (defun my/latexmk-restart ()
-      "Restart the latexmk watcher (or start it if not running)."
-      (interactive)
-      (my/latexmk-start 'restart))
+  (defun my/latexmk-stop ()
+    "Stop the running latexmk watcher (if any) and kill its buffer."
+    (interactive)
+    (when (my/latexmk-running-p)
+      (let ((proc (get-buffer-process my/latexmk-buffer)))
+        (interrupt-process proc)
+        (sit-for 0.1)
+        (ignore-errors (kill-process proc))))
+    (when (get-buffer my/latexmk-buffer)
+      (kill-buffer my/latexmk-buffer))
+    (message "latexmk watcher stopped."))
 #+END_SRC
 
 ** Spell checking
@@ -364,16 +365,17 @@ I usually like to build LaTeX with =latexmk=, and this command starts =latexmk= 
 In the text modes I use, I turn on spell checking.
 
 #+BEGIN_SRC emacs-lisp
-  (add-hook 'org-mode-hook 'flyspell-mode)
-  (add-hook 'markdown-mode-hook 'flyspell-mode)
-  (add-hook 'latex-mode-hook 'flyspell-mode)
+(add-hook 'org-mode-hook 'flyspell-mode)
+(add-hook 'markdown-mode-hook 'flyspell-mode)
+(add-hook 'latex-mode-hook 'flyspell-mode)
 #+END_SRC
 
-Fly-spell mode uses ISpell. I want to use the =ispell= program, to use American English, and to locate my personal dictionary within my =.emacs.d= directory.
+Fly-spell mode uses aspell. I locate my personal dictionary within my
+=.emacs.d= directory.
 
 #+BEGIN_SRC emacs-lisp
-(setf ispell-program-name "/opt/homebrew/bin/aspell")
-(setf ispell-personal-dictionary "~/.emacs.d/dict")
+(setq ispell-program-name "/opt/homebrew/bin/aspell"
+      ispell-personal-dictionary "~/.emacs.d/dict")
 #+END_SRC
 
 A key binding I really miss from Vim is the spell checking keys =zg= and
@@ -382,10 +384,10 @@ is add a few key-bindings, though annoyingly =ispell-save-word= is not
 built in.
 
 #+BEGIN_SRC emacs-lisp
-  (defun ispell-save-word ()
-    (interactive)
-    (ispell-send-string (concat "*" (car (ispell-get-word nil)) "\n"))
-    (ispell-pdict-save t nil))
+(defun ispell-save-word ()
+  (interactive)
+  (ispell-send-string (concat "*" (car (ispell-get-word nil)) "\n"))
+  (ispell-pdict-save t nil))
 #+END_SRC
 
 Finally, we add key-bindings using Evil's =evil-normal-state-map=.
@@ -401,40 +403,28 @@ Finally, we add key-bindings using Evil's =evil-normal-state-map=.
 I give Org-mode files a =txt= extension because this allows editing them on other devices.
 
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'auto-mode-alist '("\\.txt$" . org-mode))
+  (add-to-list 'auto-mode-alist '("\\.txt$" . org-mode))
 #+END_SRC
 
 Org-mode indents description lists so as to keep a consistent left edge. I don't like this behavior.
 
 #+BEGIN_SRC emacs-lisp
-  (setf org-description-max-indent 0)
+  (setq org-description-max-indent 0)
 #+END_SRC
 
 I prefer to hide the inline markup used by Org-mode.
 
 #+BEGIN_SRC emacs-lisp
-  (setf org-hide-emphasis-markers t)
-  (setf org-hide-leading-stars t)
+  (setq org-hide-emphasis-markers t
+        org-hide-leading-stars t)
 #+END_SRC
 
-** Notes and journal
-
-I keep a journal for random notes (not for journaling)
+I keep an (org-mode) journal for random notes (not for journaling)
 
 #+BEGIN_SRC emacs-lisp
   (defun my-open-journal ()
     (interactive)
     (find-file "~/Dropbox/journal.org"))
-#+END_SRC
-
-I've got a few capture templates:
-
-#+BEGIN_SRC emacs-lisp
-  (setf org-capture-templates
-        '(("j" "Journal Entry" entry (file "~/Dropbox/journal.org")
-           "* %? %T" :prepend t)))
-
-  (add-hook 'org-capture-mode-hook 'evil-insert-state)
 #+END_SRC
 
 * Programming Language and File Format Tweaks
@@ -547,7 +537,7 @@ I've written such a thing: [[http://git.pavpanchekha.com/?p=keylogger.el.git;a=s
 
 #+BEGIN_SRC emacs-lisp
   (load "~/Dropbox/Archive/keylogger.el/keylogger.el")
-  (setf keylogger-filename (concat "~/Dropbox/Data/keys." (system-name) ".el"))
+  (setq keylogger-filename (concat "~/Dropbox/Data/keys." (system-name) ".el"))
   (keylogger-load)
   (keylogger-start)
   (keylogger-autosave)
