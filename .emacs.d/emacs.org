@@ -35,10 +35,8 @@ Here are the packages I use; this table is [[http://sachachua.com/blog/2015/01/g
 | magit           | A git mode                               |
 | company         | Completions and suggestions              |
 | org             | An organization tool                     |
-| haskell-mode    | Editing haskell                          |
-| projectile      | Project management                       |
 | racket-mode     | Editing Racket code                      |
-| eat             | Handle curses commands in eshell         |
+| vterm           | For running amp and maybe others         |
 
 #+BEGIN_SRC emacs-lisp :var packages=packages
   (dolist (package (mapcar #'intern (mapcar #'car (cdr packages))))
@@ -52,24 +50,21 @@ Here are the packages I use; this table is [[http://sachachua.com/blog/2015/01/g
 My name and email address helps Emacs format various messages.
 
 #+BEGIN_SRC emacs-lisp
-  (setf user-full-name "Pavel Panchekha")
-  (setf user-mail-address "me@pavpanchekha.com")
+  (setq user-full-name "Pavel Panchekha")
+  (setq user-mail-address "me@pavpanchekha.com")
 #+END_SRC
 
 I keep my custom-set variables separate from my true configuration file.
 
 #+BEGIN_SRC emacs-lisp
-  (setf custom-file "~/.emacs.d/custom.el")
+  (setq custom-file "~/.emacs.d/custom.el")
   (load custom-file)
 #+END_SRC
 
 * Graphical Interface Quirks
 
-I now use the =better-defaults= package to turn off the scroll bar, tool bar, and menu bar.
-
-#+BEGIN_SRC emacs-lisp
-  (set-scroll-bar-mode nil)
-#+END_SRC
+I now use the =better-defaults= package to turn off the scroll bar, tool
+bar, and menu bar. It also turns off beeps and TABs.
 
 Instead of the menu bar, I put the mode line at the top of the document (a trick I took from [[http://bzg.fr/emacs-strip-tease.html][Bastien Guerry]]):
 
@@ -78,74 +73,56 @@ Instead of the menu bar, I put the mode line at the top of the document (a trick
   (setq-default mode-line-format nil)
 #+END_SRC
 
-I no longer need the Emacs startup screen, so I turn it off. I usually start from the daemon anyway, so I’ll only see the startup screen once.
+Instead of the startup screen (I launch from the daemon anyway), I
+prefer Emacs open my home directory, where I link current projects.
 
 #+BEGIN_SRC emacs-lisp
-  (setf inhibit-startup-screen t
-        inhibit-startup-message t
-        inhibit-startup-echo-area-message t)
+  (setq initial-buffer-choice "~/")
 #+END_SRC
 
 Backups should go in the Emacs hidden directory, plus some more options [[https://stackoverflow.com/questions/151945/how-do-i-control-how-emacs-makes-backup-files][from SO]]:
 
 #+BEGIN_SRC emacs-lisp
-  (setq backup-directory-alist `(("." . "~/.emacs.d/backups/")))
-  (setq delete-old-versions t
-	backup-by-copying t
-	kept-new-versions 6
-	kept-old-versions 2
-	version-control t)
+  (setq backup-directory-alist `(("." . "~/.emacs.d/backups/"))
+        delete-old-versions t
+        backup-by-copying t
+        kept-new-versions 6
+        kept-old-versions 2
+        version-control t)
 #+END_SRC
 
-Instead, I would rather Emacs open up by visiting the =~= directory, in which I store current projects.
+The mode-line is made more useful by showing the column number and
+progress through the file. The column number is especially handy for
+avoiding long lines and for debugging error messages.
 
 #+BEGIN_SRC emacs-lisp
-  (setf initial-buffer-choice "~/")
+  (setq column-number-mode t)
+  (setq size-indication-mode t)
 #+END_SRC
 
-The mode-line is made more useful by showing the column number and progress through the file. The column number is especially handy for avoiding long lines and for debugging error messages.
-
-#+BEGIN_SRC emacs-lisp
-  (setf column-number-mode t)
-  (setf size-indication-mode t)
-#+END_SRC
-
-I hate my computer beeping when I err. I ask Emacs to express its discontent visually.
-
-#+BEGIN_SRC emacs-lisp
-  (setf visible-bell t)
-#+END_SRC
-
-Let's move toward obsoleting the ASCII TAB character.
-
-#+BEGIN_SRC emacs-lisp
-(setq-default indent-tabs-mode nil)
-#+END_SRC
-
-I rarely use the mouse, so tooltips are an annoyance.  This code causes them to appear in the echo area instead.
+I rarely use the mouse, so tooltips are an annoyance. They appear in the echo area instead.
 
 #+BEGIN_SRC emacs-lisp
   (tooltip-mode -1)
-  (setf tooltip-use-echo-area t)
 #+END_SRC
 
 For scrolling, I ask Emacs to scroll at most five lines at a time and to keep 5 lines between the cursor and the top/bottom of the page. This helps me keep my place in the document.
 
 #+BEGIN_SRC emacs-lisp
-(setf scroll-conservatively 5)
-(setf scroll-margin 5)
+(setq scroll-conservatively 5)
+(setq scroll-margin 5)
 #+END_SRC
 
 I use a [[https://github.com/cathywu/TimeTracker][time tracker]] that records window titles.  This is more handy if I display the currently file path in the window title.
 
 #+BEGIN_SRC emacs-lisp
   (setq frame-title-format
-        '((:eval (if (buffer-file-name)
-                     (concat "Emacs: " (abbreviate-file-name (buffer-file-name)))
-                   "Emacs: %b"))))
+        '(:eval (if (buffer-file-name)
+                    (concat "Emacs: " (abbreviate-file-name (buffer-file-name)))
+                  "Emacs: %b")))
 #+END_SRC
 
-When I teach or project it's good to have light mode, but I prefer to code in dark mode. "<leader>t" toggles between them
+When I teach or project it's good to have light mode, but I prefer to code in dark mode.
 
 #+BEGIN_SRC emacs-lisp
   (defun toggle-tango-themes ()
@@ -163,10 +140,20 @@ When I teach or project it's good to have light mode, but I prefer to code in da
        (t
         ;; If neither is active, default to tango
         (load-theme light t)))))
-
-  (evil-leader/set-key "t" #'toggle-tango-themes)
 #+END_SRC
 
+I also like =triple-split= to split the screen into three vertical
+columns, which I find handy because all three columns end up about 80
+characters wide
+
+#+BEGIN_SRC emacs-lisp
+  (defun triple-split ()
+    (interactive)
+    (delete-other-windows)
+    (split-window-right)
+    (split-window-right)
+    (balance-windows))
+#+END_SRC
 
 * Evil: key commands à la Vim
 
@@ -194,45 +181,33 @@ Evil binds =RET=, which is often used in other modes. This unbinds it:
 (define-key evil-motion-state-map (kbd "RET") nil)
 #+END_SRC
 
-I have a few shortcuts using the =SPC= leader. They’re mostly bindings to Helm tools, but I plan to grow more one day.
+I have a few shortcuts using the =SPC= leader. I usually stick tools I develop into here;
 
 #+NAME: evil-leader-bindings
-| Key | Function               |
-| SPC | counsel-M-x            |
-| f   | counsel-find-file      |
-| r   | revert-buffer          |
-| s   | save-buffer            |
-| b   | ivy-switch-buffer      |
-| h   | help-for-help          |
-| g   | ripgrep-regexp         |
-| j   | my-open-journal        |
-| c   | org-capture            |
-| e   | eshell                 |
-| TAB | switch-other-buffer    |
+| Key | Function                 |
+|-----+--------------------------|
+| SPC | counsel-M-x              |
+| a   | amp-magit-start-thread   |
+| b   | ivy-switch-buffer        |
+| c   | org-capture              |
+| d   | toggle-debug-on-error    |
+| e   | eshell                   |
+| f   | counsel-find-file        |
+| g   | ripgrep-regexp           |
+| h   | help-for-help            |
+| j   | my-open-journal          |
+| l   | my/latexmk-start         |
+| m   | magit-status             |
+| r   | revert-buffer            |
+| s   | save-buffer              |
+| t   | toggle-tango-themes      |
+| v   | start-python-http-server |
+| TAB | mode-line-other-buffer   |
+| 3   | triple-split             |
 
 #+BEGIN_SRC emacs-lisp :var bindings=evil-leader-bindings
-  (apply #'evil-leader/set-key
-         (apply #'append (mapcar (lambda (row) (list (car row) (intern (cadr row)))) (cdr bindings))))
-#+END_SRC
-
-Here, =switch-other-buffer= is the following function, from [[http://emacswiki.org/emacs/SwitchingBuffers][EmacsWiki]], inspired by [[https://github.com/syl20bnr/spacemacs][spacemacs]]:
-
-#+BEGIN_SRC emacs-lisp
-  (defun switch-other-buffer ()
-    (interactive)
-    (switch-to-buffer (other-buffer)))
-#+END_SRC
-
-Meanwhile =triple-split= splits the screen into three vertical columns, which I find handy because all three columns end up about 80 characters wide
-
-#+BEGIN_SRC emacs-lisp
-  (defun triple-split ()
-    (interactive)
-    (delete-other-windows)
-    (split-window-right)
-    (split-window-right)
-    (balance-windows))
-  (evil-leader/set-key "3" 'triple-split)
+  (dolist (row (cdr bindings))
+    (evil-leader/set-key (car row) (intern (cadr row))))
 #+END_SRC
 
 * Ivy / Counsel
@@ -253,15 +228,10 @@ Some additional information in Ivy:
 
 * Git integration (Magit)
 
-[[http://magit.github.io/magit/][Magit]] is an incredible Emacs interface to the [[https://git-scm.com][Git version-control system]].
-I have a Magit binding in my leader map:
-
-#+BEGIN_SRC emacs-lisp
-(evil-leader/set-key "m" 'magit-status)
-#+END_SRC
-
-Magit uses =SPC= for =magit-show-item-or-scroll-up=, which I don’t use.
-I bind it to use my leader key instead.
+[[http://magit.github.io/magit/][Magit]] is an incredible Emacs interface to the [[https://git-scm.com][Git version-control
+system]]. I have a Magit binding in my leader map. Magit uses =SPC= for
+=magit-show-item-or-scroll-up=, which I don’t use. I bind it to use my
+leader key instead.
 
 #+BEGIN_SRC emacs-lisp
   (define-key magit-mode-map (kbd "SPC") nil)
@@ -289,9 +259,10 @@ I maintain a [[https://pavpanchekha.com][blog]], and the blog is stored in =~/ww
             (insert ?\n))))))
 #+END_SRC
 
-The referenced =drafts.sh= file looks for all blog posts not named on the home page and outputs them in a list.
-
-I want this section to show up only in the blog post directory, so I add a hook whenever magit runs that both adds the section to the list of sections, *and* makes that variable buffer-local so it doesn't affect other directories.
+The referenced =drafts.sh= file looks for all blog posts not named on
+the home page and outputs them in a list. I want this section to show
+up only in the blog post directory, so I check the directory and add a
+hook buffer-locally.
 
 #+BEGIN_SRC emacs-lisp
   (defun my-magit-setup-blog-posts ()
@@ -386,8 +357,6 @@ I usually like to build LaTeX with =latexmk=, and this command starts =latexmk= 
       "Restart the latexmk watcher (or start it if not running)."
       (interactive)
       (my/latexmk-start 'restart))
-
-    (evil-leader/set-key "l" #'my/latexmk-start)
 #+END_SRC
 
 ** Spell checking
@@ -559,15 +528,8 @@ Doc-view works much better with Vim-style h/j/k/l movement keys.
 
 ** Emacs Lisp programming tools
 
-When I write emacs-lisp I am often in the debugger. To turn it on, I use this function:
-
-#+BEGIN_SRC emacs-lisp
-  (defun debug-mode () "Turn on various Emacs debugging features"
-    (interactive)
-    (setf debug-on-error t message-log-max 10000))
-#+END_SRC
-
-I'm also often shaving my Emacs configuration (this file). It's helpful to jump to it and reload it quickly.,
+I'm also often shaving my Emacs configuration (this file). It's
+helpful to jump to it and reload it quickly.,
 
 #+BEGIN_SRC emacs-lisp
 (defun reconfigure () (interactive)
@@ -636,6 +598,7 @@ Here are some nice keybindings (that ChatGPT wrote for me) to start the Python w
   (defvar web-server--mode-line-string ""
     "String to display in the mode line when web server is running.")
   (put 'web-server--mode-line-string 'risky-local-variable t)
+  (add-to-list 'global-mode-string 'web-server--mode-line-string t)
 
   (defconst web-server--buffer-name "*web-server*")
 
@@ -645,53 +608,43 @@ Here are some nice keybindings (that ChatGPT wrote for me) to start the Python w
 You start it with space-V (for server).
 
 #+BEGIN_SRC emacs-lisp
-    (defun stop-python-http-server ()
-      "Stop the current web server"
-      (interactive)
-      (when (and web-server--process (process-live-p web-server--process))
-        (pop-to-buffer web-server--buffer-name)
-        (unless (yes-or-no-p "A web server is running—kill it? ")
-          (user-error "Aborted starting new server"))
-        (kill-process web-server--process)
-        (setq web-server--process nil)
-        (setq web-server--mode-line-string "")
-        (force-mode-line-update t)
-        (message "Previous web server killed.")))
+  (defun stop-python-http-server ()
+    "Stop the current web server"
+    (interactive)
+    (when (and web-server--process (process-live-p web-server--process))
+      (pop-to-buffer web-server--buffer-name)
+      (unless (yes-or-no-p "A web server is running—kill it? ")
+        (user-error "Aborted starting new server"))
+      (kill-process web-server--process)
+      (setq web-server--process nil)
+      (setq web-server--mode-line-string "")
+      (force-mode-line-update t)
+      (message "Previous web server killed.")))
 
-    (defun start-python-http-server ()
-      "Prompt for a directory and launch `python3 -m http.server -d DIR` in *web-server*.
-    If a server is already running, switch to its buffer so you can inspect the log,
-    prompt to kill it, then start a new one. Finally restore the buffer you were in,
-    even if you abort."
-      (interactive)
-      (let* ((orig-buf    (current-buffer))
-             (orig-win    (selected-window))
-             (dir         (read-directory-name "Directory for HTTP server: ")))
-        (unwind-protect
-            (progn
-              ;; If already running, show its log and ask to kill
-              (stop-python-http-server)
-              ;; Start new server
-              (let ((default-directory dir))
-                (setq web-server--process
-                      (start-process "web-server" web-server--buffer-name
-                                     "python3" "-m" "http.server" "-d" dir
-                                     (number-to-string web-server--port))))
-              (setq web-server--mode-line-string
-                    (format " [HTTP:%s %s]" port
-                            (abbreviate-file-name dir)))
-              (force-mode-line-update t))
-
-              ;; Prep log buffer
-              (with-current-buffer web-server--buffer-name
-                (read-only-mode 1)
-                (goto-char (point-max))))
-          ;; always restore original window & buffer
-          (when (window-live-p orig-win)
-            (select-window orig-win)
-            (switch-to-buffer orig-buf))))
-
-      (evil-leader/set-key "v" #'start-python-http-server)
+  (defun start-python-http-server ()
+    "Prompt for a directory and launch `python3 -m http.server -d DIR` in *web-server*.
+  If a server is already running, switch to its buffer so you can inspect the log,
+  prompt to kill it, then start a new one. Finally restore the buffer you were in,
+  even if you abort."
+    (interactive)
+    (let* ((dir         (read-directory-name "Directory for HTTP server: ")))
+      ;; If already running, show its log and ask to kill
+      (save-window-excursion
+        (stop-python-http-server))
+      ;; Start new server
+      (let ((default-directory dir))
+        (setq web-server--process
+              (start-process "web-server" web-server--buffer-name
+                             "python3" "-m" "http.server" "-d" dir
+                             (number-to-string web-server--port))))
+      (setq web-server--mode-line-string
+            (format " [HTTP:%s %s]" web-server--port
+                    (abbreviate-file-name dir)))
+      (force-mode-line-update t))
+    ;; Prep log buffer
+    (with-current-buffer web-server--buffer-name
+      (read-only-mode 1)
+      (goto-char (point-max))))
 #+END_SRC
 
 * Amp integration
@@ -842,8 +795,6 @@ You start it with space-V (for server).
                   (set-window-buffer right amp-buf)
                   (balance-windows))))
             (message "AMP thread ready for branch %s" branch))))))
-
-  (evil-leader/set-key "a" #'amp-magit-start-thread)
 #+END_SRC
 
 The annoying thing about this is that vterm is kinda slow. ChatGPT said this would help:
