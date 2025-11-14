@@ -36,7 +36,11 @@
 .zprofile
 
 # Things that should really go into ~/.local
+.amp
 .cabal
+.cargo
+.cursor
+.dotnet
 .racket
 .offlineimap
 .mutt
@@ -87,8 +91,14 @@
 .parallel
 .vpython-root
 .vpython_cipd_cache
+.vscode
+.mozbuild
 .zsh_*
 .bash_*
+.rustup
+.nuget
+.matplotlib
+.lldb
 
 # System components that don't need their own directory
 .fontconfig
@@ -113,6 +123,7 @@
 .node_repl_history
 .wget-hsts
 .xfce4-session.verbose-log
+__pycache__
 
 # System files
 .ICEauthority
