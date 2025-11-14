@@ -39,10 +39,14 @@ Here are the packages I use; this table is [[http://sachachua.com/blog/2015/01/g
 | vterm           | For running amp and maybe others         |
 
 #+BEGIN_SRC emacs-lisp :var packages=packages
-  (dolist (package (mapcar #'intern (mapcar #'car (cdr packages))))
-    (unless (package-installed-p package)
-      (package-install package))
-    (require package))
+  (let ((packages-refreshed-p nil))
+    (dolist (package (mapcar #'intern (mapcar #'car packages)))
+      (unless (package-installed-p package)
+        (unless packages-refreshed-p
+  	(package-refresh-contents)
+  	(setq packages-refreshed-p t))
+        (package-install package))
+      (require package)))
 #+END_SRC
 
 * Personal Information
@@ -189,7 +193,6 @@ I have a few shortcuts using the =SPC= leader. I usually stick tools I develop i
 | SPC | counsel-M-x              |
 | a   | amp-magit-start-thread   |
 | b   | ivy-switch-buffer        |
-| c   | org-capture              |
 | d   | toggle-debug-on-error    |
 | e   | vterm                    |
 | f   | counsel-find-file        |
@@ -206,7 +209,7 @@ I have a few shortcuts using the =SPC= leader. I usually stick tools I develop i
 | "3" | triple-split             |
 
 #+BEGIN_SRC emacs-lisp :var bindings=evil-leader-bindings
-  (dolist (row (cdr bindings))
+  (dolist (row bindings)
     (evil-leader/set-key (car row) (intern (cadr row))))
 #+END_SRC
 
@@ -550,7 +553,7 @@ Note that each startup, I load the file, load my previously-saved data, tell it 
 I used to EShell as my shell. Eventually it became a pain; it can't activate Python venvs or anything like that. So I switched to vterm. Naturally the shell shouldn't be evil mode:
 
 #+BEGIN_SRC emacs-lisp
-  (add-hook 'vterm-mode-hook #'evil-emacs-state)
+  (add-hook 'vterm-mode-hook (lambda () (evil-local-mode -1)))
 #+END_SRC
 
 One really useful customization is sending notifications when long-running commands complete. Specifically, I use shell hooks to notify Emacs when a command finish, in =~/.zshrc=:

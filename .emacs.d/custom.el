@@ -8,7 +8,7 @@
  '(column-number-mode t)
  '(compilation-message-face 'default)
  '(coq-server-user "p92")
- '(custom-enabled-themes '(tango))
+ '(custom-enabled-themes '(tango-dark))
  '(custom-safe-themes
    '("76ddb2e196c6ba8f380c23d169cf2c8f561fd2013ad54b987c516d3cabc00216"
      "6fc9e40b4375d9d8d0d9521505849ab4d04220ed470db0b78b700230da0a86c1"
@@ -33,7 +33,7 @@
    '(("#3C3D37" . 0) ("#679A01" . 20) ("#4BBEAE" . 30) ("#1DB4D0" . 50)
      ("#9A8F21" . 60) ("#A75B00" . 70) ("#F309DF" . 85)
      ("#3C3D37" . 100)))
- '(ispell-program-name "/opt/homebrew/bin/aspell" t)
+ '(ispell-program-name "/opt/homebrew/bin/aspell")
  '(magit-diff-hide-trailing-cr-characters t)
  '(magit-diff-options '("--minimal" "--ignore-space-change"))
  '(magit-diff-paint-whitespace nil)
@@ -43,10 +43,11 @@
  '(org-entities-user '(("\\square" "\\square" t "&#x2610;" "[]" "[]" "☐")))
  '(org-pretty-entities t)
  '(package-selected-packages
-   '(ack activities color-theme-sanityinc-tomorrow company counsel eat
-         evil-leader exec-path-from-shell haskell-mode htmlize magit
-         markdown-mode projectile pyvenv-auto racket-mode ripgrep
-         rust-mode scribble-mode vterm yaml-mode))
+   '(ack activities better-defaults color-theme-sanityinc-tomorrow
+	 company counsel eat evil-leader exec-path-from-shell
+	 haskell-mode htmlize magit markdown-mode projectile
+	 pyvenv-auto racket-mode ripgrep rust-mode scribble-mode vterm
+	 yaml-mode))
  '(paradox-automatically-star t)
  '(pos-tip-background-color "#FFFACE")
  '(pos-tip-foreground-color "#272822")
@@ -62,9 +63,9 @@
  '(tramp-verbose 2 nil (tramp))
  '(weechat-color-list
    (unspecified "#272822" "#3C3D37" "#F70057" "#F92672" "#86C30D"
-                "#A6E22E" "#BEB244" "#E6DB74" "#40CAE4" "#66D9EF"
-                "#FB35EA" "#FD5FF0" "#74DBCD" "#A1EFE4" "#F8F8F2"
-                "#F8F8F0")))
+		"#A6E22E" "#BEB244" "#E6DB74" "#40CAE4" "#66D9EF"
+		"#FB35EA" "#FD5FF0" "#74DBCD" "#A1EFE4" "#F8F8F2"
+		"#F8F8F0")))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
