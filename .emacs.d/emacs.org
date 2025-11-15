@@ -283,7 +283,6 @@ hook buffer-locally.
 #+BEGIN_SRC emacs-lisp
   (add-hook 'org-mode-hook 'visual-line-mode)
   (add-hook 'org-mode-hook 'variable-pitch-mode)
-  (add-hook 'org-mode-hook 'org-toggle-pretty-entities)
 
   (add-hook 'markdown-mode-hook 'auto-fill-mode)
 
@@ -295,13 +294,10 @@ hook buffer-locally.
 I’ve gone back and forth on single- and double-spaced sentences, but for now I’m in the single-spacing camp.
 
 #+BEGIN_SRC emacs-lisp
-  (setf sentence-end-double-space nil)
+  (setq sentence-end-double-space nil)
 #+END_SRC
 
-I usually like to build LaTeX with =latexmk=, and this command starts
-=latexmk= in preview mode in the current directory---very handy.
-Basically, it first identifies the main file, among =main.tex=,
-=paper.tex=, and =letter.tex= (for recommendation letters):
+I usually like to build LaTeX with =latexmk=, and this command starts =latexmk= in preview mode in the current directory---very handy. Basically, it first identifies the main file, among =main.tex=, =paper.tex=, and =letter.tex= (for recommendation letters):
 
 #+BEGIN_SRC emacs-lisp
     (defun my/latexmk--choose-target ()
@@ -335,11 +331,12 @@ Preview window, so it'll also auto-restart it.
     (interactive)
     (let* ((target (my/latexmk--choose-target))
            ;; latexmk prefers being run from the file's directory
-           (default-directory (file-name-directory target))
-           (args (list "latexmk" "-pdf" "-pvc" "-shell-escape" "-interaction=nonstopmode" target)))
+           (default-directory (file-name-directory target)))
       (when (my/latexmk-running-p)
         (my/latexmk-stop))
-      (apply #'start-process "latexmk" (get-buffer-create my/latexmk-buffer) args)
+      (start-process "latexmk" my/latexmk-buffer
+                     "latexmk" "-pdf" "-pvc" "-shell-escape"
+                     "-interaction=nonstopmode" target)
       ;; Use compilation-mode for clickable errors, etc.
       (with-current-buffer my/latexmk-buffer
         (compilation-mode))
@@ -347,11 +344,12 @@ Preview window, so it'll also auto-restart it.
 
   (defun my/latexmk-running-p ()
     "Is our latexmk watcher currently running?"
-    (let ((proc (get-buffer-process my/latexmk-buffer)))
-      (and proc (process-live-p proc))))
+    (when-let ((proc (get-buffer-process my/latexmk-buffer)))
+      (process-live-p proc)))
 
   (defun my/latexmk-stop ()
-    "Stop the running latexmk watcher (if any) and kill its buffer."
+    "Stop the running latexmk watcher (if any) and kill
+   its buffer."
     (interactive)
     (when (my/latexmk-running-p)
       (let ((proc (get-buffer-process my/latexmk-buffer)))
@@ -377,7 +375,7 @@ Fly-spell mode uses aspell. I locate my personal dictionary within my
 =.emacs.d= directory.
 
 #+BEGIN_SRC emacs-lisp
-(setq ispell-program-name "/opt/homebrew/bin/aspell"
+(setq ispell-program-name "aspell"
       ispell-personal-dictionary "~/.emacs.d/dict")
 #+END_SRC
 
@@ -396,18 +394,12 @@ built in.
 Finally, we add key-bindings using Evil's =evil-normal-state-map=.
 
 #+BEGIN_SRC emacs-lisp
-(define-key evil-normal-state-map "z=" 'ispell-word)
-(define-key evil-normal-state-map "zg" 'ispell-save-word)
-(define-key evil-normal-state-map "zn" 'flyspell-goto-next-error)
+(define-key evil-normal-state-map "z=" #'ispell-word)
+(define-key evil-normal-state-map "zg" #'ispell-save-word)
+(define-key evil-normal-state-map "zn" #'flyspell-goto-next-error)
 #+END_SRC
 
 ** Org-mode
-
-I give Org-mode files a =txt= extension because this allows editing them on other devices.
-
-#+BEGIN_SRC emacs-lisp
-  (add-to-list 'auto-mode-alist '("\\.txt$" . org-mode))
-#+END_SRC
 
 Org-mode indents description lists so as to keep a consistent left edge. I don't like this behavior.
 
@@ -419,10 +411,11 @@ I prefer to hide the inline markup used by Org-mode.
 
 #+BEGIN_SRC emacs-lisp
   (setq org-hide-emphasis-markers t
-        org-hide-leading-stars t)
+        org-hide-leading-stars t
+        org-pretty-entities t)
 #+END_SRC
 
-I keep an (org-mode) journal for random notes (not for journaling)
+I keep an (org-mode) file for random notes; it's not a journal but that's what the file is called.
 
 #+BEGIN_SRC emacs-lisp
   (defun my-open-journal ()
@@ -433,41 +426,33 @@ I keep an (org-mode) journal for random notes (not for journaling)
 * Programming Language and File Format Tweaks
 ** Log files
 
-Log files and SMT-LIB files often have long lines (SMT-LIB because it's usually computer-generated), and Emacs doesn't deal particularly well with those, so I turn on truncate-long-lines mode for those files.
+Log files and SMT-LIB files often have long lines (SMT-LIB because it's usually computer-generated), modern Emacs has a mode that detects that and turns off expensive stuff like line wrapping:
 
 #+BEGIN_SRC emacs-lisp
-(defun log-truncate-long-lines ()
-  (when (and (stringp buffer-file-name) (string-match-p "\\.\\(smt2\\|log\\)$" buffer-file-name))
-    (toggle-truncate-lines)))
-(add-hook 'find-file-hook 'log-truncate-long-lines)
-#+END_SRC
-
-** FPCore
-
-FPCore is the vaguely Scheme-derived format behind [[http://fpbench.org][FPBench]].
-
-#+BEGIN_SRC emacs-lisp
-(add-to-list 'auto-mode-alist '("\\.fpcore" . scheme-mode))
+  (global-so-long-mode 1)
 #+END_SRC
 
 ** Racket
 
 I usually use the Racket dialect of Scheme, but I've used MIT-Scheme heavily in undergrad. For a while I used the [[http://www.neilvandyke.org/quack/][Quack]] and [[http://www.nongnu.org/geiser/][Geiser]] packages, which sort of supported multiple implementations, but now I use the =racket-mode= package, which has much deeper support for Racket but does not attempt to support other dialects at all. Which I think is OK, the other dialects are not used much.
 
-It is customary in Racket to use a proper Unicode λ instead of the symbol =lambda=. I hack the abbreviation tools in Emacs to make this happen: I set =lambda= to be an abbreviation for =λ=.
-
-#+BEGIN_SRC emacs-lisp
-   (require 'abbrev)
-   (add-hook 'scheme-mode-hook
-     (lambda ()
-       (abbrev-mode 1)
-       (define-abbrev scheme-mode-abbrev-table "lambda" "λ")))
-#+END_SRC
-
 Perfectly matching parentheses is annoying; =electric-pair-mode= automatically inserts closing parentheses when I type the open parenthesis. This works great with =show-paren-mode=, which automatically highlights the matching parenthesis (=show-paren-mode= is provided by =better-defaults=).
 
 #+BEGIN_SRC emacs-lisp
-  (add-hook 'scheme-mode-hook 'electric-pair-mode)
+    (add-hook racket-mode-hook 'electric-pair-mode)
+#+END_SRC
+
+You can also turn on Unicode input so that you can type a λ with =\lambda=:
+
+#+BEGIN_SRC emacs-lisp
+  (with-eval-after-load 'racket-mode
+    (racket-unicode-input-method-enable))
+#+END_SRC
+
+FPCore is the vaguely Scheme-derived format behind [[http://fpbench.org][FPBench]].
+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'auto-mode-alist '("\\.fpcore" . scheme-mode))
 #+END_SRC
 
 ** Directories (dired)
@@ -476,7 +461,7 @@ Dired is great for exploring a file system and so on.
 
 #+BEGIN_SRC emacs-lisp
   (require 'dired-x)
-  (setf dired-omit-files "^\\.?#\\|^\\.")
+  (setq dired-omit-files "^\\.?#\\|^\\.")
 #+END_SRC
 
 Because Emacs shows the =~= directory when I open it up,
@@ -486,37 +471,11 @@ Because Emacs shows the =~= directory when I open it up,
   (defun dired-hide-details-home ()
     "Hide details and hidden files,
      if the current buffer is the home directory."
-    (when (equal (expand-file-name default-directory) (expand-file-name "~/"))
+    (when (equal default-directory (expand-file-name "~/"))
       (dired-hide-details-mode)
       (dired-omit-mode)))
 
   (add-hook 'dired-mode-hook 'dired-hide-details-home)
-#+END_SRC
-
-** PDFs (doc-view)
-
-I sometimes use doc-view for long PDFs (though rarely now).
-
-For long PDFs, continuous scrolling is best.
-
-#+BEGIN_SRC emacs-lisp
-  (setf doc-view-continuous t)
-#+END_SRC
-
-144 is a decent resolution, since it makes a page of text about as wide as half my screen, and I generally use Emacs with two vertical panes.
-
-#+BEGIN_SRC emacs-lisp
-  (setf doc-view-resolution 144)
-#+END_SRC
-
-Doc-view works much better with Vim-style h/j/k/l movement keys.
-
-#+BEGIN_SRC emacs-lisp
-  (require 'doc-view)
-  (define-key doc-view-mode-map (kbd "j") 'doc-view-next-line-or-next-page)
-  (define-key doc-view-mode-map (kbd "k") 'doc-view-previous-line-or-previous-page)
-  (define-key doc-view-mode-map (kbd "h") 'image-backward-hscroll)
-  (define-key doc-view-mode-map (kbd "l") 'image-forward-hscroll)
 #+END_SRC
 
 ** Emacs Lisp programming tools
@@ -534,7 +493,7 @@ helpful to jump to it and reload it quickly.,
 
 * Inter-Key Timings
 
-One interesting characteristic of a person's typing is their inter-key timings -- the time between typing two letters in succession.  For example, it usually takes more time to type "cr" than ";l", since one involves moving the left index finger a large distance and the other uses the really natural rolling chord on the right hand.  By recording all key character pairs, we can actually track timings for this.  And since I do a lot of my work in Emacs, it is easiest to do this as an Emacs extension.
+One interesting characteristic of a person's typing is their inter-key timings -- the time between typing two letters in succession.  For example, it usually takes more time to type =cr= than =;l=, since one involves moving the left index finger a large distance and the other uses the really natural rolling chord on the right hand.  By recording all key character pairs, we can actually track timings for this.  And since I do a lot of my work in Emacs, it is easiest to do this as an Emacs extension.
 
 I've written such a thing: [[http://git.pavpanchekha.com/?p=keylogger.el.git;a=summary][keylogger.el]].  It has an Emacs Lisp extension and an analyzer written in Javascript.  I turn it on when Emacs starts:
 
@@ -575,10 +534,14 @@ precmd() {
 This sends an OSC escape sequence that vterm intercepts and calls =pavel/vterm-command-finished=, which then calls =terminal-notifier= (needs Homebrew package) to notify me if Emacs isn't focused.
 
 #+BEGIN_SRC emacs-lisp
+  (unless (executable-find "terminal-notifier")
+    (message "Warning: terminal-notifier missing, please install to get notifications"))
+
   (defun pavel/vterm-command-finished (cmd exit-status)
     "Called by vterm when a shell command finishes.
     Sends a macOS notification if Emacs isn't focused."
-    (unless (frame-focus-state)
+    (unless (and (frame-focus-state)
+                 (executable-find "terminal-notifier"))
       (start-process "notify" nil "terminal-notifier"
                      "-title" (if (string= exit-status "0")
                                   "✅ Command Done"
@@ -589,6 +552,34 @@ This sends an OSC escape sequence that vterm intercepts and calls =pavel/vterm-c
   (with-eval-after-load 'vterm
     (add-to-list 'vterm-eval-cmds
                  '("pavel/vterm-command-finished" pavel/vterm-command-finished)))
+#+END_SRC
+
+I was surprised but terminal performance is actually really important, because I use Amp as my AI agent and it's pretty curses-heavy. So here's a bunch of changes to speed up Emacs:
+
+#+BEGIN_SRC emacs-lisp
+(setq fast-but-imprecise-scrolling t
+      redisplay-skip-fontification-on-input t
+      inhibit-compacting-font-caches t)  ;; macOS CoreText can be slow
+#+END_SRC
+
+And here are some vterm-specific ones that help:
+
+#+BEGIN_SRC emacs-lisp
+  (setq read-process-output-max (* 1024 1024))  ; 1MiB
+
+  (setq vterm-timer-delay 0.01)
+  (setq vterm-max-scrollback 1000)
+  (setq vterm-kill-buffer-on-exit t)
+#+END_SRC
+
+Finally, some vterm hooks that just make it a bit nicer to use by turning off stuff that's useless in vterm
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'vterm-mode-hook
+            (lambda ()
+              (setq-local global-hl-line-mode nil)
+              (setq-local display-line-numbers nil)
+              (setq-local cursor-in-non-selected-windows nil)))
 #+END_SRC
 
 * Web Server
@@ -716,15 +707,15 @@ You start it with space-V (for server).
 
   (defun amp--get-amp-thread (file)
     "Get the amp thread ID cached in the file, if it exists, or create one"
-    (if (file-exists-p thread-file)
+    (if (file-exists-p file)
         (string-trim (with-temp-buffer
-                       (insert-file-contents thread-file)
+                       (insert-file-contents file)
                        (buffer-string)))
       (let* ((tid (with-temp-buffer
                     (if (zerop (call-process "amp" nil t nil "threads" "new"))
                         (amp--parse-thread-id (buffer-string))
                       (error "Running `amp threads new` failed:\n%s" (buffer-string))))))
-        (with-temp-file thread-file
+        (with-temp-file file
           (insert tid "\n"))
         tid)))
 
@@ -741,8 +732,8 @@ You start it with space-V (for server).
       - Use/obtain .worktrees/<branch>.ampthread for thread id.
       - Open buffer *amp:<branch>* running: amp thread continue <threadid>."
     (interactive)
-    (unless (require 'vterm nil t)
-      (user-error "vterm is required to run amp; install it with M-x package-install RET vterm RET"))
+    (unless (executable-find "amp")
+      (user-error "Amp not installed, please install and configure it"))
 
     ;; 1) Find repo root
     (let* ((repo (or (magit-toplevel) (user-error "Not inside a Git repository"))))
@@ -772,7 +763,6 @@ You start it with space-V (for server).
                    (thread-id (amp--get-amp-thread thread-file))
                    ;; 7) Open terminal buffer and run amp continue
                    (bufname (format "*amp:%s*" branch)))
-              (message "Thread ID %s" thread-id)
               ;; Create or reuse buffer
               (when (get-buffer bufname)
                 (kill-buffer bufname))
@@ -780,7 +770,6 @@ You start it with space-V (for server).
               (let* ((amp-buf (get-buffer-create bufname)))
                 ;; Start AMP in vterm without popping the buffer yet
                 (with-current-buffer amp-buf
-                  (evil-local-mode -1)
                   (vterm-mode)
                   (vterm-send-string (format "exec amp thread continue %s" thread-id))
                   (vterm-send-return))
@@ -803,29 +792,3 @@ You start it with space-V (for server).
             (message "AMP thread ready for branch %s" branch))))))
 #+END_SRC
 
-The annoying thing about this is that vterm is kinda slow. ChatGPT said this would help:
-
-#+BEGIN_SRC emacs-lisp
-(setq fast-but-imprecise-scrolling t
-      redisplay-skip-fontification-on-input t
-      inhibit-compacting-font-caches t)  ;; macOS CoreText can be slow
-#+END_SRC
-
-And maybe also this, also a ChatGPT suggestion:
-
-#+BEGIN_SRC emacs-lisp
-;; Bigger pipe for subprocess output (Emacs 27+)
-(setq read-process-output-max (* 1024 1024))  ; 1MiB
-
-;; vterm tuning
-(setq vterm-timer-delay 0.01)          ;; lower = more frequent updates (default is OK; try 0.01–0.02)
-(setq vterm-max-scrollback 1000)       ;; don’t keep huge scrollback
-(setq vterm-kill-buffer-on-exit t)
-
-;; Buffer-local UI trims for vterm
-(add-hook 'vterm-mode-hook
-          (lambda ()
-            (setq-local global-hl-line-mode nil)
-            (setq-local display-line-numbers nil)
-            (setq-local cursor-in-non-selected-windows nil)))
-#+END_SRC
