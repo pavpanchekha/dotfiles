@@ -132,8 +132,8 @@ When I teach or project it's good to have light mode, but I prefer to code in da
   (defun toggle-tango-themes ()
     "Toggle between `tango` and `tango-dark` themes."
     (interactive)
-    (let ((light 'tango)
-          (dark 'tango-dark))
+    (let ((light 'whiteboard)
+          (dark 'deeper-blue))
       (cond
        ((member light custom-enabled-themes)
         (disable-theme light)
@@ -436,13 +436,7 @@ Log files and SMT-LIB files often have long lines (SMT-LIB because it's usually 
 
 I usually use the Racket dialect of Scheme, but I've used MIT-Scheme heavily in undergrad. For a while I used the [[http://www.neilvandyke.org/quack/][Quack]] and [[http://www.nongnu.org/geiser/][Geiser]] packages, which sort of supported multiple implementations, but now I use the =racket-mode= package, which has much deeper support for Racket but does not attempt to support other dialects at all. Which I think is OK, the other dialects are not used much.
 
-Perfectly matching parentheses is annoying; =electric-pair-mode= automatically inserts closing parentheses when I type the open parenthesis. This works great with =show-paren-mode=, which automatically highlights the matching parenthesis (=show-paren-mode= is provided by =better-defaults=).
-
-#+BEGIN_SRC emacs-lisp
-    (add-hook racket-mode-hook 'electric-pair-mode)
-#+END_SRC
-
-You can also turn on Unicode input so that you can type a λ with =\lambda=:
+You can turn on Unicode input so that you can type a λ with =\lambda=:
 
 #+BEGIN_SRC emacs-lisp
   (with-eval-after-load 'racket-mode
