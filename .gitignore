@@ -164,4 +164,5 @@ priv
 .xmonad/xmonad.hi
 .xmonad/xmonad.o
 .xmonad/prompt-history
-.worktrees/
+
+.worktrees

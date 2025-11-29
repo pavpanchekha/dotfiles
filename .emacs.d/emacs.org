@@ -30,10 +30,10 @@ Here are the packages I use; this table is [[http://sachachua.com/blog/2015/01/g
 | better-defaults | Hide menus and fix some basic annoyances |
 | evil            | Vim key-bindings                         |
 | evil-leader     | Set =SPC= as a leader key                  |
-| ivy             | A generic tab completion Emacs plugin    |
-| counsel         | Find-file for Ivy                        |
+| vertico         | Minibuffer completion UI                 |
+| corfu           | In-buffer completion UI                  |
+| orderless       | Fuzzy search for completions             |
 | magit           | A git mode                               |
-| company         | Completions and suggestions              |
 | org             | An organization tool                     |
 | racket-mode     | Editing Racket code                      |
 | vterm           | For running amp and maybe others         |
@@ -190,12 +190,12 @@ I have a few shortcuts using the =SPC= leader. I usually stick tools I develop i
 #+NAME: evil-leader-bindings
 | Key | Function                 |
 |-----+--------------------------|
-| SPC | counsel-M-x              |
+| SPC | execute-extended-command |
 | a   | amp-magit-start-thread   |
-| b   | ivy-switch-buffer        |
+| b   | switch-to-buffer         |
 | d   | toggle-debug-on-error    |
 | e   | vterm                    |
-| f   | counsel-find-file        |
+| f   | find-file                |
 | g   | ripgrep-regexp           |
 | h   | help-for-help            |
 | j   | my-open-journal          |
@@ -213,20 +213,14 @@ I have a few shortcuts using the =SPC= leader. I usually stick tools I develop i
     (evil-leader/set-key (car row) (intern (cadr row))))
 #+END_SRC
 
-* Ivy / Counsel
+* Search and completion
 
-Ivy is an incredible search interface. I used to use Helm, but it was too slow, and it seems that Ivy is getting popular.
-
-#+BEGIN_SRC emacs-lisp
-  (ivy-mode 1)
-  (counsel-mode 1)
-#+END_SRC
-
-Some additional information in Ivy:
+I used to use Helm, Ivy, all sorts of stuff. I've now switched to vertico, orderless, and corfu.
 
 #+BEGIN_SRC emacs-lisp
-  (setq ivy-use-virtual-buffers t)
-  (setq ivy-height 10)
+  (vertico-mode)
+  (setopt completion-styles '(orderless))
+  (global-corfu-mode)
 #+END_SRC
 
 * Git integration (Magit)

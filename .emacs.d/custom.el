@@ -44,10 +44,10 @@
  '(org-pretty-entities t)
  '(package-selected-packages
    '(ack activities better-defaults color-theme-sanityinc-tomorrow
-	 company counsel eat evil-leader exec-path-from-shell
-	 haskell-mode htmlize magit markdown-mode projectile
-	 pyvenv-auto racket-mode ripgrep rust-mode scribble-mode vterm
-	 yaml-mode))
+         company corfu counsel eat evil-leader exec-path-from-shell
+         haskell-mode htmlize magit markdown-mode orderless projectile
+         pyvenv-auto racket-mode ripgrep rust-mode scribble-mode
+         vertico vterm yaml-mode))
  '(paradox-automatically-star t)
  '(pos-tip-background-color "#FFFACE")
  '(pos-tip-foreground-color "#272822")
@@ -63,9 +63,9 @@
  '(tramp-verbose 2 nil (tramp))
  '(weechat-color-list
    (unspecified "#272822" "#3C3D37" "#F70057" "#F92672" "#86C30D"
-		"#A6E22E" "#BEB244" "#E6DB74" "#40CAE4" "#66D9EF"
-		"#FB35EA" "#FD5FF0" "#74DBCD" "#A1EFE4" "#F8F8F2"
-		"#F8F8F0")))
+                "#A6E22E" "#BEB244" "#E6DB74" "#40CAE4" "#66D9EF"
+                "#FB35EA" "#FD5FF0" "#74DBCD" "#A1EFE4" "#F8F8F2"
+                "#F8F8F0")))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
