@@ -99,6 +99,7 @@
 .nuget
 .matplotlib
 .lldb
+.codex
 Zotero
 
 # System components that don't need their own directory
