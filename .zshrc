@@ -29,7 +29,13 @@ preexec() {
 }
 
 precmd() {
+  # Tell vterm the current directory
+  printf '\e]51;A%s@%s:%s\a' "$USER" "$HOST" "$PWD"
+
   [[ -n "$_last_command" ]] || return
-  printf '\e]51;Epavel/vterm-command-finished "%s" %d\a' "$_last_command" "$?"
+  # Escape backslashes and quotes for elisp string
+  local escaped_cmd="${_last_command//\\/\\\\}"
+  escaped_cmd="${escaped_cmd//\"/\\\"}"
+  printf '\e]51;Epavel/vterm-command-finished "%s" %d\a' "$escaped_cmd" "$?"
   _last_command=""
 }
