@@ -36,7 +36,7 @@ Here are the packages I use; this table is [[http://sachachua.com/blog/2015/01/g
 | magit           | A git mode                               |
 | org             | An organization tool                     |
 | racket-mode     | Editing Racket code                      |
-| vterm           | For running amp and maybe others         |
+| vterm           | For running commands                     |
 
 #+BEGIN_SRC emacs-lisp :var packages=packages
   (let ((packages-refreshed-p nil))
@@ -191,7 +191,7 @@ I have a few shortcuts using the =SPC= leader. I usually stick tools I develop i
 | Key | Function                 |
 |-----+--------------------------|
 | SPC | execute-extended-command |
-| a   | amp-magit-start-thread   |
+| a   | codex-magit-start-thread |
 | b   | switch-to-buffer         |
 | d   | toggle-debug-on-error    |
 | e   | vterm                    |
@@ -632,16 +632,16 @@ You start it with space-V (for server).
       (goto-char (point-max))))
 #+END_SRC
 
-* Amp integration
+* Codex integration
 
 #+BEGIN_SRC emacs-lisp
   (require 'magit)
   (require 'subr-x)
 
-  (defun amp--git (repo &rest args)
+  (defun codex--git (repo &rest args)
     "Run git ARGS in REPO, returning (exit-code . output-string)."
     (let* ((default-directory repo)
-           (buf (generate-new-buffer " *amp-git*"))
+           (buf (generate-new-buffer " *codex-git*"))
            (status (apply #'process-file "git" nil buf nil args))
            (out (with-current-buffer buf (buffer-string))))
       (kill-buffer buf)
@@ -649,7 +649,7 @@ You start it with space-V (for server).
           (string-trim out)
         (error "git %s failed: %s" (string-join args " ") out))))
 
-  (defun amp--ensure-line-in-file (file line)
+  (defun codex--ensure-line-in-file (file line)
     "Append LINE to FILE if not already present (match per line)."
     (let ((existing (when (file-exists-p file)
                       (with-temp-buffer
@@ -668,22 +668,7 @@ You start it with space-V (for server).
           (insert line "\n")
           (write-region (point-min) (point-max) file nil 'silent)))))
 
-  (defun amp--parse-thread-id (s)
-    "Heuristically extract a thread id from S."
-    (let* ((lines (split-string (string-trim s) "\n" t "[ \t\r]+"))
-           ;; Try exact single-line first
-           (one (and (= (length lines) 1) (car lines))))
-      (cond
-       ((and one (> (length one) 0)) one)
-       ;; Else: look for something id-like in the last line
-       (t
-        (save-match-data
-          (let ((last (car (last lines))))
-            (if (and last (string-match "\\([A-Za-z0-9_-]+\\)\\s-*\\'" last))
-                (match-string 1 last)
-              (error "Could not parse thread id from: %S" s))))))))
-
-  (defun amp--base-for-new-branch (branches)
+  (defun codex--base-for-new-branch (branches)
     "Choose a reasonable base for a new branch.
   Prefer local main/master; else origin/main|master; else current branch."
     (or (and (member "main" branches) "main")
@@ -693,23 +678,9 @@ You start it with space-V (for server).
         (magit-get-current-branch)
         (user-error "Cannot find a suitable base branch (tried main/master)")))
 
-  (defun amp--get-amp-thread (file)
-    "Get the amp thread ID cached in the file, if it exists, or create one"
-    (if (file-exists-p file)
-        (string-trim (with-temp-buffer
-                       (insert-file-contents file)
-                       (buffer-string)))
-      (let* ((tid (with-temp-buffer
-                    (if (zerop (call-process "amp" nil t nil "threads" "new"))
-                        (amp--parse-thread-id (buffer-string))
-                      (error "Running `amp threads new` failed:\n%s" (buffer-string))))))
-        (with-temp-file file
-          (insert tid "\n"))
-        tid)))
-
   ;;;###autoload
-  (defun amp-magit-start-thread ()
-    "Create/continue an AMP thread tied to a Git branch.
+  (defun codex-magit-start-thread ()
+    "Open Codex tied to a Git branch worktree.
 
       Steps:
       - Find repo from current buffer (Magit).
@@ -717,11 +688,10 @@ You start it with space-V (for server).
       - Add to .gitignore if missing.
       - Prompt for branch (completes from local branches; new names allowed).
       - Ensure .worktrees/<branch> dir exists; create branch if missing (from main/master/origin/main).
-      - Use/obtain .worktrees/<branch>.ampthread for thread id.
-      - Open buffer *amp:<branch>* running: amp thread continue <threadid>."
+      - Open buffer *codex:<branch>* running: codex."
     (interactive)
-    (unless (executable-find "amp")
-      (user-error "Amp not installed, please install and configure it"))
+    (unless (executable-find "codex")
+      (user-error "Codex not installed, please install and configure it"))
 
     ;; 1) Find repo root
     (let* ((repo (or (magit-toplevel) (user-error "Not inside a Git repository"))))
@@ -730,39 +700,36 @@ You start it with space-V (for server).
         ;; 2) Create worktree directory
         (make-directory wt-root t)
         ;; 3) Ensure .worktrees in .gitignore
-        (amp--ensure-line-in-file gitignore ".worktrees")
+        (codex--ensure-line-in-file gitignore ".worktrees")
         ;; 4) Prompt for branch with completion
         (let* ((branches (magit-list-local-branch-names))
                (prompt   "Branch (existing or new): ")
                (branch (completing-read prompt branches nil nil nil nil
                                         (magit-get-current-branch)))
                (branch-exists (member branch branches))
-               (base (amp--base-for-new-branch branches)))
+               (base (codex--base-for-new-branch branches)))
           ;; 5) Ensure .worktrees/<branch> dir exists
           (let* ((wt-dir (expand-file-name branch wt-root)))
             (if branch-exists
                 (if (file-exists-p wt-dir)
                     (message "Branch %s and its worktree exists" branch)
-                    (amp--git repo "worktree" "add" wt-dir branch))
-              (amp--git repo "worktree" "add" "-b" branch wt-dir base))
-            ;; 6) Get or create AMP thread id
-            (let* ((thread-file (expand-file-name (format "%s.ampthread" branch) wt-root))
-                   (default-directory wt-dir)
-                   (thread-id (amp--get-amp-thread thread-file))
-                   ;; 7) Open terminal buffer and run amp continue
-                   (bufname (format "*amp:%s*" branch)))
+                    (codex--git repo "worktree" "add" wt-dir branch))
+              (codex--git repo "worktree" "add" "-b" branch wt-dir base))
+            ;; 6) Open terminal buffer and run codex
+            (let* ((default-directory wt-dir)
+                   (bufname (format "*codex:%s*" branch)))
               ;; Create or reuse buffer
               (when (get-buffer bufname)
                 (kill-buffer bufname))
-              ;; Launch AMP in the worktree, then split: [ Magit | AMP ]
-              (let* ((amp-buf (get-buffer-create bufname)))
-                ;; Start AMP in vterm without popping the buffer yet
-                (with-current-buffer amp-buf
+              ;; Launch Codex in the worktree, then split: [ Magit | Codex ]
+              (let* ((codex-buf (get-buffer-create bufname)))
+                ;; Start Codex in vterm without popping the buffer yet
+                (with-current-buffer codex-buf
                   (vterm-mode)
-                  (vterm-send-string (format "exec amp thread continue %s" thread-id))
+                  (vterm-send-string "exec codex")
                   (vterm-send-return))
                 
-                ;; Two-column layout: left = Magit, right = AMP
+                ;; Two-column layout: left = Magit, right = Codex
                 (delete-other-windows)
                 (let* ((left  (selected-window))
                        (right (split-window-right)))
@@ -773,10 +740,9 @@ You start it with space-V (for server).
                       (magit-auto-revert-mode 1))
                     (set-window-buffer left magit-buf))
 
-                  ;; Right: the AMP terminal buffer (and leave focus here)
+                  ;; Right: the Codex terminal buffer (and leave focus here)
                   (select-window right)
-                  (set-window-buffer right amp-buf)
+                  (set-window-buffer right codex-buf)
                   (balance-windows))))
-            (message "AMP thread ready for branch %s" branch))))))
+            (message "Codex thread ready for branch %s" branch))))))
 #+END_SRC
-
