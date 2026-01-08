@@ -678,6 +678,16 @@ You start it with space-V (for server).
         (magit-get-current-branch)
         (user-error "Cannot find a suitable base branch (tried main/master)")))
 
+  (defun codex--normalize-repo-root (repo)
+    "If REPO is a worktree under .worktrees, return the main repo root."
+    (let* ((normalized (directory-file-name repo))
+           (pattern (concat (regexp-quote (concat "/" ".worktrees" "/"))
+                            "[^/]+\\'")))
+      (if (string-match-p pattern normalized)
+          (file-name-directory
+           (directory-file-name (file-name-directory normalized)))
+        normalized)))
+
   ;;;###autoload
   (defun codex-magit-start-thread ()
     "Open Codex tied to a Git branch worktree.
@@ -694,7 +704,8 @@ You start it with space-V (for server).
       (user-error "Codex not installed, please install and configure it"))
 
     ;; 1) Find repo root
-    (let* ((repo (or (magit-toplevel) (user-error "Not inside a Git repository"))))
+    (let* ((repo (or (magit-toplevel) (user-error "Not inside a Git repository")))
+           (repo (codex--normalize-repo-root repo)))
       (let* ((wt-root (expand-file-name ".worktrees" repo))
              (gitignore (expand-file-name ".gitignore" repo)))
         ;; 2) Create worktree directory
