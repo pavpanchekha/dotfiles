@@ -612,7 +612,8 @@ You start it with space-V (for server).
   prompt to kill it, then start a new one. Finally restore the buffer you were in,
   even if you abort."
     (interactive)
-    (let* ((dir         (read-directory-name "Directory for HTTP server: ")))
+    (let* ((dir (expand-file-name
+                 (read-directory-name "Directory for HTTP server: "))))
       ;; If already running, show its log and ask to kill
       (save-window-excursion
         (stop-python-http-server))
